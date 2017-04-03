@@ -1,5 +1,6 @@
 
 # Ronnegard & Valdar 2011
+#' @export
 calc.SIM.cache <- function(cache.dir, use.dosages=FALSE, use.subjects=NULL, model="additive", p.null=0.125, scale="Mb", just.these.loci=NULL){
   h <- bagpipe.backend::DiploprobReader$new(cache.dir)
   
@@ -36,6 +37,7 @@ get.SIM <- function(p.post, p.null=NULL){
   return(SIM.ind/log(1/p.null))
 }
 
+#' @export
 plot.SIM <- function(SIM.object, chr=1, main=""){
   use.based.chr <- SIM.object$chr == chr
   pos <- SIM.object$pos[use.based.chr]
@@ -65,6 +67,7 @@ calc.dist.from.balance <- function(genomecache, model){
   return(dist.vec)
 }
 
+#' @export
 calc.dist.cache <- function(cache.dir, use.dosages=FALSE, use.subjects=NULL, interval=1) 
 {
   h <- bagpipe.backend::DiploprobReader$new(cache.dir)
@@ -106,6 +109,7 @@ calc.dist.cache <- function(cache.dir, use.dosages=FALSE, use.subjects=NULL, int
               interval.spacing=interval))
 }
 
+#' @export
 plot.dist <- function(dist.object, comparison.object=NULL, main="", random.sample=20, seed=10){
   o <- order(dist.object$Mb)
   plot(x=dist.object$Mb[o], y=dist.object$dist.matrix[1,o], type="p", pch=20, col="grey", 

@@ -1,3 +1,4 @@
+#' @export
 snp.null.par.bs.threshold.scan <- function(scan.object, 
                                            data,
                                            allele.dir, genomecache,
@@ -58,6 +59,7 @@ snp.null.par.bs.threshold.scan <- function(scan.object,
   return(list(full.results=list(p.values=full.results, chr=these.chr, pos=these.pos), max.statistics=max.results))
 }
 
+#' @export
 snp.par.perm.threshold.scan <- function(scan.object, 
                                         data,
                                         allele.dir, genomecache,
@@ -119,6 +121,7 @@ snp.par.perm.threshold.scan <- function(scan.object,
   return(list(full.results=list(p.values=full.results, chr=these.chr, pos=these.pos), max.statistics=max.results))
 }
 
+#' @export
 snp.perm.threshold.scan <- function(scan.object, 
                                     data,
                                     allele.dir, genomecache,

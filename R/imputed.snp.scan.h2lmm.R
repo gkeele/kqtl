@@ -1,3 +1,4 @@
+#' @export
 imputed.snp.scan.h2lmm <- function(data, formula, K,
                                    allele.dir, genomecache,
                                    model=c("additive", "full"),
