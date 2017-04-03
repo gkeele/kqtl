@@ -1,3 +1,4 @@
+#' @export
 pairwise.cor.snp.scan <- function(data, formula, K,
                                   allele.dir, genomecache,
                                   model=c("additive", "full"), chr, point.locus,
@@ -67,6 +68,7 @@ pairwise.cor.snp.scan <- function(data, formula, K,
   return(output)
 }
 
+#' @export
 extract.r2.interval <- function(scan.object, r2.scan.object, r2.level=0.6){
   high.r2 <- r2.scan.object$r2[which(r2.scan.object$r2 > r2.level)]
   high.r2.loci <- r2.scan.object$loci[which(r2.scan.object$r2 > r2.level)]
