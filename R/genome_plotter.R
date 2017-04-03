@@ -755,7 +755,7 @@ snp.genome.plotter.w.r2 <- function(snp.scan, r2.object, use.lod=TRUE,
          bg="red", pch=21, cex=1.5)
   axis(side=2, at=0:y.max, las=2)
 
-  color.legend(xl=floor(0.75*max.pos), yb=y.max, xr=max.pos, yt=y.max+0.5, legend=c(0, 0.25, 0.5, 0.75, 1), rect.col=these.colors, align="rb", gradient="x")  
+  plotrix::color.legend(xl=floor(0.75*max.pos), yb=y.max, xr=max.pos, yt=y.max+0.5, legend=c(0, 0.25, 0.5, 0.75, 1), rect.col=these.colors, align="rb", gradient="x")  
   text(x=(max.pos - floor(0.75*max.pos))/2 + floor(0.75*max.pos),
        y=y.max+0.75,
        labels="r2 with peak SNP")
