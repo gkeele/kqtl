@@ -97,12 +97,12 @@ genome.plotter.per.chr <- function(scan.object, chr, use.lod=TRUE, print.median.
     points(pos[pre.chr==chr.types[1]], outcome[pre.chr==chr.types[1]], type="l", lwd=1.5, col=main.colors[1])
     if(use.lod){
       mi.outcome.LOD.scale <- unlist(mi.scan["LOD"])[order.i]
-      points(pos[pre.chr==chr.types[1]], mi.outcome.LOD.scale[pre.chr==chr.types[1]], type="l", lwd=0.75, col=alpha(mi.colors[1], 0.5))
-      points(pos[pre.chr==chr.types[1]], mi.outcome.LOD.exp.scale[pre.chr==chr.types[1]], type="l", lwd=0.75, col=alpha(mi.colors[2], 0.5))
+      points(pos[pre.chr==chr.types[1]], mi.outcome.LOD.scale[pre.chr==chr.types[1]], type="l", lwd=0.75, col=scales::alpha(mi.colors[1], 0.5))
+      points(pos[pre.chr==chr.types[1]], mi.outcome.LOD.exp.scale[pre.chr==chr.types[1]], type="l", lwd=0.75, col=scales::alpha(mi.colors[2], 0.5))
     }
     if(!use.lod){
       mi.outcome.pvalue.scale <- unlist(mi.scan["p.value"])[order.i]
-      points(pos[pre.chr==chr.types[1]], mi.outcome.pvalue.scale[pre.chr==chr.types[1]], type="l", lwd=0.75, col=alpha(mi.colors[1], 0.5))
+      points(pos[pre.chr==chr.types[1]], mi.outcome.pvalue.scale[pre.chr==chr.types[1]], type="l", lwd=0.75, col=scales::alpha(mi.colors[1], 0.5))
     }
   }
   
@@ -123,13 +123,13 @@ genome.plotter.per.chr <- function(scan.object, chr, use.lod=TRUE, print.median.
         }
         points(pos[pre.chr==chr.types[i]] + shift, outcome[pre.chr==chr.types[i]], type="l", lwd=1.5, col=main.colors[1])
         if(use.lod){
-          points(pos[pre.chr==chr.types[i]] + shift, mi.outcome.LOD.scale[pre.chr==chr.types[i]], type="l", lwd=0.75, col=alpha(mi.colors[1], 0.5))
-          points(pos[pre.chr==chr.types[i]] + shift, mi.outcome.LOD.exp.scale[pre.chr==chr.types[i]], type="l", lwd=0.75, col=alpha(mi.colors[2], 0.5))
+          points(pos[pre.chr==chr.types[i]] + shift, mi.outcome.LOD.scale[pre.chr==chr.types[i]], type="l", lwd=0.75, col=scales::alpha(mi.colors[1], 0.5))
+          points(pos[pre.chr==chr.types[i]] + shift, mi.outcome.LOD.exp.scale[pre.chr==chr.types[i]], type="l", lwd=0.75, col=scales::alpha(mi.colors[2], 0.5))
         }
         if(!use.lod){
-          points(pos[pre.chr==chr.types[i]] + shift, mi.outcome.pvalue.LOD.scale[pre.chr==chr.types[i]], type="l", lwd=0.75, col=alpha(mi.colors[1], 0.5))
-          points(pos[pre.chr==chr.types[i]] + shift, mi.outcome.pvalue.exp.scale[pre.chr==chr.types[i]], type="l", lwd=0.75, col=alpha(mi.colors[2], 0.5))
-          points(pos[pre.chr==chr.types[i]] + shift, mi.outcome.mi.pvalue[pre.chr==chr.types[i]], type="l", lwd=0.75, col=alpha(mi.colors[3], 0.5))
+          points(pos[pre.chr==chr.types[i]] + shift, mi.outcome.pvalue.LOD.scale[pre.chr==chr.types[i]], type="l", lwd=0.75, col=scales::alpha(mi.colors[1], 0.5))
+          points(pos[pre.chr==chr.types[i]] + shift, mi.outcome.pvalue.exp.scale[pre.chr==chr.types[i]], type="l", lwd=0.75, col=scales::alpha(mi.colors[2], 0.5))
+          points(pos[pre.chr==chr.types[i]] + shift, mi.outcome.mi.pvalue[pre.chr==chr.types[i]], type="l", lwd=0.75, col=scales::alpha(mi.colors[3], 0.5))
         }
       }
       shift <- shift + max.pos[i]
@@ -299,11 +299,11 @@ single.chr.plotter.w.ci <- function(scan.object, qtl.ci.object,
   }
   for(i in 1:dim(full.results)[2]){
     for(j in 1:dim(full.results)[1]){
-      lines(pos, -log10(full.results[j,i,]), lwd=0.5, col=alpha(these.col[i], 0.5))
+      lines(pos, -log10(full.results[j,i,]), lwd=0.5, col=scales::alpha(these.col[i], 0.5))
     }
   }
-  rug(qtl.ci.object$peak.pos[[scale]], col=alpha("black", 0.5))
-  rug(qtl.ci.object$peak.pos[[scale]][,qtl.only], col=alpha(these.col[i], 0.75))
+  rug(qtl.ci.object$peak.pos[[scale]], col=scales::alpha("black", 0.5))
+  rug(qtl.ci.object$peak.pos[[scale]][,qtl.only], col=scales::alpha(these.col[i], 0.75))
   
   lines(pos, outcome, lwd=1.5)
 }
@@ -424,12 +424,12 @@ genome.plotter.whole <- function(non.mi.scan.list, mi.scan=NULL, use.lod=TRUE, j
     points(pos[pre.chr==chr.types[1]], outcome[pre.chr==chr.types[1]], type="l", lwd=1.5, col=main.colors[1])
     if(use.lod){
       mi.outcome.LOD.scale <- unlist(mi.scan["LOD"])[order.i]
-      points(pos[pre.chr==chr.types[1]], mi.outcome.LOD.scale[pre.chr==chr.types[1]], type="l", lwd=0.75, col=alpha(mi.colors[1], 0.5))
-      points(pos[pre.chr==chr.types[1]], mi.outcome.LOD.exp.scale[pre.chr==chr.types[1]], type="l", lwd=0.75, col=alpha(mi.colors[2], 0.5))
+      points(pos[pre.chr==chr.types[1]], mi.outcome.LOD.scale[pre.chr==chr.types[1]], type="l", lwd=0.75, col=scales::alpha(mi.colors[1], 0.5))
+      points(pos[pre.chr==chr.types[1]], mi.outcome.LOD.exp.scale[pre.chr==chr.types[1]], type="l", lwd=0.75, col=scales::alpha(mi.colors[2], 0.5))
     }
     if(!use.lod){
       mi.outcome.pvalue.scale <- unlist(mi.scan["p.value"])[order.i]
-      points(pos[pre.chr==chr.types[1]], mi.outcome.pvalue.scale[pre.chr==chr.types[1]], type="l", lwd=0.75, col=alpha(mi.colors[1], 0.5))
+      points(pos[pre.chr==chr.types[1]], mi.outcome.pvalue.scale[pre.chr==chr.types[1]], type="l", lwd=0.75, col=scales::alpha(mi.colors[1], 0.5))
     }
   }
   
@@ -450,13 +450,13 @@ genome.plotter.whole <- function(non.mi.scan.list, mi.scan=NULL, use.lod=TRUE, j
         }
         points(pos[pre.chr==chr.types[i]] + shift, outcome[pre.chr==chr.types[i]], type="l", lwd=1.5, col=main.colors[1])
         if(use.lod){
-          points(pos[pre.chr==chr.types[i]] + shift, mi.outcome.LOD.scale[pre.chr==chr.types[i]], type="l", lwd=0.75, col=alpha(mi.colors[1], 0.5))
-          points(pos[pre.chr==chr.types[i]] + shift, mi.outcome.LOD.exp.scale[pre.chr==chr.types[i]], type="l", lwd=0.75, col=alpha(mi.colors[2], 0.5))
+          points(pos[pre.chr==chr.types[i]] + shift, mi.outcome.LOD.scale[pre.chr==chr.types[i]], type="l", lwd=0.75, col=scales::alpha(mi.colors[1], 0.5))
+          points(pos[pre.chr==chr.types[i]] + shift, mi.outcome.LOD.exp.scale[pre.chr==chr.types[i]], type="l", lwd=0.75, col=scales::alpha(mi.colors[2], 0.5))
         }
         if(!use.lod){
-          points(pos[pre.chr==chr.types[i]] + shift, mi.outcome.pvalue.LOD.scale[pre.chr==chr.types[i]], type="l", lwd=0.75, col=alpha(mi.colors[1], 0.5))
-          points(pos[pre.chr==chr.types[i]] + shift, mi.outcome.pvalue.exp.scale[pre.chr==chr.types[i]], type="l", lwd=0.75, col=alpha(mi.colors[2], 0.5))
-          points(pos[pre.chr==chr.types[i]] + shift, mi.outcome.mi.pvalue[pre.chr==chr.types[i]], type="l", lwd=0.75, col=alpha(mi.colors[3], 0.5))
+          points(pos[pre.chr==chr.types[i]] + shift, mi.outcome.pvalue.LOD.scale[pre.chr==chr.types[i]], type="l", lwd=0.75, col=scales::alpha(mi.colors[1], 0.5))
+          points(pos[pre.chr==chr.types[i]] + shift, mi.outcome.pvalue.exp.scale[pre.chr==chr.types[i]], type="l", lwd=0.75, col=scales::alpha(mi.colors[2], 0.5))
+          points(pos[pre.chr==chr.types[i]] + shift, mi.outcome.mi.pvalue[pre.chr==chr.types[i]], type="l", lwd=0.75, col=scales::alpha(mi.colors[3], 0.5))
         }
       }
       shift <- shift + max.pos[i]
