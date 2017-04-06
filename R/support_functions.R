@@ -241,6 +241,7 @@ calc.kinship.from.genomecache <- function(genomecache, model="additive"){
   return(K)
 }
 
+#' @export
 get.gev.thresholds <- function(min.pval, percentile=0.95){
   require(evir)
   evd.pars <- as.numeric(gev(-log10(min.pval))$par.est)
