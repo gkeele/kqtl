@@ -11,15 +11,13 @@ multi.imput.lmmbygls <- function(num.imp, data, formula,
     null.formula <- make.null.formula(formula=formula, do.augment=do.augment)
     fit0 <- lmmbygls(null.formula, data=data, K=K, use.par=use.par, brute=brute, weights=weights)
   }
-  if(!is.null(fit0)){
-    K <- fit0$K
-    if(is.null(weights)){
-      eigen.K <- fit0$eigen.K
-    }
-    if(!is.null(fix.par)){
-      M <- fit0$M
-      logDetV <- fit0$logDetV
-    }
+  K <- fit0$K
+  if(is.null(weights)){
+    eigen.K <- fit0$eigen.K
+  }
+  if(!is.null(fix.par)){
+    M <- fit0$M
+    logDetV <- fit0$logDetV
   }
   full.to.dosages <- straineff.mapping.matrix()
   

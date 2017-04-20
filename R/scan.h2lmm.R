@@ -1,7 +1,7 @@
 #' @export
-scan.h2lmm <- function(genomecache, data, formula, K,
+scan.h2lmm <- function(genomecache, data, formula, K=NULL,
                        model=c("additive", "full", "diplolasso"), diplolasso.refit=FALSE,
-                       use.par="h2", use.multi.impute=TRUE, num.imp=10, chr="all", brute=TRUE, use.fix.par=FALSE, 
+                       use.par="h2", use.multi.impute=TRUE, num.imp=10, chr="all", brute=TRUE, use.fix.par=TRUE, 
                        seed=1, 
                        weights=NULL, do.augment=FALSE, use.augment.weights=FALSE, use.full.null=FALSE, added.data.points=1, 
                        just.these.loci=NULL,
