@@ -58,9 +58,9 @@ lmmbygls <- function(formula, data, K=NULL, eigen.K=NULL, fix.par=NULL,
       }
       else{
         eigen.K <- eigen(K)
+        Ut <- t(eigen.K$vectors) # a small optimization
       }
     }
-    Ut <- t(eigen.K$vectors) # a small optimization
   }
   ## Define local objective function/closure for Brent's optimization
   ### Optimize functions
