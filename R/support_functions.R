@@ -25,6 +25,7 @@ remove.whitespace.formula <- function(formula){
 }
 check.for.lmer.formula <- function(formula){
   formula.string <- paste0(Reduce(paste, deparse(formula)))
+  formula.string <- gsub("[[:space:]]", "", formula.string)
   use.lmer <- grepl(pattern="\\([a-zA-Z0-9\\.]+\\|[a-zA-Z0-9\\.]+\\)", x=formula.string, perl=TRUE)
   return(use.lmer)
 }
