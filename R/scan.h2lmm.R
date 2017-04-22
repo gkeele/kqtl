@@ -232,7 +232,7 @@ scan.h2lmm <- function(genomecache, data, formula, K=NULL,
                  chr=h$getChromOfLocus(loci),
                  fit0=fit0,
                  fit0.REML=fit0.REML,
-                 y=fit1$y,
+                 y=data$y,
                  formula=formula.string,
                  model.type=model)
   return(output)
