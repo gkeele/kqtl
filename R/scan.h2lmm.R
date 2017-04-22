@@ -62,6 +62,7 @@ scan.h2lmm <- function(genomecache, data, formula, K=NULL,
   ###### Null model
   ## check for LMER notation
   use.lmer <- check.for.lmer.formula(null.formula)
+  print(null.formula)
   print(use.lmer)
   if(use.lmer & !is.null(K)){
     stop("Cannot use LMER sparse random effects AND a non-sparse random effect", call.=FALSE)
