@@ -18,6 +18,17 @@ make.snp.alt.formula <- function(formula){
   this.formula <- as.formula(paste(this.formula.string, "SNP", sep=" + "))
   return(this.formula)
 }
+remove.whitespace.formula <- function(formula){
+  formula.string <- paste0(Reduce(paste, deparse(formula)))
+  formula.string <- gsub("[[:space:]]", "", formula.string)
+  return(as.formula(formula.string))
+}
+check.for.lmer.formula <- function(formula){
+  formula.string <- paste0(Reduce(paste, deparse(formula)))
+  #random.effect.index <- grepl(pattern="\\(1\\s*\\|", x=formula.string, perl=TRUE)
+  use.lmer <- grepl(pattern="\\([a-zA-Z0-9]+\\|[a-zA-Z0-9]+\\)", x=formula.string, perl=TRUE)
+  return(use.lmer)
+}
 make.processed.data <- function(formula, data, cache.subjects, K){
   all.variables <- all.vars(formula)
   covariates <- all.variables[-1]

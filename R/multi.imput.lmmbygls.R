@@ -1,21 +1,25 @@
 multi.imput.lmmbygls <- function(num.imp, data, formula,
                                  founders=founders, diplotypes, K=NULL, fit0=NULL, fit0.glmnet=NULL,
                                  use.par, fix.par=NULL, model=c("additive", "full", "diplolasso"),
-                                 diplolasso.refit=FALSE, diplolasso.penalty.factor=NULL,
+                                 use.lmer, diplolasso.refit=FALSE, diplolasso.penalty.factor=NULL,
                                  brute=TRUE, seed=1, do.augment,
                                  weights=NULL){
   
   model <- model[1]
   eigen.K <- logDetV <- M <- NULL
-  if(is.null(fit0)){
+  if(is.null(fit0) & !use.lmer){
     null.formula <- make.null.formula(formula=formula, do.augment=do.augment)
     fit0 <- lmmbygls(null.formula, data=data, K=K, use.par=use.par, brute=brute, weights=weights)
+    K <- fit0$K
   }
-  K <- fit0$K
-  if(is.null(weights)){
+  if(is.null(fit0) & use.lmer){
+    null.formula <- make.null.formula(formula=formula, do.augment=do.augment)
+    fit0 <- lmmbylmer(null.formula, data=data, REML=FALSE, weights=weights)
+  }
+  if(is.null(weights) & !use.lmer){
     eigen.K <- fit0$eigen.K
   }
-  if(!is.null(fix.par)){
+  if(!is.null(fix.par) & !use.lmer){
     M <- fit0$M
     logDetV <- fit0$logDetV
   }
@@ -25,7 +29,7 @@ multi.imput.lmmbygls <- function(num.imp, data, formula,
 
   null.data <- data
   set.seed(seed)
-  for(i in 1:num.imp) {
+  for(i in 1:num.imp){
     if(model=="additive"){
       if(any(diplotypes < 0)){
         diplotypes[diplotypes < 0] <- 0
@@ -55,41 +59,56 @@ multi.imput.lmmbygls <- function(num.imp, data, formula,
 
     locus.formula <- make.alt.formula(formula=formula, X=X, do.augment=do.augment)
     data <- cbind(null.data, X)
-    if(model != "diplolasso"){
-      fit1 <- lmmbygls(locus.formula, data=data, eigen.K=eigen.K, K=K,
-                       logDetV=logDetV, M=M, 
-                       use.par="h2", fix.par=fix.par,
-                       brute=brute, weights=weights)
-      imp.logLik[i] <- fit1$logLik
-      imp.h2[i] <- fit1$h2
-      imp.df[i] <- fit1$rank
+    if(use.lmer){
+      fit1 <- lmmbylmer(formula=locus.formula, data=data, REML=FALSE, weights=weights)
+      imp.logLik[i] <- as.numeric(logLik(fit1))
+      imp.h2[i] <- NA
+      imp.df[i] <- length(fixef(fit1))
     }
     else{
-      fit1 <- lmmbygls.diplolasso(locus.formula, data=data, eigen.K=eigen.K, K=K,
-                                  logDetV=logDetV, M=M, 
-                                  use.par="h2", fix.par=fix.par, 
-                                  diplolasso.refit=diplolasso.refit, diplolasso.penalty.factor=diplolasso.penalty.factor, founders=founders,
-                                  brute=brute, weights=weights)
-      if(diplolasso.refit){
+      if(model != "diplolasso"){
+        fit1 <- lmmbygls(locus.formula, data=data, eigen.K=eigen.K, K=K,
+                         logDetV=logDetV, M=M, 
+                         use.par="h2", fix.par=fix.par,
+                         brute=brute, weights=weights)
         imp.logLik[i] <- fit1$logLik
         imp.h2[i] <- fit1$h2
         imp.df[i] <- fit1$rank
       }
       else{
-        imp.logLik[i] <- fit1$SSR
-        imp.h2[i] <- fit1$h2
-        imp.df[i] <- fit1$df
+        fit1 <- lmmbygls.diplolasso(locus.formula, data=data, eigen.K=eigen.K, K=K,
+                                    logDetV=logDetV, M=M, 
+                                    use.par="h2", fix.par=fix.par, 
+                                    diplolasso.refit=diplolasso.refit, diplolasso.penalty.factor=diplolasso.penalty.factor, founders=founders,
+                                    brute=brute, weights=weights)
+        if(diplolasso.refit){
+          imp.logLik[i] <- fit1$logLik
+          imp.h2[i] <- fit1$h2
+          imp.df[i] <- fit1$rank
+        }
+        else{
+          imp.logLik[i] <- fit1$SSR
+          imp.h2[i] <- fit1$h2
+          imp.df[i] <- fit1$df
+        }
       }
     }
   }
-  if(model == "diplolasso" & diplolasso.refit){
-    imp.lod <- log10(exp(fit0.glmnet$SSR - imp.logLik))
-    fstat <- ((fit0.glmnet$SSR - imp.logLik)/(imp.df - fit0.glmnet$df[1]))/(imp.logLik/(length(y) - imp.df))
-    imp.p.value <- 1 - pf(fstat, (imp.df - fit0.glmnet$df[1]), (length(y) - imp.df))
+  ## Summarizing over imputations
+  if(use.lmer){
+    imp.LOD <- log10(exp(imp.logLik - as.numeric(logLik(fit0))))
+    imp.p.value <- pchisq(q=-2*(as.numeric(logLik(fit0)) - imp.logLik), df=imp.df - length(fixef(fit0)), lower.tail=FALSE)
   }
   else{
-    imp.LOD <- log10(exp(imp.logLik - fit0$logLik))
-    imp.p.value <- pchisq(q=-2*(fit0$logLik - imp.logLik), df=imp.df - fit0$rank, lower.tail=FALSE)
+    if(model == "diplolasso" & diplolasso.refit){
+      imp.LOD <- log10(exp(fit0.glmnet$SSR - imp.logLik))
+      fstat <- ((fit0.glmnet$SSR - imp.logLik)/(imp.df - fit0.glmnet$df[1]))/(imp.logLik/(length(y) - imp.df))
+      imp.p.value <- 1 - pf(fstat, (imp.df - fit0.glmnet$df[1]), (length(y) - imp.df))
+    }
+    else{
+      imp.LOD <- log10(exp(imp.logLik - fit0$logLik))
+      imp.p.value <- pchisq(q=-2*(fit0$logLik - imp.logLik), df=imp.df - fit0$rank, lower.tail=FALSE)
+    }
   }
   return(list(h2=imp.h2, 
               LOD=imp.LOD,
