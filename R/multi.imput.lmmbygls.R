@@ -7,14 +7,15 @@ multi.imput.lmmbygls <- function(num.imp, data, formula,
   
   model <- model[1]
   eigen.K <- logDetV <- M <- NULL
-  if(is.null(fit0) & !use.lmer){
+  if(is.null(fit0)){
     null.formula <- make.null.formula(formula=formula, do.augment=do.augment)
-    fit0 <- lmmbygls(null.formula, data=data, K=K, use.par=use.par, brute=brute, weights=weights)
-    K <- fit0$K
-  }
-  if(is.null(fit0) & use.lmer){
-    null.formula <- make.null.formula(formula=formula, do.augment=do.augment)
-    fit0 <- lmmbylmer(null.formula, data=data, REML=FALSE, weights=weights)
+    if(use.lmer){
+      fit0 <- lmmbylmer(null.formula, data=data, REML=FALSE, weights=weights)
+    }
+    else{
+      fit0 <- lmmbygls(null.formula, data=data, K=K, use.par=use.par, brute=brute, weights=weights)
+      K <- fit0$K
+    }
   }
   if(is.null(weights) & !use.lmer){
     eigen.K <- fit0$eigen.K
