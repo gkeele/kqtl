@@ -32,22 +32,24 @@ check.for.lmer.formula <- function(formula){
 make.processed.data <- function(formula, data, cache.subjects, K){
   all.variables <- all.vars(formula)
   covariates <- all.variables[-1]
-  formula.string <- paste0(paste0(Reduce(paste, deparse(formula))), "+ SUBJECT.NAME")
+  #formula.string <- paste0(paste0(Reduce(paste, deparse(formula))), "+ SUBJECT.NAME")
+  formula.string <- paste(all.variables[1],
+                          paste(paste(covariates, collapse="+"), "SUBJECT.NAME", sep="+"),
+                          sep="~")
   data <- model.frame(formula(formula.string), data=data)
+  names(data) <- c("y", all.variables[-1], "SUBJECT.NAME")
   # selecting those in both data and cache
   data <- data[as.character(data$SUBJECT.NAME) %in% cache.subjects,]
   if(!is.null(K)){
     data <- data[as.character(data$SUBJECT.NAME) %in% colnames(K),]
     K <- K[as.character(data$SUBJECT.NAME), as.character(data$SUBJECT.NAME)]
   }
-  names(data) <- c("y", all.variables[-1], "SUBJECT.NAME")
   if(length(all.variables) > 1){
     covariate.matrix <- matrix(NA, nrow=nrow(data), ncol=length(covariates))
     for(i in 1:length(covariates)){
       if(is.factor(data[,covariates[i]])){
-        require(gdata)
         factor.counts <- table(data[,covariates[i]])
-        data[,covariates[i]] <- reorder.factor(x=data[,covariates[i]], new.order=names(sort(factor.counts[factor.counts != 0], decreasing=TRUE)))
+        data[,covariates[i]] <- gdata::reorder.factor(x=data[,covariates[i]], new.order=names(sort(factor.counts[factor.counts != 0], decreasing=TRUE)))
       }
     }
   }
