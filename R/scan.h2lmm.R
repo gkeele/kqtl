@@ -12,6 +12,7 @@ scan.h2lmm <- function(genomecache, data, formula, K=NULL,
   fit0.glmnet <- diplolasso.penalty.factor <- NULL
   
   formula <- remove.whitespace.formula(formula)
+  print(formula)
   
   h <- bagpipe.backend::DiploprobReader$new(genomecache)
   founders <- h$getFounders()
