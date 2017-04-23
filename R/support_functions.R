@@ -33,7 +33,9 @@ make.processed.data <- function(formula, data, cache.subjects, K){
   all.variables <- all.vars(formula)
   covariates <- all.variables[-1]
   #formula.string <- paste0(paste0(Reduce(paste, deparse(formula))), "+ SUBJECT.NAME")
-  formula.string <- paste(all.variables[1],
+  lh.formula.string <- unlist(strsplit(Reduce(paste, deparse(formula)), split="~"))[1]
+  lh.formula.string <- gsub("[[:space:]]", "", lh.formula)
+  formula.string <- paste(lh.formula.string,
                           paste(paste(covariates, collapse="+"), "SUBJECT.NAME", sep="+"),
                           sep="~")
   data <- model.frame(formula(formula.string), data=data)
