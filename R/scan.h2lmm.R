@@ -21,6 +21,7 @@ scan.h2lmm <- function(genomecache, data, formula, K=NULL,
   data <- data.and.K$data
   K <- data.and.K$K
   if(!is.null(weights)){ weights <- weights[data$SUBJECT.NAME] }
+  print(names(data))
   
   loci.chr <- h$getChromOfLocus(loci)
   if(chr != "all"){
