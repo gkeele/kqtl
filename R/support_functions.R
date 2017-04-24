@@ -46,7 +46,7 @@ make.processed.data <- function(formula, data, cache.subjects, K, impute.on){
     data <- data[as.character(data$SUBJECT.NAME) %in% colnames(K),]
     K <- K[as.character(data$SUBJECT.NAME), as.character(data$SUBJECT.NAME)]
   }
-  if(length(all.variables) > 1){
+  if(length(covariates) > 0){
     covariate.matrix <- matrix(NA, nrow=nrow(data), ncol=length(covariates))
     for(i in 1:length(covariates)){
       if(is.factor(data[,covariates[i]])){
