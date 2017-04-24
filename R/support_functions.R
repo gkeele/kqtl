@@ -34,11 +34,10 @@ make.processed.data <- function(formula, data, cache.subjects, K, impute.on){
   covariates <- all.variables[-1]
   lh.formula.string <- unlist(strsplit(Reduce(paste, deparse(formula)), split="~"))[1]
   lh.formula.string <- gsub("[[:space:]]", "", lh.formula.string)
-  covariates <- c(covariates, unique("SUBJECT.NAME", impute.on))
+  covariates <- c(covariates, unique(c("SUBJECT.NAME", impute.on)))
   formula.string <- paste(lh.formula.string,
                           paste(covariates, collapse="+"),
                           sep="~")
-  print(formula.string)
   data <- model.frame(formula(formula.string), data=data)
   names(data) <- c("y", covariates)
   # selecting those in both data and cache
