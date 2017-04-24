@@ -476,7 +476,7 @@ genome.plotter.whole <- function(non.mi.scan.list, mi.scan=NULL, use.lod=TRUE, j
       }
       if(!use.lod){
         compare.shift <- 0
-        compare.outcome <- -log10(unlist(non.mi.scan.list[[i]]["p.value"]))[order.i]
+        compare.outcome <- -log10(unlist(non.mi.scan.list[[i]]["p.value"]))[keep.chr][order.i]
         for(j in 1:length(chr.types)){
           points(pos[pre.chr==chr.types[j]] + compare.shift, compare.outcome[pre.chr==chr.types[j]], type="l", col=main.colors[i], lwd=1.5)
           compare.shift <- compare.shift + max.pos[j]
