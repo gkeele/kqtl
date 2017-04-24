@@ -256,18 +256,18 @@ calc.kinship.from.genomecache <- function(genomecache, model="additive"){
   return(K)
 }
 
-run.imputation <- function(diplotype.probs, imputation.map){
+run.imputation <- function(diplotype.probs, impute.map){
   diplotype.probs <- data.frame(original.order=1:nrow(diplotype.probs), SUBJECT.NAME=rownames(diplotype.probs), diplotype.probs, stringsAsFactors=FALSE)
-  diplotype.probs <- merge(x=diplotype.probs, y=imputation.map, by="SUBJECT.NAME")
+  diplotype.probs <- merge(x=diplotype.probs, y=impute.map, by="SUBJECT.NAME")
   diplotype.probs <- diplotype.probs[order(diplotype.probs$original.order),]
   diplotype.probs <- diplotype.probs[, names(diplotype.probs) != "original.order"]
   
   imputable.diplotype.probs <- diplotype.probs[as.integer(rownames(unique(data.frame(diplotype.probs[,"impute.on"])))),]
   rownames(imputable.diplotype.probs) <- imputable.diplotype.probs[, "impute.on"]
-  imputable.diplotype.probs <- imputable.diplotype.probs[,!(names(imputable.diplotype.probs) %in% names(imputation.map))]
+  imputable.diplotype.probs <- imputable.diplotype.probs[,!(names(imputable.diplotype.probs) %in% names(impute.map))]
   imputation <- t(apply(imputable.diplotype.probs, 1, function(x) rmultinom(1, 1, x)))
-  full.imputation <- imputation[as.character(imputation.map[, "impute.on"]),]
-  rownames(full.imputation) <- imputation.map[, "SUBJECT.NAME"]
+  full.imputation <- imputation[as.character(impute.map[, "impute.on"]),]
+  rownames(full.imputation) <- impute.map[, "SUBJECT.NAME"]
   return(full.imputation)
 }
 
