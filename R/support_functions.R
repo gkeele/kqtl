@@ -38,7 +38,7 @@ make.processed.data <- function(formula, data, cache.subjects, K, impute.on){
   formula.string <- paste(lh.formula.string,
                           paste(covariates, collapse="+"),
                           sep="~")
-  browser()
+  print(formula.string)
   data <- model.frame(formula(formula.string), data=data)
   names(data) <- c("y", covariates)
   # selecting those in both data and cache
