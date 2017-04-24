@@ -29,17 +29,17 @@ check.for.lmer.formula <- function(formula){
   use.lmer <- grepl(pattern="\\([a-zA-Z0-9\\.]+\\|[a-zA-Z0-9\\.]+\\)", x=formula.string, perl=TRUE)
   return(use.lmer)
 }
-make.processed.data <- function(formula, data, cache.subjects, K){
+make.processed.data <- function(formula, data, cache.subjects, K, impute.on){
   all.variables <- all.vars(formula)
   covariates <- all.variables[-1]
-  #formula.string <- paste0(paste0(Reduce(paste, deparse(formula))), "+ SUBJECT.NAME")
   lh.formula.string <- unlist(strsplit(Reduce(paste, deparse(formula)), split="~"))[1]
   lh.formula.string <- gsub("[[:space:]]", "", lh.formula.string)
+  covariates <- c(covariates, unique("SUBJECT.NAME", impute.on))
   formula.string <- paste(lh.formula.string,
-                          paste(paste(covariates, collapse="+"), "SUBJECT.NAME", sep="+"),
+                          paste(covariates, collapse="+"),
                           sep="~")
   data <- model.frame(formula(formula.string), data=data)
-  names(data) <- c("y", all.variables[-1], "SUBJECT.NAME")
+  names(data) <- c("y", covariates)
   # selecting those in both data and cache
   data <- data[as.character(data$SUBJECT.NAME) %in% cache.subjects,]
   if(!is.null(K)){
@@ -254,6 +254,21 @@ calc.kinship.from.genomecache <- function(genomecache, model="additive"){
   K <- kinship.probs(probs)
   colnames(K) <- rownames(K) <- h$getSubjects()
   return(K)
+}
+
+run.imputation <- function(diplotype.probs, imputation.map){
+  diplotype.probs <- data.frame(original.order=1:nrow(diplotype.probs), SUBJECT.NAME=rownames(diplotype.probs), diplotype.probs, stringsAsFactors=FALSE)
+  diplotype.probs <- merge(x=diplotype.probs, y=imputation.map, by="SUBJECT.NAME")
+  diplotype.probs <- diplotype.probs[order(diplotype.probs$original.order),]
+  diplotype.probs <- diplotype.probs[, names(diplotype.probs) != "original.order"]
+  
+  imputable.diplotype.probs <- diplotype.probs[as.integer(rownames(unique(data.frame(diplotype.probs[,"impute.on"])))),]
+  rownames(imputable.diplotype.probs) <- imputable.diplotype.probs[, "impute.on"]
+  imputable.diplotype.probs <- imputable.diplotype.probs[,!(names(imputable.diplotype.probs) %in% names(imputation.map))]
+  imputation <- t(apply(imputable.diplotype.probs, 1, function(x) rmultinom(1, 1, x)))
+  full.imputation <- imputation[as.character(imputation.map[, "impute.on"]),]
+  rownames(full.imputation) <- imputation.map[, "SUBJECT.NAME"]
+  return(full.imputation)
 }
 
 #' @export

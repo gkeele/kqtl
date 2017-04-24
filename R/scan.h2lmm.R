@@ -2,7 +2,7 @@
 scan.h2lmm <- function(genomecache, data, formula, K=NULL,
                        model=c("additive", "full", "diplolasso"), diplolasso.refit=FALSE,
                        use.par="h2", use.multi.impute=TRUE, num.imp=10, chr="all", brute=TRUE, use.fix.par=TRUE, 
-                       seed=1, 
+                       seed=1, impute.on="SUBJECT.NAME",
                        weights=NULL, do.augment=FALSE, use.augment.weights=FALSE, use.full.null=FALSE, added.data.points=1, 
                        just.these.loci=NULL,
                        print.locus.fit=FALSE,
@@ -123,12 +123,17 @@ scan.h2lmm <- function(genomecache, data, formula, K=NULL,
   LOD.vec <- p.vec <- df <- rep(NA, length(loci))
   null.data <- data
   
+  ## Prepping imputation in multiple imputations
+  if(use.multi.impute){
+    impute.map <- data.frame(SUBJECT.NAME=data$SUBJECT.NAME, impute.on=data[,impute.on])
+  }
+  
   for(i in 1:length(loci)){
     if(use.multi.impute){
       if(i == 1){ # only at the beginning
         MI.LOD <- MI.p.value <- matrix(NA, nrow=num.imp, ncol=length(loci))
       }
-      diplotype.matrix <- h$getLocusMatrix(loci[i], model="full", subjects=old.data$SUBJECT.NAME)
+      diplotype.prob.matrix <- h$getLocusMatrix(loci[i], model="full", subjects=old.data$SUBJECT.NAME)
       if(do.augment){
         if(model=="additive"){
           augment.matrix <- matrix(0, nrow=augment.n, ncol=choose(augment.n, 2) + augment.n)
@@ -139,13 +144,13 @@ scan.h2lmm <- function(genomecache, data, formula, K=NULL,
         if(model=="full"){
           augment.matrix <- diag(augment.n)
         }
-        sample.names <- rownames(diplotype.matrix)
-        diplotype.matrix <- rbind(diplotype.matrix, augment.matrix)
-        rownames(diplotype.matrix) <- c(sample.names, paste0("augment.obs", 1:augment.n))
+        sample.names <- rownames(diplotype.prob.matrix)
+        diplotype.prob.matrix <- rbind(diplotype.prob.matrix, augment.matrix)
+        rownames(diplotype.prob.matrix) <- c(sample.names, paste0("augment.obs", 1:augment.n))
       }
       fit1 <- multi.imput.lmmbygls(num.imp=num.imp, data=data, formula=formula, founders=founders,
-                                   diplotypes=diplotype.matrix, 
-                                   model=model, use.lmer=use.lmer,
+                                   diplotype.probs=diplotype.prob.matrix, 
+                                   model=model, use.lmer=use.lmer, impute.map=impute.map,
                                    diplolasso.refit=diplolasso.refit, diplolasso.penalty.factor=diplolasso.penalty.factor,
                                    use.par=use.par, fix.par=fix.par, fit0=fit0, fit0.glmnet=fit0.glmnet, do.augment=do.augment, 
                                    brute=brute, seed=seed, weights=weights) 

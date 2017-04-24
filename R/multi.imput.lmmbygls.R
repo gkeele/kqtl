@@ -1,7 +1,7 @@
 multi.imput.lmmbygls <- function(num.imp, data, formula,
-                                 founders=founders, diplotypes, K=NULL, fit0=NULL, fit0.glmnet=NULL,
+                                 founders=founders, diplotype.probs, K=NULL, fit0=NULL, fit0.glmnet=NULL,
                                  use.par, fix.par=NULL, model=c("additive", "full", "diplolasso"),
-                                 use.lmer, diplolasso.refit=FALSE, diplolasso.penalty.factor=NULL,
+                                 use.lmer, impute.map, diplolasso.refit=FALSE, diplolasso.penalty.factor=NULL,
                                  brute=TRUE, seed=1, do.augment,
                                  weights=NULL){
   
@@ -31,25 +31,28 @@ multi.imput.lmmbygls <- function(num.imp, data, formula,
   null.data <- data
   set.seed(seed)
   for(i in 1:num.imp){
-    if(model=="additive"){
-      if(any(diplotypes < 0)){
-        diplotypes[diplotypes < 0] <- 0
-        diplotypes <- t(apply(diplotypes, 1, function(x) x/sum(x)))
+    if(model == "additive"){
+      if(any(diplotype.probs < 0)){
+        diplotype.probs[diplotype.probs < 0] <- 0
+        diplotype.probs <- t(apply(diplotype.probs, 1, function(x) x/sum(x)))
       }
-      X <- t(apply(diplotypes, 1, function(x) rmultinom(1, 1, x))) %*% full.to.dosages
+      #X <- t(apply(diplotype.probs, 1, function(x) rmultinom(1, 1, x))) %*% full.to.dosages
+      X <- run.imputation(diplotype.probs=diplotype.probs, impute.map=impute.map) %*% full.to.dosages
       max.column <- which.max(colSums(X))[1]
       X <- X[,-max.column]
       colnames(X) <- gsub(pattern="/", replacement=".", x=founders, fixed=TRUE)[-max.column]
     }
-    if(model=="full"){
-      X <- t(apply(diplotypes, 1, function(x) rmultinom(1, 1, x)))
+    if(model == "full"){
+      #X <- t(apply(diplotype.probs, 1, function(x) rmultinom(1, 1, x)))
+      X <- run.imputation(diplotype.probs=diplotype.probs, impute.map=impute.map)
       max.column <- which.max(colSums(X))[1]
       X <- X[,-max.column]
-      colnames(X) <- gsub(pattern="/", replacement=".", x=colnames(diplotypes), fixed=TRUE)[-max.column]
+      colnames(X) <- gsub(pattern="/", replacement=".", x=colnames(diplotype.probs), fixed=TRUE)[-max.column]
     }
     if(model=="diplolasso"){
       num.founders <- length(founders)
-      dip.draw <- t(apply(diplotypes, 1, function(x) rmultinom(1, 1, x)))
+      #dip.draw <- t(apply(diplotype.probs, 1, function(x) rmultinom(1, 1, x)))
+      dip.draw <- run.imputation(diplotype.probs=diplotype.probs, impute.map=impute.map)
       X.add <- dip.draw %*% full.to.dosages
       #max.column <- which.max(colSums(X.add))[1]
       X <- cbind(X.add,#[, -max.column], 
