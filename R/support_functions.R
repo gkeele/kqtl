@@ -226,10 +226,9 @@ straineff.mapping.matrix <- function(M=8){
   return(t(mapping))
 }
 
+#' @export
 calc.kinship.from.genomecache <- function(genomecache, model="additive"){
-  require(bagpipe.backend)
-  require(DOQTL)
-  h <- DiploprobReader$new(genomecache)
+  h <- bagpipe.backend::DiploprobReader$new(genomecache)
   mapping <- straineff.mapping.matrix()
   
   probs <- array(NA, dim=c(length(h$getSubjects()), length(h$getFounders()), length(h$getLoci())))
@@ -251,7 +250,7 @@ calc.kinship.from.genomecache <- function(genomecache, model="additive"){
     probs[,,i] <- use.probs
   }
   
-  K <- kinship.probs(probs)
+  K <- DOQTL::kinship.probs(probs)
   colnames(K) <- rownames(K) <- h$getSubjects()
   return(K)
 }
