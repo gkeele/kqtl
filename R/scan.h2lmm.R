@@ -82,7 +82,7 @@ scan.h2lmm <- function(genomecache, data, formula, K=NULL,
     else{
       ###### This function is made for handling constant weights at all loci
       if(!is.null(weights)){
-        J <- weights^(-1/2) * t(weights^(-1/2) * K)
+        J <- weights^(1/2) * t(weights^(1/2) * K)
         eigen.J <- eigen(J)
         fit0 <- lmmbygls(null.formula, data=data, eigen.K=eigen.J, K=J, use.par=use.par, weights=weights, brute=brute)
         fit0.REML <- lmmbygls(null.formula, data=data, eigen.K=eigen.J, K=J, use.par="h2.REML", weights=weights, brute=brute)
