@@ -73,10 +73,8 @@ lmmbygls <- function(formula, data, K=NULL, eigen.K=NULL, fix.par=NULL,
       }
       else{
         d <- h2*eigen.K$values + (1-h2)
-        #M <- d^-0.5 * t((1/sqrt(weights)) * t(Ut))
-        M <- d^-0.5 * t((sqrt(weights)) * t(Ut))
+        M <- d^-0.5 * t(sqrt(weights) * t(Ut))
         logDetV <- sum(log(1/weights)) + sum(log(d)) # maybe right
-        #logDetV <- sum(log(weights)) + sum(log(d)) # maybe right
       }
     }
     else{
@@ -85,10 +83,8 @@ lmmbygls <- function(formula, data, K=NULL, eigen.K=NULL, fix.par=NULL,
         logDetV <- 0
       }
       if(fix.par == 0 & !is.null(weights)){
-        #M <- diag(1/sqrt(weights))
         M <- diag(sqrt(weights))
         logDetV <- sum(log(1/weights))
-        #logDetV <- sum(log(weights))
       }
     }
     fit <- gls.fit(X=X, y=y, M=M, logDetV=logDetV, ...)
@@ -112,8 +108,8 @@ lmmbygls <- function(formula, data, K=NULL, eigen.K=NULL, fix.par=NULL,
       }
       else{
         d <- h2*eigen.K$values + (1-h2)
-        M <- d^-0.5 * t(sqrt(weights) * Ut)
-        logDetV <- sum(log(weights)) + sum(log(d)) # maybe right
+        M <- d^-0.5 * t(sqrt(weights) * t(Ut))
+        logDetV <- sum(log(1/weights)) + sum(log(d)) # maybe right
       }
     }
     else{
