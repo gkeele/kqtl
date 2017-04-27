@@ -87,7 +87,7 @@ lmmbygls <- function(formula, data, K=NULL, eigen.K=NULL, fix.par=NULL,
         logDetV <- sum(log(1/weights))
       }
     }
-    fit <- gls.fit(X=X, y=y, M=M, logDetV=logDetV, weights=weights ...)
+    fit <- gls.fit(X=X, y=y, M=M, logDetV=logDetV, weights=weights, ...)
     if(logLik.only){
       if(verbose){
         cat(sep="", "h2 = ", h2, " : logLik = ", fit$logLik, "\n")
