@@ -1,5 +1,5 @@
-gls.fit <- function(X, y, ...,  M, logDetV, rotate=TRUE){
-  n  <- nrow(X)
+gls.fit <- function(X, y, weights, ...,  M, logDetV, rotate=TRUE){
+  n  <- ifelse(is.null(weights), nrow(X), sum(weights))
   # Tranform to uncorrelated Sigma form
   if(!is.null(M)){
     MX <- M %*% X
@@ -87,7 +87,7 @@ lmmbygls <- function(formula, data, K=NULL, eigen.K=NULL, fix.par=NULL,
         logDetV <- sum(log(1/weights))
       }
     }
-    fit <- gls.fit(X=X, y=y, M=M, logDetV=logDetV, ...)
+    fit <- gls.fit(X=X, y=y, M=M, logDetV=logDetV, weights=weights ...)
     if(logLik.only){
       if(verbose){
         cat(sep="", "h2 = ", h2, " : logLik = ", fit$logLik, "\n")
@@ -122,7 +122,7 @@ lmmbygls <- function(formula, data, K=NULL, eigen.K=NULL, fix.par=NULL,
         logDetV <- sum(log(weights))
       }
     }
-    fit <- gls.fit(X=X, y=y, M=M, logDetV=logDetV, ...)
+    fit <- gls.fit(X=X, y=y, M=M, logDetV=logDetV, weights=weights, ...)
     adjusted.logLik <- -0.5*n*log(2*pi) - 0.5*n*log(fit$sigma2) - 0.5*(n-ncol(X)) - 0.5*logDetV 
     REML.logLik <- adjusted.logLik + 0.5*(ncol(X)*log(2*pi*fit$sigma2) + log(det(t(X)%*%X)) - log(det(t(X)%*%t(Ut)%*%diag(1/d)%*%Ut%*%X)))
     fit$REML.logLik <- REML.logLik
