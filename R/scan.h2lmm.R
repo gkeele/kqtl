@@ -11,7 +11,7 @@ scan.h2lmm <- function(genomecache, data, formula, K=NULL,
   # Defaults if DiploLASSO is not used
   fit0.glmnet <- diplolasso.penalty.factor <- NULL
   
-  h <- bagpipe.backend::DiploprobReader$new(genomecache)
+  h <- DiploprobReader$new(genomecache)
   founders <- h$getFounders()
   num.founders <- length(founders)
   loci <- h$getLoci()
@@ -254,7 +254,7 @@ single.locus.fit.h2lmm <- function(genomecache, data, formula, K, locus,
 {
   model <- model[1]
   
-  h <- bagpipe.backend::DiploprobReader$new(genomecache)
+  h <- DiploprobReader$new(genomecache)
   founders <- h$getFounders()
   num.founders <- length(founders)
   cache.subjects <- rownames(h$getLocusMatrix(locus, model="additive"))

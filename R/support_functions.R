@@ -225,36 +225,6 @@ straineff.mapping.matrix <- function(M=8){
   }
   return(t(mapping))
 }
-
-#' @export
-calc.kinship.from.genomecache <- function(genomecache, model="additive"){
-  h <- bagpipe.backend::DiploprobReader$new(genomecache)
-  mapping <- straineff.mapping.matrix()
-  
-  probs <- array(NA, dim=c(length(h$getSubjects()), length(h$getFounders()), length(h$getLoci())))
-  
-  loci <- h$getLoci()
-  
-  for(i in 1:length(loci)){
-    diplotypes <- h$getLocusMatrix(loci[i], model="full")
-    if(any(diplotypes < 0)){
-      diplotypes[diplotypes < 0] <- 0
-      diplotypes <- t(apply(diplotypes, 1, function(x) x/sum(x)))
-    }
-    if(model == "additive"){
-      use.probs <- (diplotypes %*% mapping)/2
-    }
-    if(model == "full"){
-      use.probs <- diplotypes
-    }
-    probs[,,i] <- use.probs
-  }
-  
-  K <- DOQTL::kinship.probs(probs)
-  colnames(K) <- rownames(K) <- h$getSubjects()
-  return(K)
-}
-
 run.imputation <- function(diplotype.probs, impute.map){
   diplotype.probs <- data.frame(original.order=1:nrow(diplotype.probs), SUBJECT.NAME=rownames(diplotype.probs), diplotype.probs, stringsAsFactors=FALSE)
   diplotype.probs <- merge(x=diplotype.probs, y=impute.map, by="SUBJECT.NAME")
@@ -268,14 +238,6 @@ run.imputation <- function(diplotype.probs, impute.map){
   full.imputation <- imputation[as.character(impute.map[, "impute.on"]),]
   rownames(full.imputation) <- impute.map[, "SUBJECT.NAME"]
   return(full.imputation)
-}
-
-#' @export
-get.gev.thresholds <- function(min.pval, percentile=0.95){
-  require(evir)
-  evd.pars <- as.numeric(gev(-log10(min.pval))$par.est)
-  thresh <- qgev(p=percentile, xi=evd.pars[1], sigma=evd.pars[2], mu=evd.pars[3])
-  return(thresh)
 }
   
 

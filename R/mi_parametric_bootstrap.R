@@ -7,7 +7,7 @@ averaged.mi.parametric.bootstrap <- function(formula, data, genomecache, K,
                                              do.augment=FALSE, seed=1, scale="cM"){
   full.to.dosages <- straineff.mapping.matrix()
   
-  h <- bagpipe.backend::DiploprobReader$new(genomecache)
+  h <- DiploprobReader$new(genomecache)
   cache.subjects <- h$getSubjects()
   
   data.and.K <- make.processed.data()

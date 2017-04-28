@@ -10,7 +10,7 @@ random.scan.h2lmm <- function(genomecache, data, formula, K,
   model <- model[1]
   use.par <- use.par[1]
   
-  h <- bagpipe.backend::DiploprobReader$new(genomecache)
+  h <- DiploprobReader$new(genomecache)
   num.founders <- length(h$getFounders())
   cache.subjects <- h$getSubjects()
   

@@ -16,7 +16,7 @@ pairwise.cor.snp.scan <- function(data, formula, K,
   
   these.chr <- chr
   # Genomecache for imputation
-  h <- bagpipe.backend::DiploprobReader$new(genomecache)
+  h <- DiploprobReader$new(genomecache)
   
   loci <- names(X.list)
   

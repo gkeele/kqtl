@@ -2,7 +2,7 @@
 # Ronnegard & Valdar 2011
 #' @export
 calc.SIM.cache <- function(cache.dir, use.dosages=FALSE, use.subjects=NULL, model="additive", p.null=0.125, scale="Mb", just.these.loci=NULL){
-  h <- bagpipe.backend::DiploprobReader$new(cache.dir)
+  h <- DiploprobReader$new(cache.dir)
   
   loci <- h$getLoci()
   if(!is.null(just.these.loci)){ loci <- just.these.loci }
@@ -70,7 +70,7 @@ calc.dist.from.balance <- function(genomecache, model){
 #' @export
 calc.dist.cache <- function(cache.dir, use.dosages=FALSE, use.subjects=NULL, interval=1) 
 {
-  h <- bagpipe.backend::DiploprobReader$new(cache.dir)
+  h <- DiploprobReader$new(cache.dir)
   
   loci <- h$getLoci()
   o <- order(h$getMarkerLocation(loci, scale="Mb"))

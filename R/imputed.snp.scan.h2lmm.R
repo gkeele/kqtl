@@ -19,7 +19,7 @@ imputed.snp.scan.h2lmm <- function(data, formula, K,
   these.chr <- chr
   if(chr == "all"){ these.chr <- c(1:20, "X") }
   # Genomecache for imputation
-  h <- bagpipe.backend::DiploprobReader$new(genomecache)
+  h <- DiploprobReader$new(genomecache)
   
   if(!exists("X.list")){
     loci <- h$getLoci(chr=these.chr)

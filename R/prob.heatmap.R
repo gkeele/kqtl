@@ -5,7 +5,7 @@ prob.heatmap = function(marker, p.value=NULL, genomecache, model,
     p.value <- round(-log10(p.value), 4)
   }
   
-  h <- bagpipe.backend::DiploprobReader$new(genomecache)
+  h <- DiploprobReader$new(genomecache)
   X <- h$getLocusMatrix(locus=marker, model=model)
   if(is.null(column.labels)){
     column.labels <- colnames(X)

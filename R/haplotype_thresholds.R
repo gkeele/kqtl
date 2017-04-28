@@ -29,7 +29,6 @@ generate.null.bs.matrix <- function(scan.object, use.REML=FALSE, num.samples, se
 
 #' @export
 generate.parametric.perm.matrix <- function(scan.object, use.REML, num.samples, seed=1){
-  require(mnormt)
   if(use.REML){
     null.fit <- scan.object$fit0.REML
   }
@@ -74,7 +73,7 @@ run.threshold.scans <- function(sim.threshold.object, keep.full.scans=TRUE,
   
   num.scans <- ncol(y.matrix)
   
-  h <- bagpipe.backend::DiploprobReader$new(genomecache)
+  h <- DiploprobReader$new(genomecache)
   loci <- h$getLoci()
   loci.chr <- h$getChromOfLocus(loci)
   if(chr != "all"){

@@ -10,7 +10,7 @@ snp.null.par.bs.threshold.scan <- function(scan.object,
                                            map.file=NULL,
                                            num.bs.scans=100, keep.full.scans=TRUE,
                                            ...){
-  h <- bagpipe.backend::DiploprobReader$new(genomecache)
+  h <- DiploprobReader$new(genomecache)
   
   loci <- scan.object$loci
   loci.chr <- scan.object$chr
@@ -71,7 +71,7 @@ snp.par.perm.threshold.scan <- function(scan.object,
                                         map.file=NULL,
                                         num.perm.scans=100, keep.full.scans=TRUE,
                                         ...){
-  h <- bagpipe.backend::DiploprobReader$new(genomecache)
+  h <- DiploprobReader$new(genomecache)
   
   loci <- scan.object$loci
   loci.chr <- scan.object$chr
@@ -133,7 +133,7 @@ snp.perm.threshold.scan <- function(scan.object,
                                     map.file=NULL,
                                     num.perm.scans=100, keep.full.scans=TRUE,
                                     ...){
-  h <- bagpipe.backend::DiploprobReader$new(genomecache)
+  h <- DiploprobReader$new(genomecache)
   
   loci <- scan.object$loci
   loci.chr <- scan.object$chr
