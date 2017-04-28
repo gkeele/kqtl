@@ -1,6 +1,5 @@
-
 #### Class for a DiploprobReader object
-#### Written by Will Valdar
+#### Written by Will Valdar - from bagpipe.backend package
 
 DiploprobReader <- setRefClass("DiploprobReader",
   fields = c(
