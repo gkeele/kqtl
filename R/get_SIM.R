@@ -38,7 +38,7 @@ get.SIM <- function(p.post, p.null=NULL){
 }
 
 #' @export
-plot.SIM <- function(SIM.object, chr=1, main=""){
+plot_SIM <- function(SIM.object, chr=1, main=""){
   use.based.chr <- SIM.object$chr == chr
   pos <- SIM.object$pos[use.based.chr]
   SIM <- SIM.object$SIM.matrix[,use.based.chr]
@@ -110,7 +110,7 @@ calc.dist.cache <- function(cache.dir, use.dosages=FALSE, use.subjects=NULL, int
 }
 
 #' @export
-plot.dist <- function(dist.object, comparison.object=NULL, main="", random.sample=20, seed=10){
+plot_dist <- function(dist.object, comparison.object=NULL, main="", random.sample=20, seed=10){
   o <- order(dist.object$Mb)
   plot(x=dist.object$Mb[o], y=dist.object$dist.matrix[1,o], type="p", pch=20, col="grey", 
        ylim=c(0, max(dist.object$dist.matrix, comparison.object$dist.matrix)), 
