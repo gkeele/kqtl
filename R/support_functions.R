@@ -42,6 +42,7 @@ make.processed.data <- function(formula, data, cache.subjects, K, impute.on){
   names(data) <- c("y", covariates)
   # selecting those in both data and cache
   #data <- data[as.character(data$SUBJECT.NAME) %in% cache.subjects,]
+  cache.subjes <- cache.subjects[cache.subjects %in% as.character(data$SUBJECT.NAME)]
   data <- data[match(x=as.character(data$SUBJECT.NAME), table=cache.subjects, nomatch=0),]
   if(!is.null(K)){
     #data <- data[as.character(data$SUBJECT.NAME) %in% colnames(K),]
