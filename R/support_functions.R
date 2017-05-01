@@ -44,7 +44,7 @@ make.processed.data <- function(formula, data, cache.subjects, K, impute.on){
   data <- data[as.character(data$SUBJECT.NAME) %in% cache.subjects,]
   data <- data[match(x=as.character(data$SUBJECT.NAME), table=cache.subjects),]
   if(!is.null(K)){
-    #data <- data[as.character(data$SUBJECT.NAME) %in% colnames(K),]
+    data <- data[as.character(data$SUBJECT.NAME) %in% colnames(K),]
     K <- K[as.character(data$SUBJECT.NAME), as.character(data$SUBJECT.NAME)]
   }
   if(length(covariates) > 0){
