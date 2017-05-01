@@ -174,10 +174,14 @@ lmmbygls <- function(formula, data, K=NULL, eigen.K=NULL, fix.par=NULL,
 
   fit$terms <- Terms
   fit$call <- call
-  if (model){
+  if(model){
     fit$model <- m
   }
   fit$na.action <- attr(m, "na.action")
+  if(!is.null(K)){
+    names(y) <- rownames(K)
+    rownames(X) <- rownames(K)
+  }
   fit$weights <- weights
   fit$x <- X
   fit$y <- y
