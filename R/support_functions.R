@@ -43,7 +43,9 @@ make.processed.data <- function(formula, data, cache.subjects, K, impute.on){
   # selecting those in both data and cache
   #data <- data[as.character(data$SUBJECT.NAME) %in% cache.subjects,]
   cache.subjects <- cache.subjects[cache.subjects %in% as.character(data$SUBJECT.NAME)]
-  data <- data[match(x=as.character(data$SUBJECT.NAME), table=cache.subjects, nomatch=0),]
+  matching <- match(x=as.character(data$SUBJECT.NAME), table=cache.subjects)
+  matching <- matching[!is.na(matching)]
+  data <- data[matching,]
   if(!is.null(K)){
     #data <- data[as.character(data$SUBJECT.NAME) %in% colnames(K),]
     K <- K[as.character(data$SUBJECT.NAME), as.character(data$SUBJECT.NAME)]
