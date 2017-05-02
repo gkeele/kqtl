@@ -1,6 +1,6 @@
 #' @export
-prob.heatmap = function(marker, p.value=NULL, genomecache, model, 
-                        phenotype, phenotype.data, column.labels=NULL){
+prob.heatmap = function(marker, p.value=NULL, genomecache, model,
+                        phenotype, phenotype.data, merge.by="SUBJECT.NAME", column.labels=NULL){
   if(!is.null(p.value)){
     p.value <- round(-log10(p.value), 4)
   }
@@ -11,19 +11,21 @@ prob.heatmap = function(marker, p.value=NULL, genomecache, model,
     column.labels <- colnames(X)
   }
   num.col <- length(column.labels)
-  if(model == "additive"){
-    if(sum(X[1,]) == 2){
-      X <- X/2
-    }
-  }
+  # if(model == "additive"){
+  #   if(sum(X[1,]) == 2){
+  #     X <- X/2
+  #   }
+  # }
   
   subjects <- h$getSubjects()
-  X.data <- data.frame(SUBJECT.NAME=rownames(X), X)
-
+  #X.data <- data.frame(SUBJECT.NAME=rownames(X), X)
+  X.data <- data.frame(rownames(X), X)
+  names(X.data)[1] <- merge.by
+  
   # allow function of phenotype
-  phenotype.data <- model.frame(formula(paste0(phenotype, " ~ 1 + SUBJECT.NAME")), data=phenotype.data)
+  phenotype.data <- model.frame(formula(paste(phenotype, "~ 1 +", merge.by)), data=phenotype.data)
   names(phenotype.data)[1] <- "y"
-  final.data <- merge(x=phenotype.data, y=X.data, by="SUBJECT.NAME", all=FALSE)
+  final.data <- merge(x=phenotype.data, y=X.data, by=merge.by, all=FALSE)
 
   #final.data <- final.data[!is.na(final.data[,phenotype]),]
   final.data <- final.data[order(final.data$y),] # sort by phenotypic value
@@ -42,7 +44,7 @@ prob.heatmap = function(marker, p.value=NULL, genomecache, model,
   op <- par()
   cols <- rev(gray(10000:1/10000))
   par(plt=c(0.1,.75,0.1,.8))    ##set the margin  
-  image(z=1-probs, axes=F, col=cols)
+  image(z=1-probs, axes=FALSE, col=cols)
   #heatmap(t(probs), Rowv=NA, Colv=NA, col = rev(cols), scale="column", margins=c(4,4), labCol="") 
   box()
   axis(2, at=seq(0, num.col, 1+1/num.col)/num.col, 
@@ -53,8 +55,12 @@ prob.heatmap = function(marker, p.value=NULL, genomecache, model,
   this.title <- ifelse(is.null(p.value), marker, paste0(marker, ": -log10P=", p.value))
   title(this.title, line=2.5)
   
-  par(fig=c(.9,.97,.3,.6), mai=c(.1,.1,.3,.1), new=T)
-  image(z=1-rbind(1:length(cols)), axes=F, col=cols, main="Prob") #for the legend
+  ramp.label <- ifelse(model == "additive", "Dos", "Prob")
+  par(fig=c(.9,.97,.3,.6), mai=c(.1,.1,.3,.1), new=TRUE)
+  if(model == "additive"){ image(y=seq(from=0, to=2, length.out=length(cols)), z=matrix(seq(from=0, to=2, length.out=length(cols)), nrow=1), 
+                                 zlim=c(0, 2), ylim=c(0, 2), axes=FALSE, col=rev(cols), main=ramp.label) } #for the legend 
+  if(model == "full"){ image(y=seq(from=0, to=1, length.out=length(cols)), z=matrix(seq(from=0, to=1, length.out=length(cols)), nrow=1), 
+                             zlim=c(0, 1), ylim=c(0, 1), axes=FALSE, col=rev(cols), main=ramp.label) }
   box()
   axis(2, las=1)          
   
