@@ -1,7 +1,53 @@
+#' Run a haplotype-based genome scan from probabilities stored in a genome cache directory
+#'
+#' This function primarily takes a formula, data frame, and genome cache to run a genome scan.
+#'
+#' @param genomecache The path to the genome cache directory. The genome cache is a particularly structured
+#' directory that stores the haplotype probabilities/dosages at each locus. It has an additive model
+#' subdirectory and a full model subdirectory. Each contains subdirectories for each chromosome, which then
+#' store .RData files for the probabilities/dosages of each locus.
+#' @param data A data frame with outcome and potential covariates. Should also have individual IDs
+#' that link to IDs in the genome cache  with a column named "SUBJECT.NAME".
+#' @param formula An lm style formula with functions of outcome and covariates contained in data frame.
+#' @param K DEFAULT: NULL. A positive semi-definite relationship matrix, usually a realized genetic relationship matrix (GRM)
+#' based on SNP genotypes or the founder haplotype probabilities. Colnames and rownames should match
+#' the SUBJECT.NAME column in the data frame. If no K matrix is specified, either lmer is used (if sparse random effects
+#' are included in the formula) or a fixed effect model (equivalent to lm).
+#' @param model DEFAULT: additive. Specifies how to model the founder haplotype probabilities. The additive options specifies
+#' use of haplotype dosages, and is most commonly used. The full option regresses the phenotype on the actual
+#' diplotype probabilities. The diplolasso option specifies the DiploLASSO model.
+#' @param diplolasso.refit DEFAULT: FALSE. If the DiploLASSO model is being run, this option re-runs the model on the
+#' with the reduced set of dominance parameters unshrunk.
+#' @param use.multi.impute DEFAULT: TRUE. This option specifies whether to use ROP or multiple imputations.
+#' @param num.imp DEFAULT: 11. IF multiple imputations are used, this specifies the number of imputations to perform.
+#' @param chr DEFAULT: "all". Specifies which chromosomes to scan.
+#' @param brute DEFAULT: TRUE. During the optimization to find maximum likelihood parameters, this specifies checking the
+#' boundaries of h2=0 and h2=1. Slightly less efficient, but otherwise the optimization procedure will not directly check
+#' these values.
+#' @param use.fix.par DEFAULT: TRUE. This specifies an approximate fitting of mixed effect model (Kang et al. 2009). Much
+#' more efficient, as the optimization of h2 only needs to be performed once for the null model rather than every locus. 
+#' Technically less powerful, though in practice it has proven to be almost equal to the exact procedure.
+#' @param seed DEFAULT: 1. Multiple imputations involve a sampling process of the diplotypes, thus a seed is necessary
+#' to produce the same results over multiple runs and different machines.
+#' @param impute.on DEFAULT: "SUBJECT.NAME". Name of the column in the data to match to the genome cache for imputations. 
+#' Usually "SUBJECT.NAME", the individual. If there are multiple observations of the same genome, this can specify that
+#' every individual with the same genome receives the same imputation - as is the case for inbred individuals.
+#' @param weights DEFAULT: NULL. If unspecified, individuals are equally weighted. This option allows for a weighted analysis 
+#' when using the mean of multiple individuals with the same genome.
+#' @param do.augment DEFAULT: FALSE. Augments the data with null observations for genotype groups. This is an approximately Bayesian 
+#' approach to applying a prior to the data, and can help control highly influential data points.
+#' @param use.augment.weights DEFAULT: FALSE. Specify non-equal weights on the augmented data points. This allows for the inclusion of
+#' augmented data points to all genotype classes while reducing their overall contribution to the data.
+#' @param use.full.null DEFAULT: FALSE. Draws augmented data points from the null model. This allows for the inclusion of null data points
+#' that do not influence the estimation of other model parameters as much.
+#' @param added.data.points DEFAULT: 1. If augment weights are being used, this specifies how many data points should be added in total.
+#' @param just.these.loci DEFAULT: NULL. Specifies a reduced set of loci to fit.
+#' @param print.locus.fit DEFAULT: FALSE. If TRUE, prints out how many loci have been fit currently.
 #' @export
+#' @examples run.diploffect.inla.through.genomecache()
 scan.h2lmm <- function(genomecache, data, formula, K=NULL,
                        model=c("additive", "full", "diplolasso"), diplolasso.refit=FALSE,
-                       use.par="h2", use.multi.impute=TRUE, num.imp=10, chr="all", brute=TRUE, use.fix.par=TRUE, 
+                       use.par="h2", use.multi.impute=TRUE, num.imp=11, chr="all", brute=TRUE, use.fix.par=TRUE, 
                        seed=1, impute.on="SUBJECT.NAME",
                        weights=NULL, do.augment=FALSE, use.augment.weights=FALSE, use.full.null=FALSE, added.data.points=1, 
                        just.these.loci=NULL,
@@ -225,7 +271,7 @@ scan.h2lmm <- function(genomecache, data, formula, K=NULL,
       names(LOD.vec) <- names(p.vec) <- names(df) <- loci
     }
     if(print.locus.fit){
-      cat("locus", i, "\n")
+      cat(print("locus", i, "out of", length(loci)), "\n")
     }
   }
   output <- list(LOD=LOD.vec,
