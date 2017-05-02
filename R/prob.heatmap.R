@@ -1,16 +1,32 @@
+#' Plot founder haplotype dosage/probabilities, ordered by phenotype
+#'
+#' This function produces a probability heatmap plot, ordered by the phenotype. This gives an idea of what the regression
+#' procedure is actually being handed as inputs.
+#'
+#' @param marker A marker that is contained in the genome cache. In general this should be a marker of interest, such as one
+#' beneath a putative QTL peak.
+#' @param p.value DEFAULT: NULL. Includes the observed p-value in the plot title.
+#' @param genomecache The path to the genome cache that contains founder haplotype information.
+#' @param model DEFAULT: "additive". If "additive", dosages are plotted. If "full", probabilities are plotted.
+#' @param phenotype The name of the phenotype column in the data set.
+#' @param phenotype.data A data.frame object that contains the phenotype information. Should also have a column that matches
+#' genomes in the genome cache.
+#' @param merge.by DEFAULT: "SUBJECT.NAME". Specifies the columns to merge phenotype and haplotype data.
+#' @param founder.labels DEFAULT: "NULL". If NULL, will default to the labels in the genome cache.
 #' @export
-prob.heatmap = function(marker, p.value=NULL, genomecache, model,
-                        phenotype, phenotype.data, merge.by="SUBJECT.NAME", column.labels=NULL){
+#' @examples prob.heatmap()
+prob.heatmap = function(marker, p.value=NULL, genomecache, model="additive",
+                        phenotype, phenotype.data, merge.by="SUBJECT.NAME", founder.labels=NULL){
   if(!is.null(p.value)){
     p.value <- round(-log10(p.value), 4)
   }
   
   h <- DiploprobReader$new(genomecache)
   X <- h$getLocusMatrix(locus=marker, model=model)
-  if(is.null(column.labels)){
-    column.labels <- colnames(X)
+  if(is.null(founder.labels)){
+    founder.labels <- colnames(X)
   }
-  num.col <- length(column.labels)
+  num.col <- length(founder.labels)
   # if(model == "additive"){
   #   if(sum(X[1,]) == 2){
   #     X <- X/2
@@ -18,7 +34,6 @@ prob.heatmap = function(marker, p.value=NULL, genomecache, model,
   # }
   
   subjects <- h$getSubjects()
-  #X.data <- data.frame(SUBJECT.NAME=rownames(X), X)
   X.data <- data.frame(rownames(X), X)
   names(X.data)[1] <- merge.by
   
@@ -27,7 +42,6 @@ prob.heatmap = function(marker, p.value=NULL, genomecache, model,
   names(phenotype.data)[1] <- "y"
   final.data <- merge(x=phenotype.data, y=X.data, by=merge.by, all=FALSE)
 
-  #final.data <- final.data[!is.na(final.data[,phenotype]),]
   final.data <- final.data[order(final.data$y),] # sort by phenotypic value
   probs <- as.matrix(final.data[,-(1:2)]) # Just keep prob of 8 strains for a certain marker
   probs <- probs[,rev(1:ncol(probs))]
@@ -48,7 +62,7 @@ prob.heatmap = function(marker, p.value=NULL, genomecache, model,
   #heatmap(t(probs), Rowv=NA, Colv=NA, col = rev(cols), scale="column", margins=c(4,4), labCol="") 
   box()
   axis(2, at=seq(0, num.col, 1+1/num.col)/num.col, 
-       labels=rev(column.labels), 
+       labels=rev(founder.labels), 
        lty=0, srt=90, las=2) # add txt on the strain   
   axis(1, at=0.5, labels=phenotype, tick=FALSE)
   axis(3, at=c(0,0.25,0.5,0.75,1), labels=c(s1,s2,s3,s5,s6))
