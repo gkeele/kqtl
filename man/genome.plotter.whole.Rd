@@ -2,7 +2,7 @@
 % Please edit documentation in R/genome_plotter.R
 \name{genome.plotter.whole}
 \alias{genome.plotter.whole}
-\title{Plot haplotype-based genome scan.}
+\title{Plot haplotype-based genome scan}
 \usage{
 genome.plotter.whole(non.mi.scan.list, mi.scan = NULL, use.lod = TRUE,
   just.these.chr = NULL, scale = "Mb", main.colors = c("black", "gray48",
@@ -31,4 +31,7 @@ genome.plotter.whole(non.mi.scan.list, mi.scan = NULL, use.lod = TRUE,
 }
 \description{
 This function takes the genome scan output from scan.h2lmm() and plots out genome scan.
+}
+\examples{
+genome.plotter.whole()
 }

@@ -317,7 +317,7 @@ inspect.ci.genome.plotter.whole <- function(ci.object, scan.type.label, which.ci
   genome.plotter.whole(non.mi.scan.list=this.scan.list, use.lod=FALSE, scale="cM", ...)
 }
 
-#' Plot haplotype-based genome scan.
+#' Plot haplotype-based genome scan
 #'
 #' This function takes the genome scan output from scan.h2lmm() and plots out genome scan.
 #'
@@ -331,7 +331,7 @@ inspect.ci.genome.plotter.whole <- function(ci.object, scan.type.label, which.ci
 #' @param my.legend.cex DEFAULT: 0.6. Specifies the size of the text in the legend.
 #' @param y.max.manual DEFAULT: NULL. Manually adds a max y-value. Allows multiple genome scans to easily be on the same scale.
 #' @export
-#' @example genome.plotter.whole()
+#' @examples genome.plotter.whole()
 genome.plotter.whole <- function(non.mi.scan.list, mi.scan=NULL, use.lod=TRUE, just.these.chr=NULL,
                                  scale="Mb", main.colors=c("black", "gray48", "blue"), mi.colors=c("purple", "cyan", "dark green"),
                                  use.legend=TRUE, main="",
