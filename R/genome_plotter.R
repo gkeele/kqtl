@@ -317,22 +317,36 @@ inspect.ci.genome.plotter.whole <- function(ci.object, scan.type.label, which.ci
   genome.plotter.whole(non.mi.scan.list=this.scan.list, use.lod=FALSE, scale="cM", ...)
 }
 
+#' Plot haplotype-based genome scan.
+#'
+#' This function takes the genome scan output from scan.h2lmm() and plots out genome scan.
+#'
+#' @param non.mi.scan.list A list of scan.h2lmm() objects that are plotted within the same genome scan plot.
+#' @param mi.scan DEFAULT: NULL. Multiple imputation scan.h2lmm() object. Median and confidence interval on median are plotted.
+#' @param use.lod DEFAULT: TRUE. Plots either the LOD score or the -log10 p-value.
+#' @param scale DEFAULT: "Mb". Specifies the scale of genomic position to be plotted. Either Mb or cM are expected.
+#' @param main.colors DEFAULT: "black". The color of the main association score to be plotted.
+#' @param use.legend DEFAULT: TRUE. Include a legend for the different associations. If TRUE, the labels are the names of the non.mi.scan.list object.
+#' @param main DEFAULT: NULL. Adds a title above the model.
+#' @param my.legend.cex DEFAULT: 0.6. Specifies the size of the text in the legend.
+#' @param y.max.manual DEFAULT: NULL. Manually adds a max y-value. Allows multiple genome scans to easily be on the same scale.
 #' @export
+#' @example genome.plotter.whole()
 genome.plotter.whole <- function(non.mi.scan.list, mi.scan=NULL, use.lod=TRUE, just.these.chr=NULL,
                                  scale="Mb", main.colors=c("black", "gray48", "blue"), mi.colors=c("purple", "cyan", "dark green"),
-                                 use.legend=TRUE, main.label=NULL, main="",
+                                 use.legend=TRUE, main="",
                                  my.legend.cex=0.6,
                                  bs.max=NULL,
                                  y.max.manual=NULL,
                                  hard.thresholds=NULL)
 {
   main.object <- non.mi.scan.list[[1]]
-  if (use.lod) {
+  if(use.lod){
     outcome <- main.object$LOD
     plot.this <- "LOD"
     this.ylab <- "LOD"
   }
-  if (!use.lod) {
+  if(!use.lod){
     outcome <- -log10(main.object$p.value)
     plot.this <- "p.value"
     this.ylab <- expression("-log"[10]*"P")
