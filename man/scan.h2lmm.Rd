@@ -78,5 +78,5 @@ that do not influence the estimation of other model parameters as much.}
 This function primarily takes a formula, data frame, and genome cache to run a genome scan.
 }
 \examples{
-run.diploffect.inla.through.genomecache()
+scan.h2lmm()
 }

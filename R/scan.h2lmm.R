@@ -44,7 +44,7 @@
 #' @param just.these.loci DEFAULT: NULL. Specifies a reduced set of loci to fit.
 #' @param print.locus.fit DEFAULT: FALSE. If TRUE, prints out how many loci have been fit currently.
 #' @export
-#' @examples run.diploffect.inla.through.genomecache()
+#' @examples scan.h2lmm()
 scan.h2lmm <- function(genomecache, data, formula, K=NULL,
                        model=c("additive", "full", "diplolasso"), diplolasso.refit=FALSE,
                        use.par="h2", use.multi.impute=TRUE, num.imp=11, chr="all", brute=TRUE, use.fix.par=TRUE, 
