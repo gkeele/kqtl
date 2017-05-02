@@ -1,4 +1,4 @@
-#' Plot founder haplotype dosage/probabilities, ordered by phenotype
+#' Plot founder haplotype dosages/probabilities, ordered by phenotype
 #'
 #' This function produces a probability heatmap plot, ordered by the phenotype. This gives an idea of what the regression
 #' procedure is actually being handed as inputs.

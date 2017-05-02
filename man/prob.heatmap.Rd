@@ -2,7 +2,7 @@
 % Please edit documentation in R/prob.heatmap.R
 \name{prob.heatmap}
 \alias{prob.heatmap}
-\title{Plot founder haplotype dosage/probabilities, ordered by phenotype}
+\title{Plot founder haplotype dosages/probabilities, ordered by phenotype}
 \usage{
 prob.heatmap(marker, p.value = NULL, genomecache, model = "additive",
   phenotype, phenotype.data, merge.by = "SUBJECT.NAME",
