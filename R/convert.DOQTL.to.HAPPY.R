@@ -88,15 +88,27 @@ convert.DOQTL.to.HAPPY <- function(DOQTL.recon.output.path,
   # }
   output.marker.file <- function(data_table, allele.labels, diplotype.labels, full.to.dosages.matrix){
     var_name <- data_table$marker[1]
-    assign(var_name, matrix(data=c(data_table$AA, data_table$BB, data_table$CC, data_table$DD, 
-                                   data_table$EE, data_table$FF, data_table$GG, data_table$HH,
-                                   data_table$BA, data_table$CA, data_table$CB, data_table$DA, 
-                                   data_table$DB, data_table$DC, data_table$EA, data_table$EB, 
-                                   data_table$EC, data_table$ED, data_table$FA, data_table$FB, 
-                                   data_table$FC, data_table$FD, data_table$FE, data_table$GA, 
-                                   data_table$GB, data_table$GC, data_table$GD, data_table$GE, 
-                                   data_table$GF, data_table$HA, data_table$HB, data_table$HC, 
-                                   data_table$HD, data_table$HE, data_table$HF, data_table$HG),
+    cat(var_name)
+    # assign(var_name, matrix(data=c(data_table$AA, data_table$BB, data_table$CC, data_table$DD, 
+    #                                data_table$EE, data_table$FF, data_table$GG, data_table$HH,
+    #                                data_table$BA, data_table$CA, data_table$CB, data_table$DA, 
+    #                                data_table$DB, data_table$DC, data_table$EA, data_table$EB, 
+    #                                data_table$EC, data_table$ED, data_table$FA, data_table$FB, 
+    #                                data_table$FC, data_table$FD, data_table$FE, data_table$GA, 
+    #                                data_table$GB, data_table$GC, data_table$GD, data_table$GE, 
+    #                                data_table$GF, data_table$HA, data_table$HB, data_table$HC, 
+    #                                data_table$HD, data_table$HE, data_table$HF, data_table$HG),
+    #                         ncol=length(diplotype.labels),
+    #                         dimnames=list(NULL, diplotype.labels)))
+    assign(var_name, matrix(data=c(AA, BB, CC, DD, 
+                                   EE, FF, GG, HH,
+                                   BA, CA, CB, DA, 
+                                   DB, DC, EA, EB, 
+                                   EC, ED, FA, FB, 
+                                   FC, FD, FE, GA, 
+                                   GB, GC, GD, GE, 
+                                   GF, HA, HB, HC, 
+                                   HD, HE, HF, HG),
                             ncol=length(diplotype.labels),
                             dimnames=list(NULL, diplotype.labels)))
       temp <- get(var_name)
