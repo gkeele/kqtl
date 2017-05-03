@@ -176,7 +176,7 @@ convert.DOQTL.to.HAPPY <- function(DOQTL.recon.output.path,
                      BG, CG, DG, EG,
                      FG, AH, BH, CH,
                      DH, EH, FH, GH,
-                     allele.labels, diplotype.labels, full.to.dosages), by="marker"]
+                     allele.labels, diplotype.labels, full.to.dosages), by="marker", with=TRUE]
     #cat(colnames(all.subjects), "\n")
     #cat(class(all.subjects), "\n")
     
