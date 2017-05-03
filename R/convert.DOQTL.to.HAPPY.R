@@ -25,7 +25,6 @@ convert.DOQTL.to.HAPPY <- function(DOQTL.recon.output.path,
   load(paste(DOQTL.recon.output.path, "founder.probs.Rdata", sep="/"))
   
   samples <- dimnames(model.probs)[[1]]
-  loci <- dimnames(model.probs)[[3]]
   simple.alleles <- dimnames(model.probs)[[2]]
   rm(model.probs)
   
@@ -48,7 +47,7 @@ convert.DOQTL.to.HAPPY <- function(DOQTL.recon.output.path,
   #-------------------------------
   # Marker info
   #-------------------------------
-  map = read.table(map.path, header=TRUE, as.is=TRUE)
+  map <- read.table(map.path, header=TRUE, as.is=TRUE)
   
   
   #-------------------------------
@@ -131,6 +130,8 @@ convert.DOQTL.to.HAPPY <- function(DOQTL.recon.output.path,
                                                                17,5,12,18,23,6,13,19,24,28,7,14,
                                                                20,25,29,32,8,15,21,26,30,33,35)+5)]
       combined.data <- combined.data[combined.data$chr == chr[i],]
+      paste(dim(combined.data))
+      cat(combined.data[1:10,])
     
       if(!exists('all.subjects')){
         all.subjects <- combined.data
@@ -143,7 +144,6 @@ convert.DOQTL.to.HAPPY <- function(DOQTL.recon.output.path,
     # make each marker_name.Rdata
     # Subject order in marker_name.Rdata should match with SUBJECT.NAME in pheno
     #---------------------------------------------------------------------------
-    #paste(is(all.subjects), collapse=" ")
     var.names <- c(names(all.subjects)[1:5], simple.het.labels)
     data.table::setnames(all.subjects, names(all.subjects), var.names)
     data.table::setkey(all.subjects, NULL)
