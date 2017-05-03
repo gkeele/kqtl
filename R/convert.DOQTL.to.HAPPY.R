@@ -166,21 +166,21 @@ convert.DOQTL.to.HAPPY <- function(DOQTL.recon.output.path,
     #                  all.subjects$FG, all.subjects$AH, all.subjects$BH, all.subjects$CH,
     #                  all.subjects$DH, all.subjects$EH, all.subjects$FH, all.subjects$GH,
     #                  allele.labels, diplotype.labels, full.to.dosages), by=all.subjects$marker]
-    # all.subjects[, f(chr, marker,
-    #                  AA, BB, CC, DD,
-    #                  EE, FF, GG, HH,
-    #                  AB, AC, BC, AD,
-    #                  BD, CD, AE, BE,
-    #                  CE, DE, AF, BF,
-    #                  CF, DF, EF, AG,
-    #                  BG, CG, DG, EG,
-    #                  FG, AH, BH, CH,
-    #                  DH, EH, FH, GH,
-    #                  allele.labels, diplotype.labels, full.to.dosages), by=marker]
-    cat(colnames(all.subjects), "\n")
-    cat(class(all.subjects), "\n")
+    all.subjects[, f(chr, marker,
+                     AA, BB, CC, DD,
+                     EE, FF, GG, HH,
+                     AB, AC, BC, AD,
+                     BD, CD, AE, BE,
+                     CE, DE, AF, BF,
+                     CF, DF, EF, AG,
+                     BG, CG, DG, EG,
+                     FG, AH, BH, CH,
+                     DH, EH, FH, GH,
+                     allele.labels, diplotype.labels, full.to.dosages), by="marker"]
+    #cat(colnames(all.subjects), "\n")
+    #cat(class(all.subjects), "\n")
     
-    cat(all.subjects[, AA, by="marker", with=TRUE])
+    #cat(all.subjects[, AA, by="marker", with=TRUE])
     
     #-------------------------------------
     # make other necessary files
