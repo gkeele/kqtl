@@ -125,10 +125,9 @@ convert.DOQTL.to.HAPPY <- function(DOQTL.recon.output.path,
       marker <- rownames(prsmth)
       subject <- rep(samples[j], nrow(prsmth))
       one.sample.data <- data.frame(marker, subject,  prsmth)
-      combined.data <- merge(x=map, y=one.sample.data, by.x="marker", by.y="marker",
-                             all.x=FALSE, all.y=TRUE)[,c(1:5,c(1,9,16,22,27,31,34,36,2,3,10,4,11,
-                                                               17,5,12,18,23,6,13,19,24,28,7,14,
-                                                               20,25,29,32,8,15,21,26,30,33,35)+5)]
+      combined.data <- merge(x=map, y=one.sample.data, by.x="marker", by.y="marker")[,c(1:5,c(1,9,16,22,27,31,34,36,2,3,10,4,11,
+                                                                                              17,5,12,18,23,6,13,19,24,28,7,14,
+                                                                                              20,25,29,32,8,15,21,26,30,33,35)+5)]
       combined.data <- combined.data[combined.data$chr == chr[i],]
       #cat(paste(dim(combined.data), collapse=" "), "\n")
       #cat(paste(combined.data[1:10,]))
