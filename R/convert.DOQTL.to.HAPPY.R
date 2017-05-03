@@ -123,13 +123,14 @@ convert.DOQTL.to.HAPPY <- function(DOQTL.recon.output.path,
       all.subjects <- combined.data
     } 
     else{ 
-      all.subjects <- data.table::rbindlist(list(all.subjects, combined.data)) 
+      all.subjects <- data.table::rbindlist(list(all.subjects, combined.data))
     }
     
     #--------------------------------------------------------------------------
     # make each marker_name.Rdata
     # Subject order in marker_name.Rdata should match with SUBJECT.NAME in pheno
     #---------------------------------------------------------------------------
+    is(all.subjects)
     var.names <- c(names(all.subjects)[1:5], simple.het.labels)
     data.table::setnames(all.subjects, names(all.subjects), var.names)
     data.table::setkey(all.subjects, NULL)
