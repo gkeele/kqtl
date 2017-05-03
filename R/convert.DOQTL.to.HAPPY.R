@@ -62,7 +62,7 @@ convert.DOQTL.to.HAPPY <- function(DOQTL.recon.output.path,
                 allele.labels,
                 diplotype.labels,
                 full.to.dosages.matrix){
-    var_name <- Marker.Name[1]
+    var_name <- Marker.Name
     assign(var_name, matrix(data=c(aa, bb, cc, dd, ee, ff, gg, hh,
                                    ba, ca, cb, da, db, dc, ea, eb, ec, ed,
                                    fa, fb, fc, fd, fe, ga, gb, gc, gd, ge, gf,

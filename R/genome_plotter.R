@@ -1,12 +1,11 @@
-# Plotting functions for genome scans
 #' @export
-genome.plotter.per.chr <- function(scan.object, chr, use.lod=TRUE, print.median.band=TRUE,
-                                   scale="Mb", main.col="black", median.band.col="gray48",
-                                   main.label=NULL, main="",
-                                   my.legend.cex=0.6,
-                                   bs.max=NULL,
-                                   y.max.manual=NULL,
-                                   hard.thresholds=NULL)
+genome.plotter.chr <- function(scan.object, chr, use.lod=TRUE, print.median.band=TRUE,
+                               scale="Mb", main.col="black", median.band.col="gray48",
+                               main.label=NULL, main="",
+                               my.legend.cex=0.6,
+                               bs.max=NULL,
+                               y.max.manual=NULL,
+                               hard.thresholds=NULL)
 {
   if(use.lod){
     outcome <- scan.object$LOD[scan.object$chr == chr]
