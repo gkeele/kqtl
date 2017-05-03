@@ -105,9 +105,10 @@ convert.DOQTL.to.HAPPY <- function(DOQTL.recon.output.path,
   #-----------------------------
   # combining data of individuals
   #-----------------------------
-  for(i in 1:length(samples)){
-    for(j in 1:length(chr)){
-      cat(paste("Loading DOQTL output for individual", i, "for chr", j), "\n")
+  
+  for(i in 1:length(chr)){
+    for(j in 1:length(samples)){  
+      cat(paste("Loading DOQTL output for individual", j, "for chr", i), "\n")
       load(paste0(DOQTL.recon.output.path, "/", samples[i], ".genotype.probs.Rdata"))
       marker <- rownames(prsmth)
       subject <- rep(samples[i], nrow(prsmth))
@@ -116,7 +117,7 @@ convert.DOQTL.to.HAPPY <- function(DOQTL.recon.output.path,
                              all.x=FALSE, all.y=TRUE)[,c(1:5,c(1,9,16,22,27,31,34,36,2,3,10,4,11,
                                                                17,5,12,18,23,6,13,19,24,28,7,14,
                                                                20,25,29,32,8,15,21,26,30,33,35)+5)]
-      combined.data <- combined.data[combined.data$chr == chr[j],]
+      combined.data <- combined.data[combined.data$chr == chr[i],]
     }
     if(!exists('all.subjects')){
       all.subjects <- combined.data
@@ -170,11 +171,6 @@ convert.DOQTL.to.HAPPY <- function(DOQTL.recon.output.path,
     save(strains, file = paste0(final.output.path, 'genotype/chr', this.chr, '/strains.RData'))
   }
 }
-
-
-
-
-
 
 
 
