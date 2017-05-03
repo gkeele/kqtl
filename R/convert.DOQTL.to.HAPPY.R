@@ -163,6 +163,8 @@ convert.DOQTL.to.HAPPY <- function(DOQTL.recon.output.path,
     markers.one.subj[, export_marker_chromosome_file(all.subjects$chr.notkey), by=all.subjects$chr]
     
     markers.one.subj[, export_marker_map_distance_file(all.subjects$chr.notkey, all.subjects$pos), by=all.subjects$chr]
+    
+    rm(all.subjects)
   }
   
   # export file of mice names and strains
