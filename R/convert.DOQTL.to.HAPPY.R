@@ -185,13 +185,13 @@ convert.DOQTL.to.HAPPY <- function(DOQTL.recon.output.path,
   subjects <- samples
   strains <- allele.labels
   for(this.chr in chr){
-    save(subjects, file = paste0(HAPPY.output.path, 'additive/chr', this.chr, '/subjects.RData'))
-    save(subjects, file = paste0(HAPPY.output.path, 'full/chr', this.chr, '/subjects.RData'))
-    save(subjects, file = paste0(HAPPY.output.path, 'genotype/chr', this.chr, '/subjects.RData'))
+    save(subjects, file = paste0(HAPPY.output.path, '/additive/chr', this.chr, '/subjects.RData'))
+    save(subjects, file = paste0(HAPPY.output.path, '/full/chr', this.chr, '/subjects.RData'))
+    save(subjects, file = paste0(HAPPY.output.path, '/genotype/chr', this.chr, '/subjects.RData'))
     
-    save(strains, file = paste0(HAPPY.output.path, 'additive/chr', this.chr, '/strains.RData'))
-    save(strains, file = paste0(HAPPY.output.path, 'full/chr', this.chr, '/strains.RData'))
-    save(strains, file = paste0(HAPPY.output.path, 'genotype/chr', this.chr, '/strains.RData'))
+    save(strains, file = paste0(HAPPY.output.path, '/additive/chr', this.chr, '/strains.RData'))
+    save(strains, file = paste0(HAPPY.output.path, '/full/chr', this.chr, '/strains.RData'))
+    save(strains, file = paste0(HAPPY.output.path, '/genotype/chr', this.chr, '/strains.RData'))
   }
 }
 
