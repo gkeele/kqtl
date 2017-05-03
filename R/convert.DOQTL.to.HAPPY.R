@@ -1,9 +1,23 @@
+#' Takes DO-QTL founder haplotype reconstruction output files and re-formats into a HAPPY genome cache
+#'
+#' This function produces a HAPPY-format genome cache from DO-QTL founder haplotype reconstruction output files.
+#' The main output files of importance are the individual-level files with naming scheme [sample].genotype.probs.Rdata.
+#'
+#' @param DOQTL.recon.output.path The path to the directory containing DO-QTL founder haplotype output files. 
+#' @param map.path The path to the map file. The map file contains data on the loci. It should be a tab-delimited 
+#' file with columns labeled "marker", "chr", "bp", and "pos". "pos" represents map distance in cM. "bp" should 
+#' be in bp, not Mb. 
+#' @param HAPPY.output.path The path to a directory that will be created as the HAPPY-format genome cache.
+#' @param allele.labels DEFAULT: NULL. Allows for specification of founder labels different from what is in the DO-QTL
+#' output. The DEFAULT of NULL leads to using the labels from the DO-QTL output.
+#' @param chr DEFAULT: c(1:19, "X"). Allows for specification of the chromosomes. DEFAULT is all the chromosomes from the mouse.
 #' @export
+#' @examples convert.DOQTL.to.HAPPY()
 convert.DOQTL.to.HAPPY <- function(DOQTL.recon.output.path,
                                    map.path,
                                    HAPPY.output.path,
                                    allele.labels=NULL,
-                                   chr=c(1:20, "X")){
+                                   chr=c(1:19, "X")){
   
   #----------------------------------
   # founder probs from DO-QTL
@@ -108,7 +122,7 @@ convert.DOQTL.to.HAPPY <- function(DOQTL.recon.output.path,
   
   for(i in 1:length(chr)){
     for(j in 1:length(samples)){
-      cat(paste("Loading DOQTL output for individual", j, "for chr", i), "\n")
+      cat(paste("Loading DOQTL output for individual", j, "for chr", chr[i]), "\n")
       load(paste0(DOQTL.recon.output.path, "/", samples[i], ".genotype.probs.Rdata"))
       marker <- rownames(prsmth)
       subject <- rep(samples[i], nrow(prsmth))
@@ -168,7 +182,6 @@ convert.DOQTL.to.HAPPY <- function(DOQTL.recon.output.path,
   }
   
   # export file of mice names and strains
-  #chr.names <- unique(all.subjects[,chr])
   subjects <- samples
   strains <- allele.labels
   for(this.chr in chr){
