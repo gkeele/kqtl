@@ -19,6 +19,7 @@ convert.DOQTL.to.HAPPY <- function(DOQTL.recon.output.path,
                                    allele.labels=NULL,
                                    chr=c(1:19, "X")){
   
+  require(data.table)
   #----------------------------------
   # founder probs from DO-QTL
   #----------------------------------
