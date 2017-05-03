@@ -107,7 +107,7 @@ convert.DOQTL.to.HAPPY <- function(DOQTL.recon.output.path,
   #-----------------------------
   
   for(i in 1:length(chr)){
-    for(j in 1:length(samples)){  
+    for(j in 1:length(samples)){
       cat(paste("Loading DOQTL output for individual", j, "for chr", i), "\n")
       load(paste0(DOQTL.recon.output.path, "/", samples[i], ".genotype.probs.Rdata"))
       marker <- rownames(prsmth)
@@ -118,19 +118,19 @@ convert.DOQTL.to.HAPPY <- function(DOQTL.recon.output.path,
                                                                17,5,12,18,23,6,13,19,24,28,7,14,
                                                                20,25,29,32,8,15,21,26,30,33,35)+5)]
       combined.data <- combined.data[combined.data$chr == chr[i],]
-    }
-    if(!exists('all.subjects')){
-      all.subjects <- combined.data
-    } 
-    else{ 
-      all.subjects <- data.table::rbindlist(list(all.subjects, combined.data))
-    }
     
+      if(!exists('all.subjects')){
+        all.subjects <- combined.data
+      } 
+      else{ 
+        all.subjects <- data.table::rbindlist(list(all.subjects, combined.data))
+      }
+    }
     #--------------------------------------------------------------------------
     # make each marker_name.Rdata
     # Subject order in marker_name.Rdata should match with SUBJECT.NAME in pheno
     #---------------------------------------------------------------------------
-    paste(is(all.subjects), collapse=" ")
+    #paste(is(all.subjects), collapse=" ")
     var.names <- c(names(all.subjects)[1:5], simple.het.labels)
     data.table::setnames(all.subjects, names(all.subjects), var.names)
     data.table::setkey(all.subjects, NULL)
