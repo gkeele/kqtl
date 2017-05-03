@@ -130,8 +130,8 @@ convert.DOQTL.to.HAPPY <- function(DOQTL.recon.output.path,
                                                                17,5,12,18,23,6,13,19,24,28,7,14,
                                                                20,25,29,32,8,15,21,26,30,33,35)+5)]
       combined.data <- combined.data[combined.data$chr == chr[i],]
-      paste(dim(combined.data))
-      cat(combined.data[1:10,])
+      cat(paste(dim(combined.data), collapse=" "), "\n")
+      cat(paste(combined.data[1:10,]))
     
       if(!exists('all.subjects')){
         all.subjects <- combined.data
