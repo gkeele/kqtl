@@ -47,7 +47,7 @@ convert.DOQTL.to.HAPPY <- function(DOQTL.recon.output.path,
                 ha, hb, hc, hd, he, hf, hg,
                 allele.labels,
                 diplotype.labels,
-                full.to.dosages.matrix) {
+                full.to.dosages.matrix){
     var_name <- Marker.Name[1]
     assign(var_name, matrix(data=c(aa, bb, cc, dd, ee, ff, gg, hh,
                                    ba, ca, cb, da, db, dc, ea, eb, ec, ed,
@@ -135,10 +135,10 @@ convert.DOQTL.to.HAPPY <- function(DOQTL.recon.output.path,
     data.table::setnames(all.subjects, names(all.subjects), var.names)
     data.table::setkey(all.subjects, NULL)
     data.table::setkey(all.subjects, chr, bp, marker, subject)
-    all.subjects$marker2 <- all.subjects$marker
-    all.subjects$chr2 <- all.subjects$chr
+    all.subjects$marker.notkey <- all.subjects$marker
+    all.subjects$chr.notkey <- all.subjects$chr
     
-    all.subjects[, f(chr, marker2, AA, BB, CC, DD, EE, FF, GG, HH, 
+    all.subjects[, f(chr, marker.notkey, AA, BB, CC, DD, EE, FF, GG, HH, 
                      AB, AC, BC, AD, BD, CD, AE, BE, CE, DE, 
                      AF, BF, CF, DF, EF, AG, BG, CG, DG, EG, FG, 
                      AH, BH, CH, DH, EH, FH, GH, allele.labels, diplotype.labels, full.to.dosages), by=marker]
@@ -149,13 +149,13 @@ convert.DOQTL.to.HAPPY <- function(DOQTL.recon.output.path,
     one.subj = samples[1]
     markers.one.subj <- all.subjects[grepl(one.subj, subject), ]  
     
-    markers.one.subj[, export_marker_name_file(chr2, marker), by=chr]
+    markers.one.subj[, export_marker_name_file(chr.notkey, marker), by=chr]
     
-    markers.one.subj[, export_marker_position_file(chr2, bp), by=chr]
+    markers.one.subj[, export_marker_position_file(chr.notkey, bp), by=chr]
     
-    markers.one.subj[, export_marker_chromosome_file(chr2), by=chr]
+    markers.one.subj[, export_marker_chromosome_file(chr.notkey), by=chr]
     
-    markers.one.subj[, export_marker_map_distance_file(chr2, pos), by=chr]
+    markers.one.subj[, export_marker_map_distance_file(chr.notkey, pos), by=chr]
   }
   
   # export file of mice names and strains
