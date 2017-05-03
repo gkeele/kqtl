@@ -180,7 +180,7 @@ convert.DOQTL.to.HAPPY <- function(DOQTL.recon.output.path,
     cat(colnames(all.subjects), "\n")
     cat(class(all.subjects), "\n")
     
-    cat(all.subjects[, .SD, by="marker", with=TRUE])
+    cat(all.subjects[, AA, by="marker", with=TRUE])
     
     #-------------------------------------
     # make other necessary files
