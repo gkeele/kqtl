@@ -19,7 +19,7 @@ convert.DOQTL.to.HAPPY <- function(DOQTL.recon.output.path,
                                    allele.labels=NULL,
                                    chr=c(1:19, "X")){
   
-  require(data.table)
+  #require(data.table)
   #----------------------------------
   # founder probs from DO-QTL
   #----------------------------------
@@ -54,41 +54,70 @@ convert.DOQTL.to.HAPPY <- function(DOQTL.recon.output.path,
   #-------------------------------
   # Functions to output marker files
   #-------------------------------
-  f <- function(chr, Marker.Name,
-                aa, bb, cc, dd, ee, ff, gg, hh,
-                ba, ca, cb, da, db, dc, ea, eb, ec, ed,
-                fa, fb, fc, fd, fe, ga, gb, gc, gd, ge, gf,
-                ha, hb, hc, hd, he, hf, hg,
-                allele.labels,
-                diplotype.labels,
-                full.to.dosages.matrix){
-    var_name <- Marker.Name[1]
-    assign(var_name, matrix(data=c(aa, bb, cc, dd, ee, ff, gg, hh,
-                                   ba, ca, cb, da, db, dc, ea, eb, ec, ed,
-                                   fa, fb, fc, fd, fe, ga, gb, gc, gd, ge, gf,
-                                   ha, hb, hc, hd, he, hf, hg), 
+  # f <- function(chr, Marker.Name,
+  #               aa, bb, cc, dd, ee, ff, gg, hh,
+  #               ba, ca, cb, da, db, dc, ea, eb, ec, ed,
+  #               fa, fb, fc, fd, fe, ga, gb, gc, gd, ge, gf,
+  #               ha, hb, hc, hd, he, hf, hg,
+  #               allele.labels,
+  #               diplotype.labels,
+  #               full.to.dosages.matrix){
+  #   var_name <- Marker.Name[1]
+  #   assign(var_name, matrix(data=c(aa, bb, cc, dd, ee, ff, gg, hh,
+  #                                  ba, ca, cb, da, db, dc, ea, eb, ec, ed,
+  #                                  fa, fb, fc, fd, fe, ga, gb, gc, gd, ge, gf,
+  #                                  ha, hb, hc, hd, he, hf, hg), 
+  #                           ncol=length(diplotype.labels),
+  #                           dimnames=list(NULL, diplotype.labels)))
+  #   
+  #   temp <- get(var_name)
+  #   colnames(temp) <- diplotype.labels
+  #   temp.add <- temp %*% full.to.dosages.matrix
+  #   colnames(temp.add) <- allele.labels
+  #   
+  #   dir.create(paste0(HAPPY.output.path, '/full/chr', chr[1], '/data/'),
+  #              showWarnings=FALSE, recursive=TRUE)
+  #   fn <- paste0(HAPPY.output.path, '/full/chr', chr[1], '/data/', var_name, '.RData')
+  #   save(list=var_name, file=fn)
+  #   
+  #   assign(var_name, temp.add)
+  #   dir.create(paste0(HAPPY.output.path, '/additive/chr', chr[1], '/data/'),
+  #              showWarnings=FALSE, recursive=TRUE)
+  #   fn <- paste0(HAPPY.output.path, '/additive/chr', chr[1], '/data/', var_name, '.RData')
+  #   save(list = var_name, file = fn) 
+  # }
+  output.marker.file <- function(data_table, allele.labels, diplotype.labels, full.to.dosages.matrix){
+    var_name <- data_table$marker[1]
+    assign(var_name, matrix(data=c(data_table$AA, data_table$BB, data_table$CC, data_table$DD, 
+                                   data_table$EE, data_table$FF, data_table$GG, data_table$HH,
+                                   data_table$BA, data_table$CA, data_table$CB, data_table$DA, 
+                                   data_table$DB, data_table$DC, data_table$EA, data_table$EB, 
+                                   data_table$EC, data_table$ED, data_table$FA, data_table$FB, 
+                                   data_table$FC, data_table$FD, data_table$FE, data_table$GA, 
+                                   data_table$GB, data_table$GC, data_table$GD, data_table$GE, 
+                                   data_table$GF, data_table$HA, data_table$HB, data_table$HC, 
+                                   data_table$HD, data_table$HE, data_table$HF, data_table$HG),
                             ncol=length(diplotype.labels),
                             dimnames=list(NULL, diplotype.labels)))
-    
-    temp <- get(var_name)
-    colnames(temp) <- diplotype.labels
-    temp.add <- temp %*% full.to.dosages.matrix
-    colnames(temp.add) <- allele.labels
-    
-    dir.create(paste0(HAPPY.output.path, '/full/chr', chr[1], '/data/'),
-               showWarnings=FALSE, recursive=TRUE)
-    fn <- paste0(HAPPY.output.path, '/full/chr', chr[1], '/data/', var_name, '.RData')
-    save(list=var_name, file=fn)
-    
-    assign(var_name, temp.add)
-    dir.create(paste0(HAPPY.output.path, '/additive/chr', chr[1], '/data/'),
-               showWarnings=FALSE, recursive=TRUE)
-    fn <- paste0(HAPPY.output.path, '/additive/chr', chr[1], '/data/', var_name, '.RData')
-    save(list = var_name, file = fn) 
+      temp <- get(var_name)
+      colnames(temp) <- diplotype.labels
+      temp.add <- temp %*% full.to.dosages.matrix
+      colnames(temp.add) <- allele.labels
+
+      dir.create(paste0(HAPPY.output.path, '/full/chr', chr[1], '/data/'),
+                 showWarnings=FALSE, recursive=TRUE)
+      fn <- paste0(HAPPY.output.path, '/full/chr', chr[1], '/data/', var_name, '.RData')
+      save(list=var_name, file=fn)
+
+      assign(var_name, temp.add)
+      dir.create(paste0(HAPPY.output.path, '/additive/chr', chr[1], '/data/'),
+                 showWarnings=FALSE, recursive=TRUE)
+      fn <- paste0(HAPPY.output.path, '/additive/chr', chr[1], '/data/', var_name, '.RData')
+      save(list=var_name, file=fn)
   }
-  f2 <- function(df){
-    df[1,1]
-  }
+  # f2 <- function(df){
+  #   df[1,1]
+  # }
   # export file of marker names for each chr
   export_marker_name_file <- function(chr, Marker.Name) {
     markers <- as.character(Marker.Name)
@@ -148,13 +177,13 @@ convert.DOQTL.to.HAPPY <- function(DOQTL.recon.output.path,
     # Subject order in marker_name.Rdata should match with SUBJECT.NAME in pheno
     #---------------------------------------------------------------------------
     var.names <- c(names(all.subjects)[1:5], simple.het.labels)
-    data.table::setnames(all.subjects, names(all.subjects), var.names)
-    data.table::setkey(all.subjects, NULL)
-    data.table::setkey(all.subjects, chr, bp, marker, subject)
+    # data.table::setnames(all.subjects, names(all.subjects), var.names)
+    # data.table::setkey(all.subjects, NULL)
+    # data.table::setkey(all.subjects, chr, bp, marker, subject)
     
-    # setnames(all.subjects, names(all.subjects), var.names)
-    # setkey(all.subjects, NULL)
-    # setkey(all.subjects, chr, bp, marker, subject)
+    setnames(all.subjects, names(all.subjects), var.names)
+    setkey(all.subjects, NULL)
+    setkey(all.subjects, chr, bp, marker, subject)
     #all.subjects$marker.notkey <- all.subjects$marker
     #all.subjects$chr.notkey <- all.subjects$chr
     
@@ -169,20 +198,21 @@ convert.DOQTL.to.HAPPY <- function(DOQTL.recon.output.path,
     #                  all.subjects$FG, all.subjects$AH, all.subjects$BH, all.subjects$CH,
     #                  all.subjects$DH, all.subjects$EH, all.subjects$FH, all.subjects$GH,
     #                  allele.labels, diplotype.labels, full.to.dosages), by=all.subjects$marker]
-    cat("This is crap!")
-    junk <- all.subjects[, f2(.SD), by="marker"]
-    cat(junk)
-    all.subjects[, f(chr, marker,
-                     aa=AA, BB, CC, DD,
-                     EE, FF, GG, HH,
-                     AB, AC, BC, AD,
-                     BD, CD, AE, BE,
-                     CE, DE, AF, BF,
-                     CF, DF, EF, AG,
-                     BG, CG, DG, EG,
-                     FG, AH, BH, CH,
-                     DH, EH, FH, GH,
-                     allele.labels, diplotype.labels, full.to.dosages), by="marker", with=TRUE]
+    #cat("This is crap!")
+    #junk <- all.subjects[, f2(.SD), by="marker"]
+    #cat(junk)
+    # all.subjects[, f(chr, marker,
+    #                  aa=AA, BB, CC, DD,
+    #                  EE, FF, GG, HH,
+    #                  AB, AC, BC, AD,
+    #                  BD, CD, AE, BE,
+    #                  CE, DE, AF, BF,
+    #                  CF, DF, EF, AG,
+    #                  BG, CG, DG, EG,
+    #                  FG, AH, BH, CH,
+    #                  DH, EH, FH, GH,
+    #                  allele.labels, diplotype.labels, full.to.dosages), by="marker", with=TRUE]
+    all.subjects[, output.marker.file(.SD, allele.labels, diplotype.labels, full.to.dosages), by="marker"]
     #cat(colnames(all.subjects), "\n")
     #cat(class(all.subjects), "\n")
     
