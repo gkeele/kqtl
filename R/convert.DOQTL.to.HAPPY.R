@@ -145,15 +145,15 @@ convert.DOQTL.to.HAPPY <- function(DOQTL.recon.output.path,
     # Subject order in marker_name.Rdata should match with SUBJECT.NAME in pheno
     #---------------------------------------------------------------------------
     var.names <- c(names(all.subjects)[1:5], simple.het.labels)
-    # data.table::setnames(all.subjects, names(all.subjects), var.names)
-    # data.table::setkey(all.subjects, NULL)
-    # data.table::setkey(all.subjects, chr, bp, marker, subject)
+    data.table::setnames(all.subjects, names(all.subjects), var.names)
+    data.table::setkey(all.subjects, NULL)
+    data.table::setkey(all.subjects, chr, bp, marker, subject)
     
-    setnames(all.subjects, names(all.subjects), var.names)
-    setkey(all.subjects, NULL)
-    setkey(all.subjects, chr, bp, marker, subject)
-    all.subjects$marker.notkey <- all.subjects$marker
-    all.subjects$chr.notkey <- all.subjects$chr
+    # setnames(all.subjects, names(all.subjects), var.names)
+    # setkey(all.subjects, NULL)
+    # setkey(all.subjects, chr, bp, marker, subject)
+    #all.subjects$marker.notkey <- all.subjects$marker
+    #all.subjects$chr.notkey <- all.subjects$chr
     
     # all.subjects[, f(all.subjects$chr, all.subjects$marker.notkey, 
     #                  all.subjects$AA, all.subjects$BB, all.subjects$CC, all.subjects$DD, 
@@ -166,7 +166,7 @@ convert.DOQTL.to.HAPPY <- function(DOQTL.recon.output.path,
     #                  all.subjects$FG, all.subjects$AH, all.subjects$BH, all.subjects$CH, 
     #                  all.subjects$DH, all.subjects$EH, all.subjects$FH, all.subjects$GH, 
     #                  allele.labels, diplotype.labels, full.to.dosages), by=all.subjects$marker]
-    all.subjects[, f(chr, marker.notkey, 
+    all.subjects[, f(chr, marker, 
                      AA, BB, CC, DD, 
                      EE, FF, GG, HH, 
                      AB, AC, BC, AD, 
