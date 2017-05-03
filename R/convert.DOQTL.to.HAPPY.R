@@ -120,7 +120,7 @@ convert.DOQTL.to.HAPPY <- function(DOQTL.recon.output.path,
   # combining data of individuals
   #-----------------------------
   for(i in 1:length(chr)){
-    for(j in 1:length(samples)){
+    for(j in 1:length(samples[1:3])){
       cat(paste("Loading DOQTL output for individual", j, "for chr", chr[i]), "\n")
       load(paste0(DOQTL.recon.output.path, "/", samples[j], ".genotype.probs.Rdata"))
       marker <- rownames(prsmth)
@@ -155,28 +155,28 @@ convert.DOQTL.to.HAPPY <- function(DOQTL.recon.output.path,
     #all.subjects$marker.notkey <- all.subjects$marker
     #all.subjects$chr.notkey <- all.subjects$chr
     
-    # all.subjects[, f(all.subjects$chr, all.subjects$marker.notkey, 
-    #                  all.subjects$AA, all.subjects$BB, all.subjects$CC, all.subjects$DD, 
-    #                  all.subjects$EE, all.subjects$FF, all.subjects$GG, all.subjects$HH, 
-    #                  all.subjects$AB, all.subjects$AC, all.subjects$BC, all.subjects$AD, 
-    #                  all.subjects$BD, all.subjects$CD, all.subjects$AE, all.subjects$BE, 
-    #                  all.subjects$CE, all.subjects$DE, all.subjects$AF, all.subjects$BF, 
-    #                  all.subjects$CF, all.subjects$DF, all.subjects$EF, all.subjects$AG, 
-    #                  all.subjects$BG, all.subjects$CG, all.subjects$DG, all.subjects$EG, 
-    #                  all.subjects$FG, all.subjects$AH, all.subjects$BH, all.subjects$CH, 
-    #                  all.subjects$DH, all.subjects$EH, all.subjects$FH, all.subjects$GH, 
-    #                  allele.labels, diplotype.labels, full.to.dosages), by=all.subjects$marker]
-    all.subjects[, f(chr, marker, 
-                     AA, BB, CC, DD, 
-                     EE, FF, GG, HH, 
-                     AB, AC, BC, AD, 
-                     BD, CD, AE, BE, 
-                     CE, DE, AF, BF, 
-                     CF, DF, EF, AG, 
-                     BG, CG, DG, EG, 
-                     FG, AH, BH, CH, 
-                     DH, EH, FH, GH, 
-                     allele.labels, diplotype.labels, full.to.dosages), by=marker]
+    all.subjects[, f(all.subjects$chr, all.subjects$marker,
+                     all.subjects$AA, all.subjects$BB, all.subjects$CC, all.subjects$DD,
+                     all.subjects$EE, all.subjects$FF, all.subjects$GG, all.subjects$HH,
+                     all.subjects$AB, all.subjects$AC, all.subjects$BC, all.subjects$AD,
+                     all.subjects$BD, all.subjects$CD, all.subjects$AE, all.subjects$BE,
+                     all.subjects$CE, all.subjects$DE, all.subjects$AF, all.subjects$BF,
+                     all.subjects$CF, all.subjects$DF, all.subjects$EF, all.subjects$AG,
+                     all.subjects$BG, all.subjects$CG, all.subjects$DG, all.subjects$EG,
+                     all.subjects$FG, all.subjects$AH, all.subjects$BH, all.subjects$CH,
+                     all.subjects$DH, all.subjects$EH, all.subjects$FH, all.subjects$GH,
+                     allele.labels, diplotype.labels, full.to.dosages), by=all.subjects$marker]
+    # all.subjects[, f(chr, marker, 
+    #                  AA, BB, CC, DD, 
+    #                  EE, FF, GG, HH, 
+    #                  AB, AC, BC, AD, 
+    #                  BD, CD, AE, BE, 
+    #                  CE, DE, AF, BF, 
+    #                  CF, DF, EF, AG, 
+    #                  BG, CG, DG, EG, 
+    #                  FG, AH, BH, CH, 
+    #                  DH, EH, FH, GH, 
+    #                  allele.labels, diplotype.labels, full.to.dosages), by=marker]
     
     #-------------------------------------
     # make other necessary files
