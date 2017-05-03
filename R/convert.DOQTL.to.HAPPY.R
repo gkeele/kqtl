@@ -173,7 +173,7 @@ convert.DOQTL.to.HAPPY <- function(DOQTL.recon.output.path,
     junk <- all.subjects[, f2(.SD), by="marker"]
     cat(junk)
     all.subjects[, f(chr, marker,
-                     AA, BB, CC, DD,
+                     aa=AA, BB, CC, DD,
                      EE, FF, GG, HH,
                      AB, AC, BC, AD,
                      BD, CD, AE, BE,
