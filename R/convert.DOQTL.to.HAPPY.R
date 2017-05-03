@@ -62,7 +62,7 @@ convert.DOQTL.to.HAPPY <- function(DOQTL.recon.output.path,
                 allele.labels,
                 diplotype.labels,
                 full.to.dosages.matrix){
-    var_name <- Marker.Name
+    var_name <- Marker.Name[1]
     assign(var_name, matrix(data=c(aa, bb, cc, dd, ee, ff, gg, hh,
                                    ba, ca, cb, da, db, dc, ea, eb, ec, ed,
                                    fa, fb, fc, fd, fe, ga, gb, gc, gd, ge, gf,
@@ -119,7 +119,6 @@ convert.DOQTL.to.HAPPY <- function(DOQTL.recon.output.path,
   #-----------------------------
   # combining data of individuals
   #-----------------------------
-  
   for(i in 1:length(chr)){
     for(j in 1:length(samples)){
       cat(paste("Loading DOQTL output for individual", j, "for chr", chr[i]), "\n")
