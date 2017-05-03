@@ -271,7 +271,7 @@ scan.h2lmm <- function(genomecache, data, formula, K=NULL,
       names(LOD.vec) <- names(p.vec) <- names(df) <- loci
     }
     if(print.locus.fit){
-      cat(print("locus", i, "out of", length(loci)), "\n")
+      cat(paste("locus", i, "out of", length(loci)), "\n")
     }
   }
   output <- list(LOD=LOD.vec,
