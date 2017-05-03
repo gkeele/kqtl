@@ -169,6 +169,7 @@ convert.DOQTL.to.HAPPY <- function(DOQTL.recon.output.path,
     #                  all.subjects$FG, all.subjects$AH, all.subjects$BH, all.subjects$CH,
     #                  all.subjects$DH, all.subjects$EH, all.subjects$FH, all.subjects$GH,
     #                  allele.labels, diplotype.labels, full.to.dosages), by=all.subjects$marker]
+    cat("This is crap!")
     junk <- all.subjects[, f2(.SD), by="marker"]
     cat(junk)
     all.subjects[, f(chr, marker,
