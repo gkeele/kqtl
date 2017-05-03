@@ -138,10 +138,17 @@ convert.DOQTL.to.HAPPY <- function(DOQTL.recon.output.path,
     all.subjects$marker.notkey <- all.subjects$marker
     all.subjects$chr.notkey <- all.subjects$chr
     
-    all.subjects[, f(chr, marker.notkey, AA, BB, CC, DD, EE, FF, GG, HH, 
-                     AB, AC, BC, AD, BD, CD, AE, BE, CE, DE, 
-                     AF, BF, CF, DF, EF, AG, BG, CG, DG, EG, FG, 
-                     AH, BH, CH, DH, EH, FH, GH, allele.labels, diplotype.labels, full.to.dosages), by=marker]
+    all.subjects[, f(all.subjects$chr, all.subjects$marker.notkey, 
+                     all.subjects$AA, all.subjects$BB, all.subjects$CC, all.subjects$DD, 
+                     all.subjects$EE, all.subjects$FF, all.subjects$GG, all.subjects$HH, 
+                     all.subjects$AB, all.subjects$AC, all.subjects$BC, all.subjects$AD, 
+                     all.subjects$BD, all.subjects$CD, all.subjects$AE, all.subjects$BE, 
+                     all.subjects$CE, all.subjects$DE, all.subjects$AF, all.subjects$BF, 
+                     all.subjects$CF, all.subjects$DF, all.subjects$EF, all.subjects$AG, 
+                     all.subjects$BG, all.subjects$CG, all.subjects$DG, all.subjects$EG, 
+                     all.subjects$FG, all.subjects$AH, all.subjects$BH, all.subjects$CH, 
+                     all.subjects$DH, all.subjects$EH, all.subjects$FH, all.subjects$GH, 
+                     allele.labels, diplotype.labels, full.to.dosages), by=all.subjects$marker]
     
     #-------------------------------------
     # make other necessary files
@@ -149,13 +156,13 @@ convert.DOQTL.to.HAPPY <- function(DOQTL.recon.output.path,
     one.subj = samples[1]
     markers.one.subj <- all.subjects[grepl(one.subj, subject), ]  
     
-    markers.one.subj[, export_marker_name_file(chr.notkey, marker), by=chr]
+    markers.one.subj[, export_marker_name_file(all.subjects$chr.notkey, all.subjects$marker), by=all.subjects$chr]
     
-    markers.one.subj[, export_marker_position_file(chr.notkey, bp), by=chr]
+    markers.one.subj[, export_marker_position_file(all.subjects$chr.notkey, all.subjects$bp), by=all.subjects$chr]
     
-    markers.one.subj[, export_marker_chromosome_file(chr.notkey), by=chr]
+    markers.one.subj[, export_marker_chromosome_file(all.subjects$chr.notkey), by=all.subjects$chr]
     
-    markers.one.subj[, export_marker_map_distance_file(chr.notkey, pos), by=chr]
+    markers.one.subj[, export_marker_map_distance_file(all.subjects$chr.notkey, all.subjects$pos), by=all.subjects$chr]
   }
   
   # export file of mice names and strains
