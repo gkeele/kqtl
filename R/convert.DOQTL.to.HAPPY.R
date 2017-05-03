@@ -188,13 +188,13 @@ convert.DOQTL.to.HAPPY <- function(DOQTL.recon.output.path,
     # Subject order in marker_name.Rdata should match with SUBJECT.NAME in pheno
     #---------------------------------------------------------------------------
     var.names <- c(names(all.subjects)[1:5], simple.het.labels)
-    # data.table::setnames(all.subjects, names(all.subjects), var.names)
-    # data.table::setkey(all.subjects, NULL)
-    # data.table::setkey(all.subjects, chr, bp, marker, subject)
+    data.table::setnames(all.subjects, names(all.subjects), var.names)
+    data.table::setkey(all.subjects, NULL)
+    data.table::setkey(all.subjects, chr, bp, marker, subject)
     
-    setnames(all.subjects, names(all.subjects), var.names)
-    setkey(all.subjects, NULL)
-    setkey(all.subjects, chr, bp, marker, subject)
+    # setnames(all.subjects, names(all.subjects), var.names)
+    # setkey(all.subjects, NULL)
+    # setkey(all.subjects, chr, bp, marker, subject)
     #all.subjects$marker.notkey <- all.subjects$marker
     #all.subjects$chr.notkey <- all.subjects$chr
     
