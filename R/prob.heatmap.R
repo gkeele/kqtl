@@ -55,7 +55,7 @@ prob.heatmap = function(marker, p.value=NULL, genomecache, model="additive",
   
   # plot heatmap
   ## save original par settings
-  op <- par()
+  op <- par(no.readonly=TRUE)
   cols <- rev(gray(10000:1/10000))
   par(plt=c(0.1,.75,0.1,.8))    ##set the margin  
   image(z=1-probs, axes=FALSE, col=cols)
