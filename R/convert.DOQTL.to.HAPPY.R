@@ -8,7 +8,7 @@ convert.DOQTL.to.HAPPY <- function(DOQTL.recon.output.path,
   #----------------------------------
   # founder probs from DO-QTL
   #----------------------------------
-  load(paste(DOQTL.recon.output.path, "founder.probs.Rdata"), sep="/")
+  load(paste(DOQTL.recon.output.path, "founder.probs.Rdata", sep="/"))
   
   samples <- dimnames(model.probs)[[1]]
   loci <- dimnames(model.probs)[[3]]
