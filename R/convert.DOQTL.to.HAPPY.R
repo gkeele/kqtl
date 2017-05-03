@@ -130,8 +130,8 @@ convert.DOQTL.to.HAPPY <- function(DOQTL.recon.output.path,
                                                                                               17,5,12,18,23,6,13,19,24,28,7,14,
                                                                                               20,25,29,32,8,15,21,26,30,33,35)+5)]
       combined.data <- combined.data[combined.data$chr == chr[i],]
-      cat(paste(dim(combined.data), collapse=" "), "\n")
-      cat(paste(combined.data[1:10,]))
+      #cat(paste(dim(combined.data), collapse=" "), "\n")
+      #cat(paste(combined.data[1:10,]))
     
       if(!exists('all.subjects')){
         all.subjects <- combined.data
@@ -145,9 +145,13 @@ convert.DOQTL.to.HAPPY <- function(DOQTL.recon.output.path,
     # Subject order in marker_name.Rdata should match with SUBJECT.NAME in pheno
     #---------------------------------------------------------------------------
     var.names <- c(names(all.subjects)[1:5], simple.het.labels)
-    data.table::setnames(all.subjects, names(all.subjects), var.names)
-    data.table::setkey(all.subjects, NULL)
-    data.table::setkey(all.subjects, chr, bp, marker, subject)
+    # data.table::setnames(all.subjects, names(all.subjects), var.names)
+    # data.table::setkey(all.subjects, NULL)
+    # data.table::setkey(all.subjects, chr, bp, marker, subject)
+    
+    setnames(all.subjects, names(all.subjects), var.names)
+    setkey(all.subjects, NULL)
+    setkey(all.subjects, chr, bp, marker, subject)
     all.subjects$marker.notkey <- all.subjects$marker
     all.subjects$chr.notkey <- all.subjects$chr
     
