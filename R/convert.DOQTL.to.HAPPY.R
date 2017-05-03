@@ -86,6 +86,9 @@ convert.DOQTL.to.HAPPY <- function(DOQTL.recon.output.path,
     fn <- paste0(HAPPY.output.path, '/additive/chr', chr[1], '/data/', var_name, '.RData')
     save(list = var_name, file = fn) 
   }
+  f2 <- function(df){
+    df[1,1]
+  }
   # export file of marker names for each chr
   export_marker_name_file <- function(chr, Marker.Name) {
     markers <- as.character(Marker.Name)
@@ -166,6 +169,7 @@ convert.DOQTL.to.HAPPY <- function(DOQTL.recon.output.path,
     #                  all.subjects$FG, all.subjects$AH, all.subjects$BH, all.subjects$CH,
     #                  all.subjects$DH, all.subjects$EH, all.subjects$FH, all.subjects$GH,
     #                  allele.labels, diplotype.labels, full.to.dosages), by=all.subjects$marker]
+    all.subjects[, f2(.SD), by="marker"]
     all.subjects[, f(chr, marker,
                      AA, BB, CC, DD,
                      EE, FF, GG, HH,
