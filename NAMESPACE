@@ -3,6 +3,7 @@
 export(calc.SIM.cache)
 export(calc.dist.cache)
 export(calc.kinship.from.genomecache.with.DOQTL)
+export(convert.DOQTL.to.HAPPY)
 export(extract.r2.interval)
 export(generate.null.bs.matrix)
 export(generate.parametric.perm.matrix)
