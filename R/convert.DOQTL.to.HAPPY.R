@@ -88,7 +88,6 @@ convert.DOQTL.to.HAPPY <- function(DOQTL.recon.output.path,
   # }
   output.marker.file <- function(data_table, allele.labels, diplotype.labels, full.to.dosages.matrix){
     var_name <- data_table$marker[1]
-    cat(var_name)
     # assign(var_name, matrix(data=c(data_table$AA, data_table$BB, data_table$CC, data_table$DD, 
     #                                data_table$EE, data_table$FF, data_table$GG, data_table$HH,
     #                                data_table$BA, data_table$CA, data_table$CB, data_table$DA, 
