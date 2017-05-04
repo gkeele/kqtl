@@ -104,7 +104,7 @@ convert.DOQTL.to.HAPPY <- function(DOQTL.recon.output.path,
   }
   # Export file of chromosome
   export_marker_chromosome_file <- function(chr, marker) {
-    chromosome <- rep(as.character(chr), marker)
+    chromosome <- rep(as.character(chr), length(marker))
     save(chromosome, file=paste0(HAPPY.output.path, '/additive/chr',chr[1], '/chromosome.RData'))
     save(chromosome, file=paste0(HAPPY.output.path, '/full/chr',chr[1], '/chromosome.RData'))
     save(chromosome, file=paste0(HAPPY.output.path, '/genotype/chr',chr[1], '/chromosome.RData'))
