@@ -236,7 +236,7 @@ convert.DOQTL.to.HAPPY <- function(DOQTL.recon.output.path,
     one.subj = samples[1]
     markers.one.subj <- all.subjects[grepl(one.subj, subject), ]  
     markers.one.subj[, export_marker_name_file(chr, marker), by="chr"]
-    markers.one.subj[, export_marker_position_file(chr.notkey, bp), by="chr"]
+    markers.one.subj[, export_marker_position_file(chr, bp), by="chr"]
     markers.one.subj[, export_marker_chromosome_file(chr), by="chr"]
     markers.one.subj[, export_marker_map_distance_file(chr, pos), by="chr"]
     
