@@ -49,7 +49,7 @@ genome.plotter.to.pdf <- function(scan.object, chr=c(1:19, "X"), use.lod=TRUE,
 #' on median are plotted.
 #' @param chr The chromosome to be plotted.
 #' @param use.lod DEFAULT: TRUE. Plots either the LOD score or the -log10 p-value.
-#' @param scale DEFAULT: "Mb". Specifies the scale of genomic position to be plotted. Either Mb or cM are expected.
+#' @param scale DEFAULT: "Mb". Specifies the scale of genomic position to be plotted. Either Mb or cM can be used.
 #' @param main.colors DEFAULT: "black". The color of the main association score to be plotted.
 #' @param median.band.col DEFAULT: "gray88". The color of the 95% confident band plotted around the median.
 #' @param main DEFAULT: "". Adds a title above the model.

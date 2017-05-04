@@ -16,7 +16,7 @@ on median are plotted.}
 
 \item{use.lod}{DEFAULT: TRUE. Plots either the LOD score or the -log10 p-value.}
 
-\item{scale}{DEFAULT: "Mb". Specifies the scale of genomic position to be plotted. Either Mb or cM are expected.}
+\item{scale}{DEFAULT: "Mb". Specifies the scale of genomic position to be plotted. Either Mb or cM can be used.}
 
 \item{median.band.col}{DEFAULT: "gray88". The color of the 95% confident band plotted around the median.}
 
