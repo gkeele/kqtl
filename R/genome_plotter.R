@@ -16,8 +16,8 @@
 #' @param hard.thresholds DEFAULT: NULL. Specify one or more horizontal threshold lines.
 #' @param thresholds.col DEFAULT: "red". Set the colors of the specified thresholds.
 #' @param pdf.output.path That path of the PDF file to be generated.
-#' @param pdf.height DEFAULT: 5. The height of the individual pages of the PDF.
-#' @param pdf.width DEFAULT: 9. The width of the individual pages of the PDF.
+#' @param pdf.height DEFAULT: 5. The height of an individual pages of the PDF.
+#' @param pdf.width DEFAULT: 9. The width of an individual pages of the PDF.
 #' @export
 #' @examples genome.plotter.to.pdf()
 genome.plotter.to.pdf <- function(scan.object, chr=c(1:19, "X"), use.lod=TRUE,
