@@ -2,18 +2,18 @@
 % Please edit documentation in R/genome_plotter.R
 \name{genome.plotter.whole}
 \alias{genome.plotter.whole}
-\title{Plot haplotype-based genome scan}
+\title{Plot one or more haplotype-based genome scans flexibly (whole genomes or subset of chromosomes)}
 \usage{
 genome.plotter.whole(non.mi.scan.list, mi.scan = NULL, use.lod = TRUE,
   just.these.chr = NULL, scale = "Mb", main.colors = c("black", "gray48",
   "blue"), mi.colors = c("purple", "cyan", "dark green"), use.legend = TRUE,
   main = "", my.legend.cex = 0.6, bs.max = NULL, y.max.manual = NULL,
-  hard.thresholds = NULL)
+  hard.thresholds = NULL, thresholds.col = "red")
 }
 \arguments{
 \item{non.mi.scan.list}{A list of scan.h2lmm() objects that are plotted within the same genome scan plot.}
 
-\item{mi.scan}{DEFAULT: NULL. Multiple imputation scan.h2lmm() object. Median and confidence interval on median are plotted.}
+\item{mi.scan}{DEFAULT: NULL. Multiple imputation scan.h2lmm() object.}
 
 \item{use.lod}{DEFAULT: TRUE. Plots either the LOD score or the -log10 p-value.}
 
@@ -28,9 +28,13 @@ genome.plotter.whole(non.mi.scan.list, mi.scan = NULL, use.lod = TRUE,
 \item{my.legend.cex}{DEFAULT: 0.6. Specifies the size of the text in the legend.}
 
 \item{y.max.manual}{DEFAULT: NULL. Manually adds a max y-value. Allows multiple genome scans to easily be on the same scale.}
+
+\item{hard.thresholds}{DEFAULT: NULL. Specify one or more horizontal threshold lines.}
+
+\item{thresholds.col}{DEFAULT: "red". Set the colors of the specified thresholds.}
 }
 \description{
-This function takes the genome scan output from scan.h2lmm() and plots out genome scan.
+This function takes the genome scan output from scan.h2lmm() and flexibly plots out the genome scan.
 }
 \examples{
 genome.plotter.whole()
