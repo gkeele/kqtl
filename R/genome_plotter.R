@@ -43,7 +43,7 @@ genome.plotter.to.pdf <- function(scan.object, chr=c(1:19, "X"), use.lod=TRUE,
 #' Plot single chromosome windows of haplotype-based genome scan
 #'
 #' This function takes the genome scan output from scan.h2lmm() and plots the portion that corresponds to a single chromosome.
-#' When multiple imputations are used, includes the 95% confidence band on the median.
+#' When multiple imputations are used, includes the 95/% confidence band on the median.
 #'
 #' @param scan.object A scan.h2lmm() object (ROP or multiple imputations). If multiple imputations, median and confidence interval 
 #' on median are plotted.

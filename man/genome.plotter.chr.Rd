@@ -32,7 +32,7 @@ on median are plotted.}
 }
 \description{
 This function takes the genome scan output from scan.h2lmm() and plots the portion that corresponds to a single chromosome.
-When multiple imputations are used, includes the 95% confidence band on the median.
+When multiple imputations are used, includes the 95/% confidence band on the median.
 }
 \examples{
 genome.plotter.chr()
