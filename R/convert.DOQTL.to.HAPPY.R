@@ -103,8 +103,8 @@ convert.DOQTL.to.HAPPY <- function(DOQTL.recon.output.path,
     save(bp, file=paste0(HAPPY.output.path, '/genotype/chr', chr[1], '/bp.RData'))
   }
   # Export file of chromosome
-  export_marker_chromosome_file <- function(chr) {
-    chromosome <- as.character(chr)
+  export_marker_chromosome_file <- function(chr, marker) {
+    chromosome <- rep(as.character(chr), marker)
     save(chromosome, file=paste0(HAPPY.output.path, '/additive/chr',chr[1], '/chromosome.RData'))
     save(chromosome, file=paste0(HAPPY.output.path, '/full/chr',chr[1], '/chromosome.RData'))
     save(chromosome, file=paste0(HAPPY.output.path, '/genotype/chr',chr[1], '/chromosome.RData'))
@@ -167,7 +167,7 @@ convert.DOQTL.to.HAPPY <- function(DOQTL.recon.output.path,
     markers.one.subj <- all.subjects[grepl(one.subj, subject), ]  
     markers.one.subj[, export_marker_name_file(chr, marker), by="chr"]
     markers.one.subj[, export_marker_position_file(chr, bp), by="chr"]
-    markers.one.subj[, export_marker_chromosome_file(chr), by="chr"]
+    markers.one.subj[, export_marker_chromosome_file(chr, marker), by="chr"]
     markers.one.subj[, export_marker_map_distance_file(chr, pos), by="chr"]
     
     rm(all.subjects)
