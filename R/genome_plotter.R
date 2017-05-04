@@ -1,7 +1,7 @@
 #' Plot whole genome and single chromosome windows of haplotype-based genome scan in a PDF output document
 #'
 #' This function takes the genome scan output from scan.h2lmm() and plots the whole genome and single chromosome zoom-ins for 
-#' all the specified chromosomes. When multiple imputations are used, includes the 95% confidence band on the median in the zoomed-in
+#' all the specified chromosomes. When multiple imputations are used, includes the 95\% confidence band on the median in the zoomed-in
 #' plots.
 #'
 #' @param scan.object A scan.h2lmm() object (ROP or multiple imputations). If multiple imputations, median and confidence interval 
@@ -10,7 +10,7 @@
 #' @param use.lod DEFAULT: TRUE. Plots either the LOD score or the -log10 p-value.
 #' @param scale DEFAULT: "Mb". Specifies the scale of genomic position to be plotted. Either Mb or cM are expected.
 #' @param main.colors DEFAULT: "black". The color of the main association score to be plotted.
-#' @param median.band.col DEFAULT: "gray88". The color of the 95% confident band plotted around the median.
+#' @param median.band.col DEFAULT: "gray88". The color of the 95\% confident band plotted around the median.
 #' @param main DEFAULT: "". Adds a title above the model.
 #' @param y.max.manual DEFAULT: NULL. Manually adds a max y-value. Allows multiple genome scans to easily be on the same scale.
 #' @param hard.thresholds DEFAULT: NULL. Specify one or more horizontal threshold lines.
@@ -43,7 +43,7 @@ genome.plotter.to.pdf <- function(scan.object, chr=c(1:19, "X"), use.lod=TRUE,
 #' Plot single chromosome windows of haplotype-based genome scan
 #'
 #' This function takes the genome scan output from scan.h2lmm() and plots the portion that corresponds to a single chromosome.
-#' When multiple imputations are used, includes the 95/% confidence band on the median.
+#' When multiple imputations are used, includes the 95\% confidence band on the median.
 #'
 #' @param scan.object A scan.h2lmm() object (ROP or multiple imputations). If multiple imputations, median and confidence interval 
 #' on median are plotted.
@@ -51,7 +51,7 @@ genome.plotter.to.pdf <- function(scan.object, chr=c(1:19, "X"), use.lod=TRUE,
 #' @param use.lod DEFAULT: TRUE. Plots either the LOD score or the -log10 p-value.
 #' @param scale DEFAULT: "Mb". Specifies the scale of genomic position to be plotted. Either Mb or cM can be used.
 #' @param main.colors DEFAULT: "black". The color of the main association score to be plotted.
-#' @param median.band.col DEFAULT: "gray88". The color of the 95% confident band plotted around the median.
+#' @param median.band.col DEFAULT: "gray88". The color of the 95\% confident band plotted around the median.
 #' @param main DEFAULT: "". Adds a title above the model.
 #' @param y.max.manual DEFAULT: NULL. Manually adds a max y-value. Allows multiple genome scans to easily be on the same scale.
 #' @param hard.thresholds DEFAULT: NULL. Specify one or more horizontal threshold lines.
