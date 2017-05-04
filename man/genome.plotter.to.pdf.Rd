@@ -19,7 +19,7 @@ on median are plotted.}
 
 \item{scale}{DEFAULT: "Mb". Specifies the scale of genomic position to be plotted. Either Mb or cM are expected.}
 
-\item{median.band.col}{DEFAULT: "gray88". The color of the 95% confident band plotted around the median.}
+\item{median.band.col}{DEFAULT: "gray88". The color of the 95\% confident band plotted around the median.}
 
 \item{main}{DEFAULT: "". Adds a title above the model.}
 
@@ -39,7 +39,7 @@ on median are plotted.}
 }
 \description{
 This function takes the genome scan output from scan.h2lmm() and plots the whole genome and single chromosome zoom-ins for 
-all the specified chromosomes. When multiple imputations are used, includes the 95% confidence band on the median in the zoomed-in
+all the specified chromosomes. When multiple imputations are used, includes the 95\% confidence band on the median in the zoomed-in
 plots.
 }
 \examples{
