@@ -2,7 +2,7 @@
 scan.EM <- function(genomecache, data, formula, model="additive",
                     chr="all", 
                     seed=1, oracle=FALSE,
-                    print.locus.finished=TRUE, convergence.limit=0.0001, step.limit=1000
+                    print.locus.finished=TRUE, convergence.limit=0.0001, step.limit=1000,
                     do.augment=FALSE, just.these.loci=NULL, print.locus.fit=FALSE, ...){
  
   h <- DiploprobReader$new(genomecache)
