@@ -207,7 +207,6 @@ scan.h2lmm <- function(genomecache, data, formula, K=NULL,
     }
     if(!use.multi.impute){
       if(model %in% c("additive", "full")){
-        X.check <- h$getLocusMatrix(loci[i], model=model)
         X <- h$getLocusMatrix(loci[i], model=model, subjects=data$SUBJECT.NAME[1:original.n])
         max.column <- which.max(colSums(X, na.rm=TRUE))[1]
         X <- X[,-max.column]
@@ -268,12 +267,10 @@ scan.h2lmm <- function(genomecache, data, formula, K=NULL,
           }
         }
       }
-      names(LOD.vec) <- names(p.vec) <- names(df) <- loci
     }
-    if(print.locus.fit){
-      cat(paste("locus", i, "out of", length(loci)), "\n")
-    }
+    if(print.locus.fit){ cat(paste("locus", i, "out of", length(loci)), "\n") }
   }
+  names(LOD.vec) <- names(p.vec) <- names(df) <- loci
   output <- list(LOD=LOD.vec,
                  p.value=p.vec,
                  MI.LOD=MI.LOD,
@@ -414,7 +411,6 @@ single.locus.fit.h2lmm <- function(genomecache, data, formula, K, locus,
     }
     else{
       if(model %in% c("additive", "full")){
-        X.check <- h$getLocusMatrix(locus, model=model)
         X <- h$getLocusMatrix(locus, model=model, subjects=data$SUBJECT.NAME[1:original.n])
         max.column <- which.max(colSums(X, na.rm=TRUE))[1]
         X <- X[,-max.column]
