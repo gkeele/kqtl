@@ -1,4 +1,11 @@
+## Rint function
+#' @export
+rint <- function(phenotype, prop=0.5){
+  rint_phenotype <- qnorm((rank(phenotype)-prop)/length(phenotype))
+  return(rint_phenotype)
+}
 
+## Formula manipulation functions
 make.null.formula <- function(formula, do.augment){
   this.formula.string <- Reduce(paste, deparse(formula))
   this.formula.string <- paste0("y ~ ", unlist(strsplit(this.formula.string, split="~"))[-1])
