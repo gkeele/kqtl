@@ -2,7 +2,7 @@
 % Please edit documentation in R/snp_r2.R
 \name{pairwise.cor.snp.scan}
 \alias{pairwise.cor.snp.scan}
-\title{Calculate the r^{2} (squared correlation coefficient) between the genotype at all loci on a chromosome 
+\title{Calculate the $r^{2}$ (squared correlation coefficient) between the genotype at all loci on a chromosome 
 and a specified SNP marker.}
 \usage{
 pairwise.cor.snp.scan(data, formula, K, allele.dir, genomecache,
@@ -34,7 +34,7 @@ genotype probabilities.}
 
 \item{chr}{Specifies which individual chromosomes to scan.}
 
-\item{point.locus}{The locus to calculate all pairwise r^{2} between other loci on the chromosome. Often
+\item{point.locus}{The locus to calculate all pairwise $r^{2}$ between other loci on the chromosome. Often
 the peak SNP from a scan.}
 
 \item{just.these.loci}{DEFAULT: NULL. Specifies a reduced set of loci to fit.}
@@ -49,7 +49,7 @@ of the same population with the same markers has been performed, this option can
 }
 \description{
 This function primarily takes a formula, data frame, genome cache, and directory of founder strain
-.alleles files to calculate the pairwise r^{2} between all individual markers and a specified
+.alleles files to calculate the pairwise $r^{2}$ between all individual markers and a specified
 locus, likely the peak SNP.
 }
 \examples{
