@@ -2,7 +2,7 @@
 % Please edit documentation in R/snp_r2.R
 \name{pairwise.cor.snp.scan}
 \alias{pairwise.cor.snp.scan}
-\title{Calculate the $r^{2}$ (squared correlation coefficient) between the genotype at all loci on a chromosome 
+\title{Calculate the \eqn{r^{2}} (squared correlation coefficient) between the genotype at all loci on a chromosome 
 and a specified SNP marker.}
 \usage{
 pairwise.cor.snp.scan(data, formula, K, allele.dir, genomecache,

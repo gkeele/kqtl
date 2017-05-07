@@ -1,4 +1,4 @@
-#' Calculate the $r^{2}$ (squared correlation coefficient) between the genotype at all loci on a chromosome 
+#' Calculate the \eqn{r^{2}} (squared correlation coefficient) between the genotype at all loci on a chromosome 
 #' and a specified SNP marker.
 #'
 #' This function primarily takes a formula, data frame, genome cache, and directory of founder strain
