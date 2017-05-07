@@ -1,10 +1,42 @@
+#' Calculate the r^{2} (squared correlation coefficient) between the genotype at all loci on a chromosome 
+#' and a specified SNP marker.
+#'
+#' This function primarily takes a formula, data frame, genome cache, and directory of founder strain
+#' .alleles files to calculate the pairwise r^{2} between all individual markers and a specified
+#' locus, likely the peak SNP.
+#'
+#' @param data A data frame with outcome and potential covariates. Should also have individual IDs
+#' that link to IDs in the genome cache  with a column named "SUBJECT.NAME".
+#' @param formula An lm style formula with functions of outcome and covariates contained in data frame.
+#' @param K DEFAULT: NULL. A positive semi-definite relationship matrix, usually a realized genetic relationship matrix (GRM)
+#' based on SNP genotypes or the founder haplotype probabilities. Colnames and rownames should match
+#' the SUBJECT.NAME column in the data frame. If no K matrix is specified, either lmer is used (if sparse random effects
+#' are included in the formula) or a fixed effect model (equivalent to lm).
+#' @param allele.dir The path to the directory of .allele files that specify which SNP alleles correspond
+#' to which founder haplotype. .allele files for a format used by HAPPY.
+#' @param genomecache The path to the genome cache directory. The genome cache is a particularly structured
+#' directory that stores the haplotype probabilities/dosages at each locus. It has an additive model
+#' subdirectory and a full model subdirectory. Each contains subdirectories for each chromosome, which then
+#' store .RData files for the probabilities/dosages of each locus.
+#' @param model DEFAULT: additive. Specifies how to model the founder haplotype probabilities. The additive options specifies
+#' use of SNP dosages, and is most commonly used. The full option regresses the phenotype on the actual
+#' genotype probabilities.
+#' @param chr Specifies which individual chromosomes to scan.
+#' @param point.locus The locus to calculate all pairwise r^{2} between other loci on the chromosome. Often
+#' the peak SNP from a scan.
+#' @param just.these.loci DEFAULT: NULL. Specifies a reduced set of loci to fit.
+#' @param print.progress DEFAULT: FALSE. If TRUE, prints out how many loci have been fit currently.
+#' @param exclusion.freq DEFAULT: .Machine$double.eps. Loci with observed minor allele frequencies beneath
+#' the specified value are removed from the scan.
+#' @param X.list DEFAULT: NULL. This specifies the SNP-based design matrices for all the loci. If a scan
+#' of the same population with the same markers has been performed, this option can save a lot of time.
 #' @export
+#' @examples pairwise.cor.snp.scan()
 pairwise.cor.snp.scan <- function(data, formula, K,
                                   allele.dir, genomecache,
                                   model=c("additive", "full"), chr, point.locus,
                                   just.these.loci=NULL,
                                   print.progress=FALSE,
-                                  map.file=NULL,
                                   exclusion.freq=.Machine$double.eps,
                                   X.list,
                                   ...){
@@ -47,28 +79,30 @@ pairwise.cor.snp.scan <- function(data, formula, K,
     
     r2.vec[i] <- cor(point.X, X)^2
     
-    if(print.progress){
-      cat("locus", i, "\n")
-    }
-  }
-  if(is.null(map.file)){
-    pos <- NULL
-  }
-  else{
-    map.data <- read.table(map.file, header=TRUE)
-    rownames(map.data) <- map.data$marker
-    pos <- list(cM=map.data[loci,]$pos, Mb=map.data[loci,]$bp/1000000)
+    if(print.progress){ cat(paste("locus", i, "out of", length(loci)), "\n") }
   }
   output <- list(r2=r2.vec,
                  point.locus=point.locus,
-                 pos=pos,
+                 pos=list(Mb=h$getMarkerLocation(loci, scale="Mb"), cM=h$getMarkerLocation(loci, scale="cM")),
                  loci=loci, 
                  chr=chr,
                  model.type=model)
   return(output)
 }
 
+#' Calculate the r^{2} (squared correlation coefficient) between the genotype at all loci on a chromosome 
+#' and a specified SNP marker.
+#'
+#' This function primarily takes a formula, data frame, genome cache, and directory of founder strain
+#' .alleles files to calculate the pairwise r^{2} between all individual markers and a specified
+#' locus, likely the peak SNP.
+#'
+#' @param scan.object An SNP scan object produced by imputed.snp.scan.h2lmm().
+#' @param r2.scan.object An r^{2} object produced by pairwise.cor.snp.scan().
+#' @param r2.level DEFAULT: 0.6. The r^{2} cutpoint. Returns the position interval includes loci with
+#' r^{2} \geq r2.level.
 #' @export
+#' @examples extract.r2.interval()
 extract.r2.interval <- function(scan.object, r2.scan.object, r2.level=0.6){
   high.r2 <- r2.scan.object$r2[which(r2.scan.object$r2 > r2.level)]
   high.r2.loci <- r2.scan.object$loci[which(r2.scan.object$r2 > r2.level)]
