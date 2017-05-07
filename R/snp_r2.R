@@ -98,9 +98,9 @@ pairwise.cor.snp.scan <- function(data, formula, K,
 #' locus, likely the peak SNP.
 #'
 #' @param scan.object An SNP scan object produced by imputed.snp.scan.h2lmm().
-#' @param r2.scan.object An $r^{2}$ object produced by pairwise.cor.snp.scan().
-#' @param r2.level DEFAULT: 0.6. The $r^{2}$ cutpoint. Returns the position interval includes loci with
-#' $r^{2}$ $\geq$ r2.level.
+#' @param r2.scan.object An \eqn{r^{2}} object produced by pairwise.cor.snp.scan().
+#' @param r2.level DEFAULT: 0.6. The \eqn{r^{2}} cutpoint. Returns the position interval includes loci with
+#' $r^{2}$ \eqn{\geq} r2.level.
 #' @export
 #' @examples extract.r2.interval()
 extract.r2.interval <- function(scan.object, r2.scan.object, r2.level=0.6){

@@ -10,10 +10,10 @@ extract.r2.interval(scan.object, r2.scan.object, r2.level = 0.6)
 \arguments{
 \item{scan.object}{An SNP scan object produced by imputed.snp.scan.h2lmm().}
 
-\item{r2.scan.object}{An $r^{2}$ object produced by pairwise.cor.snp.scan().}
+\item{r2.scan.object}{An \eqn{r^{2}} object produced by pairwise.cor.snp.scan().}
 
-\item{r2.level}{DEFAULT: 0.6. The $r^{2}$ cutpoint. Returns the position interval includes loci with
-$r^{2}$ $\geq$ r2.level.}
+\item{r2.level}{DEFAULT: 0.6. The \eqn{r^{2}} cutpoint. Returns the position interval includes loci with
+$r^{2}$ \eqn{\geq} r2.level.}
 }
 \description{
 This function primarily takes a formula, data frame, genome cache, and directory of founder strain
