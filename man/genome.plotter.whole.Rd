@@ -7,7 +7,7 @@
 genome.plotter.whole(non.mi.scan.list, mi.scan = NULL, use.lod = TRUE,
   just.these.chr = NULL, scale = "Mb", main.colors = c("black", "gray48",
   "blue"), mi.colors = c("purple", "cyan", "dark green"), use.legend = TRUE,
-  main = "", my.legend.cex = 0.6, bs.max = NULL, y.max.manual = NULL,
+  main = "", my.legend.cex = 0.6, y.max.manual = NULL,
   hard.thresholds = NULL, thresholds.col = "red")
 }
 \arguments{

@@ -155,7 +155,6 @@ genome.plotter.whole <- function(non.mi.scan.list, mi.scan=NULL, use.lod=TRUE, j
                                  scale="Mb", main.colors=c("black", "gray48", "blue"), mi.colors=c("purple", "cyan", "dark green"),
                                  use.legend=TRUE, main="",
                                  my.legend.cex=0.6,
-                                 bs.max=NULL,
                                  y.max.manual=NULL,
                                  hard.thresholds=NULL, thresholds.col="red")
 {
@@ -199,19 +198,6 @@ genome.plotter.whole <- function(non.mi.scan.list, mi.scan=NULL, use.lod=TRUE, j
   max.pos <- tapply(pos, pre.chr, function(x) max(x))
   chr.types <- levels(pre.chr)
   
-  # Finding thresholds
-  bs.threshold.95 <- bs.threshold.90 <- NULL
-  if(!is.null(bs.max[[1]])){
-    bs.threshold.95 <- get.gev.thresholds(bs.max[[1]])
-    bs.threshold.90 <- get.gev.thresholds(bs.max[[1]], percentile=0.9)
-  }
-  
-  mi.bs.threshold.95 <- mi.bs.threshold.90 <- NULL
-  if(!is.null(bs.max[[2]])){
-    mi.bs.threshold.95 <- get.gev.thresholds(bs.max[[2]])
-    mi.bs.threshold.90 <- get.gev.thresholds(bs.max[[2]], percentile=0.9)
-  }
-  
   # Setting up multiple imputations
   if(is.null(mi.scan)){
     mi.mat <- NULL
@@ -226,7 +212,7 @@ genome.plotter.whole <- function(non.mi.scan.list, mi.scan=NULL, use.lod=TRUE, j
   }
   
   # Finding max y of plot window
-  y.max <- ceiling(max(outcome, bs.threshold.95, mi.bs.threshold.95, mi.mat, hard.thresholds)) 
+  y.max <- ceiling(max(outcome, mi.mat, hard.thresholds)) 
   if(length(non.mi.scan.list) > 1){
     for(i in 2:length(non.mi.scan.list)){
       if(use.lod){
@@ -318,15 +304,6 @@ genome.plotter.whole <- function(non.mi.scan.list, mi.scan=NULL, use.lod=TRUE, j
       }
     }
   }
-  # Permutation threshold
-  if(!is.null(bs.max[[1]])){
-    abline(h=bs.threshold.95, lty=2, col="red")
-    abline(h=bs.threshold.90, lty=2, col="blue")
-    if(!is.null(bs.max[[2]])){
-      abline(h=mi.bs.threshold.95, lty=6, col="red")
-      abline(h=mi.bs.threshold.90, lty=6, col="blue")
-    }
-  }
   if(has.X){
     axis.label <- c(chr.types[-length(chr.types)], "X")
   }
@@ -352,18 +329,6 @@ genome.plotter.whole <- function(non.mi.scan.list, mi.scan=NULL, use.lod=TRUE, j
                col=c(main.colors[1:length(non.mi.scan.list)], "orange", mi.colors[1:3]), bty="n", cex=my.legend.cex)
       }
     }
-    if(!is.null(bs.max[[1]]) & is.null(bs.max[[2]])){
-      legend("topleft", legend=c("ROP 95% Bootstrap Thresholds - 100 samples", "ROP 90% Bootstrap Thresholds - 100 samples"), 
-             lty=c(2, 2), lwd=c(1, 1), 
-             col=c("red", "blue"), bty="n", cex=my.legend.cex)
-    }
-    if(!is.null(bs.max[[1]]) & !is.null(bs.max[[2]])){
-      legend("topleft", 
-             legend=c("ROP 95% Bootstrap Thresholds - 100 samples", "ROP 90% Bootstrap Thresholds - 100 samples", 
-                      paste0("MI", nrow(mi.mat), " 95% Bootstrap Thresholds - 100 samples"), paste0("MI", nrow(mi.mat), " 90% Bootstrap Thresholds - 100 samples")), 
-             lty=c(2, 2, 6, 6), lwd=c(1, 1, 1, 1), 
-             col=c("red", "blue", "red", "blue"), bty="n", cex=my.legend.cex)
-    }
   }
   if(!is.null(hard.thresholds)){
     for(i in 1:length(hard.thresholds)){
@@ -372,26 +337,28 @@ genome.plotter.whole <- function(non.mi.scan.list, mi.scan=NULL, use.lod=TRUE, j
   }
 }
 
+#' Plot whole genome and single chromosome windows of a SNP-based genome scan
+#'
+#' This function takes the genome scan output from imputed.snp.scan.h2lmm() and plots the whole genome or single chromosome zoom-ins. 
+#'
+#' @param snp.scan An imputed.snp.scan.h2lmm() object.
+#' @param just.these.chr DEFAULT: NULL. The chromosomes to be plotted. NULL leads to all chromosomes being plotted.
+#' @param scale DEFAULT: "Mb". Specifies the scale of genomic position to be plotted. Either Mb or cM are expected.
+#' @param y.max.manual DEFAULT: NULL. Manually adds a max y-value. Allows multiple genome scans to easily be on the same scale.
+#' @param title DEFAULT: "". Manually adds a max ylim to the plot. Allows multiple genome scans to easily be on the same scale.
+#' @param alt.col DEFAULT: NULL. Allows for a custom color vector for individual SNPs.
+#' @param hard.thresholds DEFAULT: NULL. Specify one or more horizontal threshold lines.
 #' @export
-snp.genome.plotter.whole <- function(snp.scan, use.lod=TRUE, just.these.chr=NULL,
+#' @examples snp.genome.plotter.whole()
+snp.genome.plotter.whole <- function(snp.scan, just.these.chr=NULL,
                                      scale="Mb",
-                                     main.label=NULL,
-                                     bs.max=NULL,
-                                     cache.title="DO-QTL",
-                                     approach.title="Exact", y.max.manual=NULL, title="", alt.col=NULL,
+                                     y.max.manual=NULL, title="", alt.col=NULL,
                                      hard.thresholds=NULL)
 {
   main.object <- snp.scan
-  if(use.lod){
-    outcome <- main.object$LOD
-    plot.this <- "LOD"
-    this.ylab <- "LOD"
-  }
-  if(!use.lod){
-    outcome <- -log10(main.object$p.value)
-    plot.this <- "p.value"
-    this.ylab <- expression("-log"[10]*"P")
-  }
+  outcome <- -log10(main.object$p.value)
+  plot.this <- "p.value"
+  this.ylab <- expression("-log"[10]*"P")
   
   # Allowing for special colors
   if(is.null(alt.col)){ use.col <- rep("black", length(outcome)) }
@@ -429,21 +396,8 @@ snp.genome.plotter.whole <- function(snp.scan, use.lod=TRUE, just.these.chr=NULL
   max.pos <- tapply(pos, pre.chr, function(x) max(x))
   chr.types <- levels(pre.chr)
   
-  # Finding thresholds
-  bs.threshold.95 <- bs.threshold.90 <- NULL
-  if(!is.null(bs.max[[1]])){
-    bs.threshold.95 <- get.gev.thresholds(bs.max[[1]])
-    bs.threshold.90 <- get.gev.thresholds(bs.max[[1]], percentile=0.9)
-  }
-  
-  mi.bs.threshold.95 <- mi.bs.threshold.90 <- NULL
-  if(!is.null(bs.max[[2]])){
-    mi.bs.threshold.95 <- get.gev.thresholds(bs.max[[2]])
-    mi.bs.threshold.90 <- get.gev.thresholds(bs.max[[2]], percentile=0.9)
-  }
-  
   # Finding max y of plot window
-  y.max <- ceiling(max(outcome, bs.threshold.95, mi.bs.threshold.95, hard.thresholds)) 
+  y.max <- ceiling(max(outcome, hard.thresholds)) 
   if(!is.null(y.max.manual)){
     y.max <- y.max.manual
   }
@@ -488,16 +442,6 @@ snp.genome.plotter.whole <- function(snp.scan, use.lod=TRUE, just.these.chr=NULL
     }
   }
   
-  
-  # Permutation threshold
-  if(!is.null(bs.max[[1]])){
-    abline(h=bs.threshold.95, lty=2, col="red")
-    abline(h=bs.threshold.90, lty=2, col="blue")
-    if(!is.null(bs.max[[2]])){
-      abline(h=mi.bs.threshold.95, lty=6, col="red")
-      abline(h=mi.bs.threshold.90, lty=6, col="blue")
-    }
-  }
   if(has.X){
     axis.label <- c(chr.types[-length(chr.types)], "X")
   }
@@ -507,26 +451,31 @@ snp.genome.plotter.whole <- function(snp.scan, use.lod=TRUE, just.these.chr=NULL
   axis(side=1, tick=F, line=NA, at=label.spots, labels=axis.label, cex.axis=0.7, padj=-3.5)
 }
 
+#' Plot a single chromosome window of a SNP-based genome scan overlayed with r^2 information
+#'
+#' This function takes the outputs from imputed.snp.scan.h2lmm() and pairwise.cor.snp.scan() and plots 
+#' the SNP association for a single chromosome, overlayed with r^2 information for a specified SNP. 
+#'
+#' @param snp.scan An imputed.snp.scan.h2lmm() object.
+#' @param r2.object A pairwise.cor.snp.scan() object.
+#' @param scale DEFAULT: "Mb". Specifies the scale of genomic position to be plotted. Either Mb or cM are expected.
+#' @param y.max.manual DEFAULT: NULL. Manually adds a max y-value. Allows multiple genome scans to easily be on the same scale.
+#' @param title DEFAULT: "". Manually adds a max ylim to the plot. Allows multiple genome scans to easily be on the same scale.
+#' @param alt.col DEFAULT: NULL. Allows for a custom color vector for individual SNPs.
+#' @param this.cex DEFAULT: 1. Allows for the adjustment of the cex value for the main plot.
+#' @param hard.thresholds DEFAULT: NULL. Specify one or more horizontal threshold lines.
 #' @export
-snp.genome.plotter.w.r2 <- function(snp.scan, r2.object, use.lod=TRUE,
+#' @examples snp.genome.plotter.w.r2()
+snp.genome.plotter.w.r2 <- function(snp.scan, r2.object,
                                     scale="Mb",
-                                    main.label=NULL,
-                                    bs.max=NULL,
-                                    cache.title="DO-QTL",
-                                    approach.title="Exact", y.max.manual=NULL, title="", alt.col=NULL, this.cex=1,
+                                    y.max.manual=NULL, title="", alt.col=NULL, this.cex=1,
                                     hard.thresholds=NULL)
 {
   main.object <- snp.scan
-  if(use.lod){
-    outcome <- main.object$LOD
-    plot.this <- "LOD"
-    this.ylab <- "LOD"
-  }
-  if(!use.lod){
-    outcome <- -log10(main.object$p.value)
-    plot.this <- "p.value"
-    this.ylab <- expression("-log"[10]*"P")
-  }
+
+  outcome <- -log10(main.object$p.value)
+  plot.this <- "p.value"
+  this.ylab <- expression("-log"[10]*"P")
   
   # Allowing for special colors
   if(is.null(alt.col)){ use.col <- rep("black", length(outcome)) }
@@ -550,19 +499,6 @@ snp.genome.plotter.w.r2 <- function(snp.scan, r2.object, use.lod=TRUE,
   
   min.pos <- min(pos)
   max.pos <- max(pos)
-  
-  # Finding thresholds
-  bs.threshold.95 <- bs.threshold.90 <- NULL
-  if(!is.null(bs.max[[1]])){
-    bs.threshold.95 <- get.gev.thresholds(bs.max[[1]])
-    bs.threshold.90 <- get.gev.thresholds(bs.max[[1]], percentile=0.9)
-  }
-  
-  mi.bs.threshold.95 <- mi.bs.threshold.90 <- NULL
-  if(!is.null(bs.max[[2]])){
-    mi.bs.threshold.95 <- get.gev.thresholds(bs.max[[2]])
-    mi.bs.threshold.90 <- get.gev.thresholds(bs.max[[2]], percentile=0.9)
-  }
   
   # Finding max y of plot window
   y.max <- ceiling(max(outcome, bs.threshold.95, mi.bs.threshold.95, hard.thresholds)) 
@@ -593,16 +529,6 @@ snp.genome.plotter.w.r2 <- function(snp.scan, r2.object, use.lod=TRUE,
   text(x=(max.pos - floor(0.75*max.pos))/2 + floor(0.75*max.pos),
        y=y.max+0.75,
        labels="r2 with peak SNP")
-  
-  # Permutation threshold
-  if(!is.null(bs.max[[1]])){
-    abline(h=bs.threshold.95, lty=2, col="red")
-    abline(h=bs.threshold.90, lty=2, col="blue")
-    if(!is.null(bs.max[[2]])){
-      abline(h=mi.bs.threshold.95, lty=6, col="red")
-      abline(h=mi.bs.threshold.90, lty=6, col="blue")
-    }
-  }
 }
 
 #' @export
