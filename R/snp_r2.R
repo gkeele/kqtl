@@ -1,8 +1,8 @@
-#' Calculate the \eqn{r^{2}} (squared correlation coefficient) between the genotype at all loci on a chromosome 
+#' Calculate the r^2 (squared correlation coefficient) between the genotype at all loci on a chromosome 
 #' and a specified SNP marker.
 #'
 #' This function primarily takes a formula, data frame, genome cache, and directory of founder strain
-#' .alleles files to calculate the pairwise $r^{2}$ between all individual markers and a specified
+#' .alleles files to calculate the pairwise r^2 between all individual markers and a specified
 #' locus, likely the peak SNP.
 #'
 #' @param data A data frame with outcome and potential covariates. Should also have individual IDs
