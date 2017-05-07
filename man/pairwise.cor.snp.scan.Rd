@@ -34,7 +34,7 @@ genotype probabilities.}
 
 \item{chr}{Specifies which individual chromosomes to scan.}
 
-\item{point.locus}{The locus to calculate all pairwise $r^{2}$ between other loci on the chromosome. Often
+\item{point.locus}{The locus to calculate all pairwise r^2 between other loci on the chromosome. Often
 the peak SNP from a scan.}
 
 \item{just.these.loci}{DEFAULT: NULL. Specifies a reduced set of loci to fit.}

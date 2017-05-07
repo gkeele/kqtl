@@ -22,7 +22,7 @@
 #' use of SNP dosages, and is most commonly used. The full option regresses the phenotype on the actual
 #' genotype probabilities.
 #' @param chr Specifies which individual chromosomes to scan.
-#' @param point.locus The locus to calculate all pairwise $r^{2}$ between other loci on the chromosome. Often
+#' @param point.locus The locus to calculate all pairwise r^2 between other loci on the chromosome. Often
 #' the peak SNP from a scan.
 #' @param just.these.loci DEFAULT: NULL. Specifies a reduced set of loci to fit.
 #' @param print.progress DEFAULT: FALSE. If TRUE, prints out how many loci have been fit currently.
@@ -90,17 +90,17 @@ pairwise.cor.snp.scan <- function(data, formula, K,
   return(output)
 }
 
-#' Calculate the $r^{2}$ (squared correlation coefficient) between the genotype at all loci on a chromosome 
+#' Calculate the r^2 (squared correlation coefficient) between the genotype at all loci on a chromosome 
 #' and a specified SNP marker.
 #'
 #' This function primarily takes a formula, data frame, genome cache, and directory of founder strain
-#' .alleles files to calculate the pairwise $r^{2}$ between all individual markers and a specified
+#' .alleles files to calculate the pairwise r^2 between all individual markers and a specified
 #' locus, likely the peak SNP.
 #'
 #' @param scan.object An SNP scan object produced by imputed.snp.scan.h2lmm().
-#' @param r2.scan.object An \eqn{r^{2}} object produced by pairwise.cor.snp.scan().
-#' @param r2.level DEFAULT: 0.6. The \eqn{r^{2}} cutpoint. Returns the position interval includes loci with
-#' $r^{2}$ \eqn{\geq} r2.level.
+#' @param r2.scan.object An r^2 object produced by pairwise.cor.snp.scan().
+#' @param r2.level DEFAULT: 0.6. The r^2 cutpoint. Returns the position interval includes loci with
+#' r^2 \eqn{\geq} r2.level.
 #' @export
 #' @examples extract.r2.interval()
 extract.r2.interval <- function(scan.object, r2.scan.object, r2.level=0.6){
