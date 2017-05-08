@@ -579,7 +579,6 @@ single.chr.plotter.w.ci <- function(scan.object, qtl.ci.object,
        ylim=c(0, y.max), 
        xlab=this.xlab, ylab=this.ylab, main=main.title,
        frame.plot=FALSE, type="l", pch=20, cex=0.5, las=1, cex.main=0.8)
-  browser()
   polygon(c(rep(low.locus.pos, 2), rep(high.locus.pos, 2)), c(0, rep(ceiling(max(outcome)), 2), 0), col="gray", border=NA)
   peaks <- qtl.ci.object$peak.loci.pos[[scale]]
   
