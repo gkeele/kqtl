@@ -305,8 +305,8 @@ single.locus.fit.h2lmm <- function(genomecache, data, formula, K, locus,
   data.and.K <- make.processed.data(formula=formula, data=data, cache.subjects=cache.subjects, K=K, impute.on=impute.on)
   data <- data.and.K$data
   K <- data.and.K$K
-  if(!is.null(weights)){ weights <- weights[data$SUBJECT.NAME] }
-  
+  if(!is.null(weights)){ weights <- weights[as.character(data$SUBJECT.NAME)] }
+
   locus.chr <- h$getChromOfLocus(locus)
   
   augment.indicator <- NULL
