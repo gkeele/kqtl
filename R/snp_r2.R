@@ -59,7 +59,7 @@ pairwise.cor.snp.scan <- function(data, formula, K,
   loci <- loci[loci.chr == these.chr]
   loci.chr <- loci.chr[loci.chr == these.chr]
   
-  data.and.K <- make.processed.data(formula=formula, data=data, K=K, cache.subjects=cache.subjects)
+  data.and.K <- make.processed.data(formula=formula, data=data, K=K, cache.subjects=cache.subjects, impute.on="SUBJECT.NAME")
   data <- data.and.K$data
   
   if(!is.null(just.these.loci)){
