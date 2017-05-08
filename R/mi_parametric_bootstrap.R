@@ -1,4 +1,6 @@
 # Still need to update to not mess with environment
+positional.parametric.bootstrap <- function()
+
 
 averaged.mi.parametric.bootstrap <- function(formula, data, genomecache, K,
                                              peak.locus, 

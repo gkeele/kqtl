@@ -291,7 +291,7 @@ scan.h2lmm <- function(genomecache, data, formula, K=NULL,
 single.locus.fit.h2lmm <- function(genomecache, data, formula, K, locus,
                                    model=c("additive", "full", "diplolasso"), diplolasso.refit=FALSE,
                                    use.par="h2", use.multi.impute=TRUE, num.imp=10, brute=TRUE, use.fix.par=FALSE, 
-                                   seed=1, 
+                                   seed=1, impute.on="SUBJECT.NAME",
                                    weights=NULL, do.augment=FALSE, use.augment.weights=FALSE, use.full.null=FALSE, added.data.points=1, 
                                    ...) # diplolasso and diplolasso refit not work correctly
 {
@@ -302,7 +302,7 @@ single.locus.fit.h2lmm <- function(genomecache, data, formula, K, locus,
   num.founders <- length(founders)
   cache.subjects <- rownames(h$getLocusMatrix(locus, model="additive"))
   
-  data.and.K <- make.processed.data(formula=formula, data=data, cache.subjects=cache.subjects, K=K)
+  data.and.K <- make.processed.data(formula=formula, data=data, cache.subjects=cache.subjects, K=K, impute.on=impute.on)
   data <- data.and.K$data
   K <- data.and.K$K
   if(!is.null(weights)){ weights <- weights[data$SUBJECT.NAME] }
