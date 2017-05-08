@@ -75,7 +75,7 @@ pairwise.cor.snp.scan <- function(data, formula, K,
   
   r2.vec <- rep(0, length(loci))
   for(i in 1:length(loci)){
-    X <- X.list[[loci[i]]][null.data$SUBJECT.NAME,, drop=FALSE]
+    X <- X.list[[loci[i]]][as.character(null.data$SUBJECT.NAME),, drop=FALSE]
     
     r2.vec[i] <- cor(point.X, X)^2
     
