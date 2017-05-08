@@ -12,7 +12,7 @@ rint(phenotype, prop = 0.5)
 \item{prop}{DEFAULT: 0.5. This allows Inf to not be returned for the maximum of phenotype.}
 }
 \description{
-This function primarily takes a phenotype vector and returns the rank-based inverse normal transformation.
+This function takes a phenotype vector and returns the rank-based inverse normal transformation.
 }
 \examples{
 rint()

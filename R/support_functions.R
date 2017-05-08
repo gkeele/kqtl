@@ -1,6 +1,6 @@
 #' Returns the rank-based inverse normal transformation
 #'
-#' This function primarily takes a phenotype vector and returns the rank-based inverse normal transformation.
+#' This function takes a phenotype vector and returns the rank-based inverse normal transformation.
 #'
 #' @param phenotype A vector of phenotype values for which the rank-based inverse normal transformation is output.
 #' @param prop DEFAULT: 0.5. This allows Inf to not be returned for the maximum of phenotype.

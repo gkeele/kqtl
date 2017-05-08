@@ -1,4 +1,16 @@
+#' Returns a matrix of parametric bootstrap samples from the null model of no locus effect
+#'
+#' This function takes an scan.h2lmm() object, and returns a specified number of paratmetric bootstrap samples
+#' from the null model of no locus effect.
+#'
+#' @param scan.object A scan.h2lmm() object.
+#' @param use.REML DEFAULT: FALSE. Determines whether the variance components for the parametric sampling are 
+#' based on maximizing the likelihood (ML) or the residual likelihood (REML).
+#' @param num.samples The number of parametric bootstrap samples to return.
+#' @param seed DEFAULT: 1. The sampling process is random, thus a seed must be set for samples to be the same
+#' across machines.
 #' @export
+#' @examples generate.null.bs.matrix()
 generate.null.bs.matrix <- function(scan.object, use.REML=FALSE, num.samples, seed=1){
   if(use.REML){
     null.fit <- scan.object$fit0.REML
