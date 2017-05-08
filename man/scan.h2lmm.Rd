@@ -70,7 +70,8 @@ that do not influence the estimation of other model parameters as much.}
 
 \item{added.data.points}{DEFAULT: 1. If augment weights are being used, this specifies how many data points should be added in total.}
 
-\item{just.these.loci}{DEFAULT: NULL. Specifies a reduced set of loci to fit.}
+\item{just.these.loci}{DEFAULT: NULL. Specifies a reduced set of loci to fit. If loci is just one locus, the alternative model fit
+will also be output as fit1.}
 
 \item{print.locus.fit}{DEFAULT: FALSE. If TRUE, prints out how many loci have been fit currently.}
 }
