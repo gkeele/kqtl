@@ -1,5 +1,11 @@
-## Rint function
+#' Returns the rank-based inverse normal transformation
+#'
+#' This function primarily takes a phenotype vector and returns the rank-based inverse normal transformation.
+#'
+#' @param phenotype A vector of phenotype values for which the rank-based inverse normal transformation is output.
+#' @param prop DEFAULT: 0.5. This allows Inf to not be returned for the maximum of phenotype.
 #' @export
+#' @examples rint()
 rint <- function(phenotype, prop=0.5){
   rint_phenotype <- qnorm((rank(phenotype)-prop)/length(phenotype))
   return(rint_phenotype)
