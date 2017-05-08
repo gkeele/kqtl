@@ -111,7 +111,7 @@ imputed.snp.scan.h2lmm <- function(data, formula, K,
     X <- X.list[[i]]
     data <- cbind(null.data, X[null.data$SUBJECT.NAME,, drop=FALSE])
     fit1 <- lmmbygls(locus.formula, data=data, 
-                     eigen.K=fit0$eigen.K, K=fit0$K, 
+                     eigen.K=fit0$eigen.K, K=fit0$K[null.data$SUBJECT.NAME, null.data$SUBJECT.NAME], 
                      use.par="h2", fix.par=fix.par, M=fit0$M, logDetV=fit0$logDetV,
                      brute=brute, 
                      weights=NULL)
