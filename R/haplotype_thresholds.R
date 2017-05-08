@@ -98,12 +98,12 @@ run.threshold.scans <- function(sim.threshold.object, keep.full.scans=TRUE,
     full.results <- matrix(NA, nrow=num.scans, ncol=length(loci))
     colnames(full.results) <- loci
     these.chr <- h$getChromOfLocus(loci)
-    these.pos <- h$getLocusStart(loci, scale=scale)
+    these.pos <- list(Mb=h$getLocusStart(loci, scale="Mb"),
+                      cM=h$getLocusStart(loci, scale="cM"))
   }
   max.results <- rep(NA, num.scans)
   
   set.seed(seed)
-  
   iteration.formula <- formula(paste0("new.y ~ ", unlist(strsplit(formula, split="~"))[-1]))
   for(i in 1:num.scans){
     new.y <- data.frame(new.y=y.matrix[,i], SUBJECT.NAME=colnames(K))
@@ -120,5 +120,11 @@ run.threshold.scans <- function(sim.threshold.object, keep.full.scans=TRUE,
     max.results[i] <- min(this.scan$p.value)
     cat("threshold scan:", i, "\n")
   }
-  return(list(full.results=list(p.values=full.results, chr=these.chr, pos=these.pos), max.statistics=max.results))
+  return(list(full.results=list(p.values=full.results, 
+                                chr=these.chr, 
+                                pos=these.pos), 
+              max.statistics=max.results))
 }
+
+
+
