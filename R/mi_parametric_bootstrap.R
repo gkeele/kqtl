@@ -1,6 +1,94 @@
 # Still need to update to not mess with environment
-positional.parametric.bootstrap <- function()
+generate.positional.bootstrap.matrix <- function(scan.object.w.fit1, 
+                                                 num.samples, seed=1){
+  alt.fit <- scan.object.w.fit1$fit1
+  Xb <- alt.fit$x %*% alt.fit$coefficients
+  weights <- alt.fit$weights
+  if(is.null(weights)){
+    K <- alt.fit$K
+  }
+  else{
+    K <- diag(sqrt(weights)) %*% alt.fit$K %*% diag(sqrt(weights))
+    colnames(K) <- rownames(K) <- colnames(alt.fit$K)
+  }
+  sim.y.matrix <- matrix(NA, nrow=length(Xb), ncol=num.samples)
+  set.seed(seed)
+  for(i in 1:num.samples){
+    u <- c(mnormt::rmnorm(1, mean=rep(0, nrow(alt.fit$x)), varcov=K*alt.fit$tau2.mle))
+    if(is.null(weights)){
+      e <- rnorm(n=nrow(alt.fit$x), mean=0, sd=sqrt(alt.fit$sigma2.mle))
+    }
+    else{
+      e <- c(mnormt::rmnorm(1, mean=rep(0, nrow(alt.fit$x)), varcov=diag(1/weights)*alt.fit$sigma2.mle))
+    }
+    sim.y.matrix[,i] <- Xb + u + e
+  }
+  sim.object <- list(y.matrix=sim.y.matrix,
+                     formula=scan.object.w.fit1$formula,
+                     weights=alt.fit$weights,
+                     K=K,
+                     locus=scan.object.w.fit1$loci,
+                     chr=scan.object.w.fit1$chr)
+  return(sim.object)
+}
 
+run.positional.scans <- function(sim.object, keep.full.scans=TRUE,
+                                 genomecache, data,
+                                 model=c("additive", "full", "diplolasso"),
+                                 use.par="h2", use.multi.impute=TRUE, num.imp=10, brute=TRUE, use.fix.par=FALSE, 
+                                 seed=1, scan.seed=1, do.augment=FALSE,
+                                 use.augment.weights=FALSE, use.full.null=FALSE, added.data.points=1, impute.on="SUBJECT.NAME",
+                                 ...){
+  y.matrix <- sim.object$y.matrix
+  formula <- sim.object$formula
+  weights <- sim.object$weights
+  K <- sim.object$K
+  chr <- sim.object$chr
+  
+  num.scans <- ncol(y.matrix)
+  
+  h <- DiploprobReader$new(genomecache)
+  loci <- h$getLoci()
+  chr.of.loci <- h$getChromOfLocus(loci)
+  loci <- loci[chr.of.loci == chr]
+  
+  full.results <- these.chr <- these.pos <- NULL
+  if(keep.full.scans){
+    full.results <- matrix(NA, nrow=num.scans, ncol=length(loci))
+    colnames(full.results) <- loci
+    these.chr <- rep(chr, length(loci))
+    these.pos <- list(Mb=h$getLocusStart(loci, scale="Mb"),
+                      cM=h$getLocusStart(loci, scale="cM"))
+  }
+  max.results <- rep(NA, num.scans)
+  
+  set.seed(seed)
+  peak.loci.vec <- rep(NA, num.scans)
+  iteration.formula <- formula(paste0("new.y ~ ", unlist(strsplit(formula, split="~"))[-1]))
+  for(i in 1:num.scans){
+    new.y <- data.frame(new.y=y.matrix[,i], SUBJECT.NAME=colnames(K))
+    this.data <- merge(x=new.y, y=data, by="SUBJECT.NAME", all.x=TRUE)
+    
+    this.scan <- scan.h2lmm(genomecache=genomecache, data=this.data, formula=iteration.formula, K=K, model=model,
+                            use.par=use.par, use.multi.impute=use.multi.impute, num.imp=num.imp, chr=chr, brute=brute, use.fix.par=use.fix.par, seed=scan.seed, do.augment=do.augment, 
+                            weights=weights, use.augment.weights=use.augment.weights, use.full.null=use.full.null, added.data.points=added.data.points,
+                            impute.on=impute.on)
+    peak.index <- which.max(-log10(this.scan$p.value))
+    peak.loci.vec[i] <- this.scan$loci[peak.index]
+    if(keep.full.scans){
+      full.results[i,] <- this.scan$p.value
+    }
+    cat("threshold scan:", i, "\n")
+  }
+  peak.pos <- list(Mb=h$getLocusStart(loci=peak.loci.vec, scale="Mb"),
+                       cM=h$getLocusStart(loci=peak.loci.vec, scale="cM"))
+  return(list(full.results=list(p.values=full.results, chr=these.chr, pos=these.pos), 
+              peak.loci=peak.loci.vec, 
+              peak.loci.pos=peak.pos, 
+              ci=list(Mb=quantile(peak.pos$Mb, probs=c(0.05, 0.95)),
+                      cM=quantile(peak.pos$cM, probs=c(0.05, 0.95))), 
+              chr=chr))
+}
 
 averaged.mi.parametric.bootstrap <- function(formula, data, genomecache, K,
                                              peak.locus, 

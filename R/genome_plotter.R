@@ -534,97 +534,60 @@ snp.genome.plotter.w.r2 <- function(snp.scan, r2.object,
 #' @export
 single.chr.plotter.w.ci <- function(scan.object, qtl.ci.object, 
                                     ci.type, scan.type, 
-                                    qtl.only=NULL, subsample.only=NULL, supress.ci=FALSE,
-                                    scale="cM", these.col=c("#7BAFD4", "red"), manual.interval=NULL, manual.scale=NULL){
+                                    these.col=c("#7BAFD4", "red"), scale){
   
-  outcome <- -log10(scan.object$p.value) 
+  outcome <- -log10(scan.object$p.value[scan.object$chr == qtl.ci.object$chr]) 
   this.ylab <- expression("-log"[10]*"P")
   
-  pos <- unlist(scan.object$pos[scale])
+  pos <- qtl.ci.object$full.results$pos[[scale]]
   
   order.i <- order(pos)
   pos <- pos[order.i]
   outcome <- outcome[order.i]
   
-  all.loci <- dimnames(qtl.ci.object$full.results)[[3]]
+  all.loci <- colnames(qtl.ci.object$full.results$p.values)
   
   peak.pos <- qtl.ci.object$peak.pos[[scale]]
   loci <- qtl.ci.object$peak.loci
-  if(!is.null(qtl.only)){
-    peak.pos <- qtl.ci.object$peak.pos[[scale]][qtl.only,]
-    loci <- qtl.ci.object$peak.loci[,qtl.only]
-  }
   
   # Process per CI
-  ci.names <- names(qtl.ci.object$ci)
-  for(i in 1:length(qtl.ci.object$ci)){
-    ci <- qtl.ci.object$ci[[ci.names[i]]][[scale]]
+  ci <- qtl.ci.object$ci[[scale]]
+
+  lb.dist <- pos - ci[1]
+  low.locus <- all.loci[lb.dist <= 0][which.max(lb.dist[lb.dist <= 0])]
+  low.locus.pos <- pos[which(all.loci == low.locus)]
+  ub.dist <- pos - ci[2]
+  high.locus <- all.loci[ub.dist >= 0][which.min(ub.dist[ub.dist >= 0])]
+  high.locus.pos <- pos[which(all.loci == high.locus)]
     
-    if(!is.null(qtl.only)){ 
-      ci <-  ci[qtl.only,] 
-    }
-    lb.dist <- pos - ci[1]
-    low.locus <- all.loci[lb.dist <= 0][which.max(lb.dist[lb.dist <= 0])]
-    low.locus.pos <- scan.object$pos[[scale]][which(all.loci == low.locus)]
-    ub.dist <- pos - ci[2]
-    high.locus <- all.loci[ub.dist >= 0][which.min(ub.dist[ub.dist >= 0])]
-    high.locus.pos <- scan.object$pos[[scale]][which(all.loci == high.locus)]
-    
-    region <- scan.object$pos[[scale]] >= low.locus.pos & scan.object$pos[[scale]] <= high.locus.pos
-    peak.locus <- all.loci[region][which.min(scan.object$p.value[region])]
-    peak.locus.pos <- scan.object$pos[[scale]][region][which.min(scan.object$p.value[region])]
-  }
+  region <- scan.object$pos[[scale]] >= low.locus.pos & scan.object$pos[[scale]] <= high.locus.pos
+  peak.locus <- all.loci[region][which.min(scan.object$p.value[region])]
+  peak.locus.pos <- scan.object$pos[[scale]][region][which.min(scan.object$p.value[region])]
   
-  if(!is.null(manual.interval)){
-    main.title <- c(paste0(scan.type, ": ", scan.object$formula, " + locus (", scan.object$model.type, ")"),
-                    paste0("QTL interval type: ", ci.type),
-                    paste0("Width: ", round(manual.interval[2] - manual.interval[1], 2), manual.scale),
-                    paste0("peak locus: ", peak.locus, " (", round(manual.interval[3], 4), manual.scale, ")"),
-                    paste0("(closest) lower locus: ", low.locus, " (", round(manual.interval[1], 4), manual.scale, ")"),
-                    paste0("(closest) upper locus: ", high.locus, " (", round(manual.interval[2], 4), manual.scale, ")"))
-  }
-  if(!supress.ci & is.null(manual.interval)){
-    main.title <- c(paste0(scan.type, ": ", scan.object$formula, " + locus (", scan.object$model.type, ")"),
-                    paste0("QTL interval type: ", ci.type),
-                    paste0("Width: ", round(high.locus.pos - low.locus.pos, 2), scale),
-                    paste0("peak locus: ", peak.locus, " (", round(peak.locus.pos, 4), scale, ")"),
-                    paste0("(closest) lower locus: ", low.locus, " (", round(low.locus.pos, 4), scale, ")"),
-                    paste0("(closest) upper locus: ", high.locus, " (", round(high.locus.pos, 4), scale, ")"))
-  }
-  if(supress.ci){
-    main.title <- c(paste0(scan.type, ": ", scan.object$formula, " + locus (", scan.object$model.type, ")"),
-                    paste0("QTL interval type: ", ci.type))
-  }
-  #browser()
+  main.title <- c(paste0(scan.type, ": ", scan.object$formula, " + locus (", scan.object$model.type, ")"),
+                  paste0("QTL interval type: ", ci.type),
+                  paste0("Width: ", round(high.locus.pos - low.locus.pos, 2), scale),
+                  paste0("peak locus: ", peak.locus, " (", round(peak.locus.pos, 4), scale, ")"),
+                  paste0("(closest) lower locus: ", low.locus, " (", round(low.locus.pos, 4), scale, ")"),
+                  paste0("(closest) upper locus: ", high.locus, " (", round(high.locus.pos, 4), scale, ")"))
+  full.results <- qtl.ci.object$full.results$p.values
   this.xlab <- paste("Chr", qtl.ci.object$chr, paste0("(", scale, ")"))
-  y.max <- max(outcome, -log10(qtl.ci.object$full.results))
+  if(!is.null(full.results)){ y.max <- max(outcome, -log10(full.results)) }
+  else{ y.max <- max(outcome) }
   plot(1, 
        xlim=c(0, max(pos)), 
        ylim=c(0, y.max), 
        xlab=this.xlab, ylab=this.ylab, main=main.title,
-       frame.plot=F, type="l", pch=20, cex=0.5, las=1, cex.main=0.8)
-  if(!supress.ci){
-    polygon(c(rep(low.locus.pos, 2), rep(high.locus.pos, 2)), c(0, rep(ceiling(max(outcome)), 2), 0), col="gray", border=NA)
-  }
+       frame.plot=FALSE, type="l", pch=20, cex=0.5, las=1, cex.main=0.8)
+  browser()
+  polygon(c(rep(low.locus.pos, 2), rep(high.locus.pos, 2)), c(0, rep(ceiling(max(outcome)), 2), 0), col="gray", border=NA)
+  peaks <- qtl.ci.object$peak.loci.pos[[scale]]
   
-  full.results <- qtl.ci.object$full.results
-  peaks <- qtl.ci.object$peak.pos[[scale]]
-  if(!is.null(qtl.only)){
-    full.results <- full.results[,qtl.only,,drop=FALSE]
-    peaks <- peaks[qtl.only,,drop=FALSE]
+  for(i in 1:nrow(full.results)){
+    lines(pos, -log10(full.results[i,]), lwd=0.5, col=scales::alpha(these.col[i], 0.5))
   }
-  if(!is.null(subsample.only)){
-    full.results <- full.results[subsample.only,,,drop=FALSE]
-    peaks <- peaks[,subsample.only,drop=FALSE]
-  }
-  for(i in 1:dim(full.results)[2]){
-    for(j in 1:dim(full.results)[1]){
-      lines(pos, -log10(full.results[j,i,]), lwd=0.5, col=scales::alpha(these.col[i], 0.5))
-    }
-  }
-  rug(qtl.ci.object$peak.pos[[scale]], col=scales::alpha("black", 0.5))
-  rug(qtl.ci.object$peak.pos[[scale]][,qtl.only], col=scales::alpha(these.col[i], 0.75))
-  
+  rug(qtl.ci.object$peak.loci.pos[[scale]], col=scales::alpha("black", 0.5))
+
   lines(pos, outcome, lwd=1.5)
 }
 

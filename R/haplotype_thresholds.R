@@ -28,7 +28,7 @@ generate.null.bs.matrix <- function(scan.object, use.REML=FALSE, num.samples, se
       e <- rnorm(n=nrow(null.fit$x), mean=0, sd=sqrt(null.fit$sigma2.mle))
     }
     else{
-      e <- c(mnormt::rmnorm(1, mean=rep(0, nrow(null.fit$x)), varcov=diag(null.fit$weights)*null.fit$sigma2.mle))
+      e <- c(mnormt::rmnorm(1, mean=rep(0, nrow(null.fit$x)), varcov=diag(1/null.fit$weights)*null.fit$sigma2.mle))
     }
     sim.y.matrix[,i] <- Xb + u + e
   }
@@ -57,7 +57,7 @@ generate.parametric.perm.matrix <- function(scan.object, use.REML, num.samples, 
       e <- rnorm(n=nrow(null.fit$x), mean=0, sd=sqrt(null.fit$sigma2.mle))
     }
     else{
-      e <- c(mnormt::rmnorm(1, mean=rep(0, nrow(null.fit$x)), varcov=diag(null.fit$weights)*null.fit$sigma2.mle))
+      e <- c(mnormt::rmnorm(1, mean=rep(0, nrow(null.fit$x)), varcov=diag(1/null.fit$weights)*null.fit$sigma2.mle))
     }
     perm.y.ranks <- order(Xb + u + e)
     perm.y.matrix[,i] <- null.fit$y[perm.y.ranks]
