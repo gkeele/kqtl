@@ -501,7 +501,7 @@ snp.genome.plotter.w.r2 <- function(snp.scan, r2.object,
   max.pos <- max(pos)
   
   # Finding max y of plot window
-  y.max <- ceiling(max(outcome, bs.threshold.95, mi.bs.threshold.95, hard.thresholds)) 
+  y.max <- ceiling(max(outcome, hard.thresholds)) 
   if(!is.null(y.max.manual)){
     y.max <- y.max.manual
   }
