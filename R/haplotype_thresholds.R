@@ -10,8 +10,8 @@
 #' @param seed DEFAULT: 1. The sampling process is random, thus a seed must be set for samples to be the same
 #' across machines.
 #' @export
-#' @examples generate.null.bs.matrix()
-generate.null.bs.matrix <- function(scan.object, use.REML=FALSE, num.samples, seed=1){
+#' @examples generate.null.bootstrap.matrix()
+generate.null.bootstrap.matrix <- function(scan.object, use.REML=FALSE, num.samples, seed=1){
   if(use.REML){
     null.fit <- scan.object$fit0.REML
   }
