@@ -78,7 +78,7 @@ run.positional.scans <- function(sim.object, keep.full.scans=TRUE,
     if(keep.full.scans){
       full.results[i,] <- this.scan$p.value
     }
-    cat("threshold scan:", i, "\n")
+    cat("positional scan:", i, "\n")
   }
   peak.pos <- list(Mb=h$getLocusStart(loci=peak.loci.vec, scale="Mb"),
                        cM=h$getLocusStart(loci=peak.loci.vec, scale="cM"))
