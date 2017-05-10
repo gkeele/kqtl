@@ -151,15 +151,15 @@ genome.plotter.chr <- function(scan.object, chr, use.lod=TRUE,
 #' @param thresholds.col DEFAULT: "red". Set the colors of the specified thresholds.
 #' @export
 #' @examples genome.plotter.whole()
-genome.plotter.whole <- function(non.mi.scan.list, mi.scan=NULL, use.lod=TRUE, just.these.chr=NULL,
-                                 scale="Mb", main.colors=c("black", "gray48", "blue"), mi.colors=c("purple", "cyan", "dark green"),
+genome.plotter.whole <- function(scan.list, use.lod=TRUE, just.these.chr=NULL,
+                                 scale="Mb", main.colors=c("black", "gray48", "blue"),
                                  use.legend=TRUE, main="",
                                  my.legend.cex=0.6,
                                  y.max.manual=NULL,
                                  hard.thresholds=NULL, thresholds.col="red")
 {
   if(length(thresholds.col) < length(hard.thresholds)){ rep(thresholds.col, length(hard.thresholds)) }
-  main.object <- non.mi.scan.list[[1]]
+  main.object <- scan.list[[1]]
   if(use.lod){
     outcome <- main.object$LOD
     plot.this <- "LOD"
@@ -184,7 +184,7 @@ genome.plotter.whole <- function(non.mi.scan.list, mi.scan=NULL, use.lod=TRUE, j
   has.X <- FALSE
   if(any(chr=="X")){
     has.X <- TRUE
-    chr[chr=="X"] <- length(unique(chr))
+    chr[chr=="X"] <- max(as.numeric(unique(chr[chr != "X"]))) + 1
   }
   
   pre.chr <- as.factor(as.numeric(chr))
@@ -198,28 +198,15 @@ genome.plotter.whole <- function(non.mi.scan.list, mi.scan=NULL, use.lod=TRUE, j
   max.pos <- tapply(pos, pre.chr, function(x) max(x))
   chr.types <- levels(pre.chr)
   
-  # Setting up multiple imputations
-  if(is.null(mi.scan)){
-    mi.mat <- NULL
-  }
-  if(!is.null(mi.scan)){
-    if(use.lod){
-      mi.mat <- mi.scan$mi.LOD[,order.i]
-    }
-    if(!use.lod){
-      mi.mat <- -log10(mi.scan$mi.p.mat)[,order.i]
-    }
-  }
-  
   # Finding max y of plot window
-  y.max <- ceiling(max(outcome, mi.mat, hard.thresholds)) 
-  if(length(non.mi.scan.list) > 1){
-    for(i in 2:length(non.mi.scan.list)){
+  y.max <- ceiling(max(outcome, hard.thresholds)) 
+  if(length(scan.list) > 1){
+    for(i in 2:length(scan.list)){
       if(use.lod){
-        y.max <- ceiling(max(y.max, unlist(non.mi.scan.list[[i]][plot.this])))
+        y.max <- ceiling(max(y.max, unlist(scan.list[[i]][plot.this])))
       }
       if(!use.lod){
-        y.max <- ceiling(max(y.max, -log10(unlist(non.mi.scan.list[[i]][plot.this]))))
+        y.max <- ceiling(max(y.max, -log10(unlist(scan.list[[i]][plot.this]))))
       }
     }
   }
@@ -229,7 +216,7 @@ genome.plotter.whole <- function(non.mi.scan.list, mi.scan=NULL, use.lod=TRUE, j
   
   shift.left <- min(pos[chr==chr.types[1]])
 
-  this.title <- c(main, paste0(non.mi.scan.list[[1]]$formula, " + locus (", non.mi.scan.list[[1]]$model.type, ")"))
+  this.title <- c(main, paste0(scan.list[[1]]$formula, " + locus (", scan.list[[1]]$model.type, ")"))
   
   plot(pos[pre.chr==chr.types[1]], outcome[pre.chr==chr.types[1]], 
        xlim=c(shift.left, sum(max.pos)+(length(chr.types)-1)), 
@@ -237,21 +224,6 @@ genome.plotter.whole <- function(non.mi.scan.list, mi.scan=NULL, use.lod=TRUE, j
        xaxt="n", yaxt="n", xlab="", ylab=this.ylab, main=this.title,
        frame.plot=F, type="l", pch=20, cex=0.5, lwd=1.5, col=main.colors[1])
   axis(side=2, at=0:y.max, las=2)
-  if(!is.null(mi.scan)){
-    for(i in 1:nrow(mi.mat)){
-      points(pos[pre.chr==chr.types[1]], mi.mat[i,][pre.chr==chr.types[1]], type="l", lwd=0.5, col="orange")
-    }
-    points(pos[pre.chr==chr.types[1]], outcome[pre.chr==chr.types[1]], type="l", lwd=1.5, col=main.colors[1])
-    if(use.lod){
-      mi.outcome.LOD.scale <- unlist(mi.scan["LOD"])[order.i]
-      points(pos[pre.chr==chr.types[1]], mi.outcome.LOD.scale[pre.chr==chr.types[1]], type="l", lwd=0.75, col=scales::alpha(mi.colors[1], 0.5))
-      points(pos[pre.chr==chr.types[1]], mi.outcome.LOD.exp.scale[pre.chr==chr.types[1]], type="l", lwd=0.75, col=scales::alpha(mi.colors[2], 0.5))
-    }
-    if(!use.lod){
-      mi.outcome.pvalue.scale <- unlist(mi.scan["p.value"])[order.i]
-      points(pos[pre.chr==chr.types[1]], mi.outcome.pvalue.scale[pre.chr==chr.types[1]], type="l", lwd=0.75, col=scales::alpha(mi.colors[1], 0.5))
-    }
-  }
   
   label.spots <- min.pos[1] + (max.pos[1] - min.pos[1])/2
   shift <- max.pos[1]
@@ -264,31 +236,16 @@ genome.plotter.whole <- function(non.mi.scan.list, mi.scan=NULL, use.lod=TRUE, j
       }
       label.spots <- c(label.spots, min.pos[i] + shift + (max.pos[i] - min.pos[i])/2)
       points(this.pos, outcome[pre.chr==chr.types[i]], type="l", lwd=1.5, col=main.colors[1])
-      if(!is.null(mi.scan)){
-        for(j in 1:nrow(mi.mat)){
-          points(pos[pre.chr==chr.types[i]] + shift, mi.mat[j,][pre.chr==chr.types[i]], type="l", lwd=0.5, col="orange")
-        }
-        points(pos[pre.chr==chr.types[i]] + shift, outcome[pre.chr==chr.types[i]], type="l", lwd=1.5, col=main.colors[1])
-        if(use.lod){
-          points(pos[pre.chr==chr.types[i]] + shift, mi.outcome.LOD.scale[pre.chr==chr.types[i]], type="l", lwd=0.75, col=scales::alpha(mi.colors[1], 0.5))
-          points(pos[pre.chr==chr.types[i]] + shift, mi.outcome.LOD.exp.scale[pre.chr==chr.types[i]], type="l", lwd=0.75, col=scales::alpha(mi.colors[2], 0.5))
-        }
-        if(!use.lod){
-          points(pos[pre.chr==chr.types[i]] + shift, mi.outcome.pvalue.LOD.scale[pre.chr==chr.types[i]], type="l", lwd=0.75, col=scales::alpha(mi.colors[1], 0.5))
-          points(pos[pre.chr==chr.types[i]] + shift, mi.outcome.pvalue.exp.scale[pre.chr==chr.types[i]], type="l", lwd=0.75, col=scales::alpha(mi.colors[2], 0.5))
-          points(pos[pre.chr==chr.types[i]] + shift, mi.outcome.mi.pvalue[pre.chr==chr.types[i]], type="l", lwd=0.75, col=scales::alpha(mi.colors[3], 0.5))
-        }
-      }
       shift <- shift + max.pos[i]
     }
   }
   
   # Plot other method's statistics
-  if(length(non.mi.scan.list) > 1){
-    for(i in 2:length(non.mi.scan.list)){
+  if(length(scan.list) > 1){
+    for(i in 2:length(scan.list)){
       if(use.lod){
         compare.shift <- 0
-        compare.outcome <- unlist(non.mi.scan.list[[i]]["LOD"])[keep.chr][order.i]
+        compare.outcome <- unlist(scan.list[[i]]["LOD"])[keep.chr][order.i]
         for(j in 1:length(chr.types)){
           points(pos[pre.chr==chr.types[j]] + compare.shift, compare.outcome[pre.chr==chr.types[j]], type="l", col=main.colors[i], lwd=1.5)
           compare.shift <- compare.shift + max.pos[j]
@@ -296,7 +253,7 @@ genome.plotter.whole <- function(non.mi.scan.list, mi.scan=NULL, use.lod=TRUE, j
       }
       if(!use.lod){
         compare.shift <- 0
-        compare.outcome <- -log10(unlist(non.mi.scan.list[[i]]["p.value"]))[keep.chr][order.i]
+        compare.outcome <- -log10(unlist(scan.list[[i]]["p.value"]))[keep.chr][order.i]
         for(j in 1:length(chr.types)){
           points(pos[pre.chr==chr.types[j]] + compare.shift, compare.outcome[pre.chr==chr.types[j]], type="l", col=main.colors[i], lwd=1.5)
           compare.shift <- compare.shift + max.pos[j]
@@ -312,23 +269,9 @@ genome.plotter.whole <- function(non.mi.scan.list, mi.scan=NULL, use.lod=TRUE, j
   }
   axis(side=1, tick=F, line=NA, at=label.spots, labels=axis.label, cex.axis=0.7, padj=-1.5)
   if(use.legend){
-    if(is.null(mi.scan)){
-      legend("topright", legend=names(non.mi.scan.list), 
-             lty=rep(1, length(non.mi.scan.list)), lwd=c(rep(1.5, length(non.mi.scan.list))), 
-             col=main.colors[1:length(non.mi.scan.list)], bty="n", cex=my.legend.cex)
-    }
-    if(!is.null(mi.scan)){
-      if(use.lod){
-        legend("topright", legend=c(names(non.mi.scan.list), paste0("MI - ", nrow(mi.mat)), "MI: Mean LOD", "MI: Mean LOD (Lik scale)"), 
-               lty=rep(1, length(non.mi.scan.list)+3), lwd=c(1.5, rep(1.5, length(non.mi.scan.list)+2)), 
-               col=c(main.colors[1:length(non.mi.scan.list)], "orange", mi.colors[1:2]), bty="n", cex=my.legend.cex)
-      }
-      if(!use.lod){
-        legend("topright", legend=c(names(non.mi.scan.list), paste0("MI - ", nrow(mi.mat)), "MI: Mean P-value (LOD scale)", "MI: Mean P-value (P scale)", "MI: Rubin MI LRT P-value"), 
-               lty=rep(1, length(non.mi.scan.list)+4), lwd=c(1.5, rep(1.5, length(non.mi.scan.list)+3)), 
-               col=c(main.colors[1:length(non.mi.scan.list)], "orange", mi.colors[1:3]), bty="n", cex=my.legend.cex)
-      }
-    }
+    legend("topright", legend=names(scan.list), 
+           lty=rep(1, length(scan.list)), lwd=c(rep(1.5, length(scan.list))), 
+           col=main.colors[1:length(scan.list)], bty="n", cex=my.legend.cex)
   }
   if(!is.null(hard.thresholds)){
     for(i in 1:length(hard.thresholds)){
@@ -599,7 +542,7 @@ inspect.ci.genome.plotter.whole <- function(ci.object, scan.type.label, which.ci
                     pos = ci.object$pos)
   this.scan.list <- list()
   this.scan.list[[scan.type.label]] <- this.scan
-  genome.plotter.whole(non.mi.scan.list=this.scan.list, use.lod=FALSE, scale="cM", ...)
+  genome.plotter.whole(scan.list=this.scan.list, use.lod=FALSE, scale="cM", ...)
 }
 
 
