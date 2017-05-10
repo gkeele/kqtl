@@ -1,6 +1,8 @@
 # Still need to update to not mess with environment
+#' @export
 generate.positional.bootstrap.matrix <- function(scan.object.w.fit1, 
-                                                 num.samples, seed=1){
+                                                 num.samples, seed=1,
+                                                 use.BLUP=TRUE){
   alt.fit <- scan.object.w.fit1$fit1
   Xb <- alt.fit$x %*% alt.fit$coefficients
   weights <- alt.fit$weights
@@ -12,9 +14,23 @@ generate.positional.bootstrap.matrix <- function(scan.object.w.fit1,
     colnames(K) <- rownames(K) <- colnames(alt.fit$K)
   }
   sim.y.matrix <- matrix(NA, nrow=length(Xb), ncol=num.samples)
+  if(use.BLUP){
+    X <- alt.fit$x
+    Sigma <- K*alt.fit$tau2.mle + diag(1/weights)*alt.fit$sigma2.mle
+    inv.Sigma <- solve(Sigma)
+    u.BLUP <- (K*alt.fit$tau2.mle) %*% inv.Sigma %*% (diag(nrow(K)) - X %*% solve(t(X) %*% inv.Sigma %*% X) %*% t(X) %*% inv.Sigma) %*% alt.fit$y  
+  }
   set.seed(seed)
   for(i in 1:num.samples){
-    u <- c(mnormt::rmnorm(1, mean=rep(0, nrow(alt.fit$x)), varcov=K*alt.fit$tau2.mle))
+    if(alt.fit$tau2.mle != 0){ 
+      if(use.BLUP){
+        u <- u.BLUP
+      }
+      else{
+        u <- c(mnormt::rmnorm(1, mean=rep(0, nrow(alt.fit$x)), varcov=K*alt.fit$tau2.mle)) 
+      }
+    }
+    else{ u <- rep(0, nrow(alt.fit$x)) }
     if(is.null(weights)){
       e <- rnorm(n=nrow(alt.fit$x), mean=0, sd=sqrt(alt.fit$sigma2.mle))
     }
@@ -32,6 +48,7 @@ generate.positional.bootstrap.matrix <- function(scan.object.w.fit1,
   return(sim.object)
 }
 
+#' @export
 run.positional.scans <- function(sim.object, keep.full.scans=TRUE,
                                  genomecache, data,
                                  model=c("additive", "full", "diplolasso"),

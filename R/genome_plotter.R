@@ -560,16 +560,19 @@ single.chr.plotter.w.ci <- function(scan.object, qtl.ci.object,
   high.locus <- all.loci[ub.dist >= 0][which.min(ub.dist[ub.dist >= 0])]
   high.locus.pos <- pos[which(all.loci == high.locus)]
     
-  region <- scan.object$pos[[scale]] >= low.locus.pos & scan.object$pos[[scale]] <= high.locus.pos
-  peak.locus <- all.loci[region][which.min(scan.object$p.value[region])]
-  peak.locus.pos <- scan.object$pos[[scale]][region][which.min(scan.object$p.value[region])]
+  actual.p.value <- scan.object$p.value[scan.object$chr == qtl.ci.object$chr]
+  actual.loci <- scan.object$loci[scan.object$chr == qtl.ci.object$chr]
+  actual.pos <- scan.object$pos[[scale]][scan.object$chr == qtl.ci.object$chr]
+  region <- actual.pos >= low.locus.pos & actual.pos <= high.locus.pos
+  peak.locus <- all.loci[region][which.min(actual.p.value[region])]
+  peak.locus.pos <- actual.pos[region][which.min(actual.p.value[region])]
   
   main.title <- c(paste0(scan.type, ": ", scan.object$formula, " + locus (", scan.object$model.type, ")"),
                   paste0("QTL interval type: ", ci.type),
                   paste0("Width: ", round(high.locus.pos - low.locus.pos, 2), scale),
-                  paste0("peak locus: ", peak.locus, " (", round(peak.locus.pos, 4), scale, ")"),
-                  paste0("(closest) lower locus: ", low.locus, " (", round(low.locus.pos, 4), scale, ")"),
-                  paste0("(closest) upper locus: ", high.locus, " (", round(high.locus.pos, 4), scale, ")"))
+                  paste0("peak locus: ", peak.locus, " (", round(peak.locus.pos, 3), scale, ")"),
+                  paste0("(closest) lower locus: ", low.locus, " (", round(low.locus.pos, 3), scale, ")"),
+                  paste0("(closest) upper locus: ", high.locus, " (", round(high.locus.pos, 3), scale, ")"))
   full.results <- qtl.ci.object$full.results$p.values
   this.xlab <- paste("Chr", qtl.ci.object$chr, paste0("(", scale, ")"))
   if(!is.null(full.results)){ y.max <- max(outcome, -log10(full.results)) }
