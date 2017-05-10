@@ -138,9 +138,9 @@ genome.plotter.chr <- function(scan.object, chr, use.lod=TRUE,
 #'
 #' This function takes the genome scan output from scan.h2lmm() and flexibly plots out the genome scan.
 #'
-#' @param non.mi.scan.list A list of scan.h2lmm() objects that are plotted within the same genome scan plot.
-#' @param mi.scan DEFAULT: NULL. Multiple imputation scan.h2lmm() object.
+#' @param scan.list A list of scan.h2lmm() objects that are to be plotted within the same genome scan plot.
 #' @param use.lod DEFAULT: TRUE. Plots either the LOD score or the -log10 p-value.
+#' @param just.these.chr DEFAULT: NULL. Specifies a subset of the chromosomes to be plotted. NULL results in all chromosomes being plotted.
 #' @param scale DEFAULT: "Mb". Specifies the scale of genomic position to be plotted. Either Mb or cM are expected.
 #' @param main.colors DEFAULT: "black". The color of the main association score to be plotted.
 #' @param use.legend DEFAULT: TRUE. Include a legend for the different associations. If TRUE, the labels are the names of the non.mi.scan.list object.
