@@ -75,9 +75,7 @@ run.threshold.scans <- function(sim.threshold.object, keep.full.scans=TRUE,
                                 model=c("additive", "full", "diplolasso"),
                                 use.par="h2", use.multi.impute=TRUE, num.imp=10, brute=TRUE, use.fix.par=FALSE, 
                                 seed=1, scan.seed=1, do.augment=FALSE, chr="all",
-                                use.augment.weights=FALSE, use.full.null=FALSE, added.data.points=1,
-                                scale="cM",
-                                ...){
+                                use.augment.weights=FALSE, use.full.null=FALSE, added.data.points=1, ...){
   y.matrix <- sim.threshold.object$y.matrix
   formula <- sim.threshold.object$formula
   weights <- sim.threshold.object$weights
