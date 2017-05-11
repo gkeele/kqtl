@@ -474,10 +474,24 @@ snp.genome.plotter.w.r2 <- function(snp.scan, r2.object,
        labels="r2 with peak SNP")
 }
 
+#' Plot whole genome and single chromosome windows of haplotype-based genome scan in a PDF output document
+#'
+#' This function takes the genome scan output from scan.h2lmm() and plots the whole genome and single chromosome zoom-ins for 
+#' all the specified chromosomes. When multiple imputations are used, includes the 95\% confidence band on the median in the zoomed-in
+#' plots.
+#'
+#' @param scan.object A scan.h2lmm() object (ROP or multiple imputations). If multiple imputations, median and confidence interval 
+#' on median are plotted. Expected to the scan of the actual data.
+#' @param qtl.ci.object A run.positional.scans() object. Should contain single chromosome scans from some form of sampling process, such as a parametric bootstrap.
+#' @param ci.type Positional confidence interval to be included in the title. Example: "Parametric Bootstrap".
+#' @param scan.type Scan type to be included in the title. Example: "ROP".
+#' @param these.col Colors to be used for individual artificial scans.
+#' @param scale DEFAULT: "Mb". Specifies the scale of genomic position to be plotted. Either "Mb" or "cM" is expected.
 #' @export
+#' @examples single.chr.plotter.w.ci()
 single.chr.plotter.w.ci <- function(scan.object, qtl.ci.object, 
                                     ci.type, scan.type, 
-                                    these.col=c("#7BAFD4", "red"), scale){
+                                    these.col=c("#7BAFD4", "red"), scale="Mb"){
   
   outcome <- -log10(scan.object$p.value[scan.object$chr == qtl.ci.object$chr]) 
   this.ylab <- expression("-log"[10]*"P")
