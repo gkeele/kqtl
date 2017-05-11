@@ -18,6 +18,7 @@
 #' diplotype probabilities. The diplolasso option specifies the DiploLASSO model.
 #' @param diplolasso.refit DEFAULT: FALSE. If the DiploLASSO model is being run, this option re-runs the model on the
 #' with the reduced set of dominance parameters unshrunk.
+#' @param use.par DEFAULT: "h2". The parameterization of the likelihood to be used. 
 #' @param use.multi.impute DEFAULT: TRUE. This option specifies whether to use ROP or multiple imputations.
 #' @param num.imp DEFAULT: 11. IF multiple imputations are used, this specifies the number of imputations to perform.
 #' @param chr DEFAULT: "all". Specifies which chromosomes to scan.

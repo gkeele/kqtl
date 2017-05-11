@@ -1,5 +1,19 @@
-# Still need to update to not mess with environment
+#' Generate parametric bootstrap samples from the alternative model of a particular locus
+#'
+#' This function generates parametric bootstrap samples from the alternative model of a particular locus. These
+#' samples will then be used to estimate a confidence interval for QTL position.
+#'
+#' @param scan.object.w.fit1 A scan.h2lmm() object fit for a single locus. scan.h2lmm() includes the alternative
+#' model fit when a single locus is specified. This alternative fit will be used as the basis for the bootstrap
+#' sampling process.
+#' @param num.samples The number of samples to be generated from the parametric model.
+#' @param seed DEFAULT: 1. The sampling procedure is a random process. Specifying a seed allows consistent results
+#' across runs and machines.
+#' @param use.BLUP DEFAULT: TRUE. If a mixed effect model is specified with a random effect and corresponding kinship
+#' matrix, the random effect could be sampled as well as the unstructured error term. If TRUE, the BLUP of the 
+#' random effect is used, resulting in less random variation over samples, and ultimately narrower intervals.
 #' @export
+#' @examples generate.positional.bootstrap.matrix()
 generate.positional.bootstrap.matrix <- function(scan.object.w.fit1, 
                                                  num.samples, seed=1,
                                                  use.BLUP=TRUE){
@@ -48,14 +62,57 @@ generate.positional.bootstrap.matrix <- function(scan.object.w.fit1,
   return(sim.object)
 }
 
+#' Run single chromosome scans on parametric bootstrap samples from the alternative model of a particular locus
+#'
+#' This function runs single chromosome scans of parametric bootstrap samples from the alternative model of a particular locus. These
+#' association scans can then be used to estimate a confidence interval on QTL position.
+#'
+#' @param sim.object A sample object. This is primarily a matrix of parametric bootstrap
+#' samples from a locus.
+#' @param keep.full.scans DEFAULT: TRUE. If TRUE, the full scans from each sample are kept. This allows for them
+#' to be plotted out, but also increases the memory or storage needed.
+#' @param genomecache The path to the genome cache directory. The genome cache is a particularly structured
+#' directory that stores the haplotype probabilities/dosages at each locus. It has an additive model
+#' subdirectory and a full model subdirectory. Each contains subdirectories for each chromosome, which then
+#' store .RData files for the probabilities/dosages of each locus.
+#' @param data A data frame with outcome and potential covariates. Should also have IDs
+#' that link to IDs in the genome cache, often the individual-level ID named "SUBJECT.NAME".
+#' @param model DEFAULT: additive. Specifies how to model the founder haplotype probabilities. The additive options specifies
+#' use of haplotype dosages, and is most commonly used. The full option regresses the phenotype on the actual
+#' diplotype probabilities. The diplolasso option specifies the DiploLASSO model.
+#' @param use.par DEFAULT: "h2". The parameterization of the likelihood to be used.
+#' @param use.multi.impute DEFAULT: TRUE. If TRUE, use multiple imputations of genetic data. If FALSE, use ROP.
+#' @param num.imp DEFAULT: 11. If multiple imputations are used, this specifies the number of imputations to perform.
+#' @param brute DEFAULT: TRUE. During the optimization to find maximum likelihood parameters, this specifies checking the
+#' boundaries of h2=0 and h2=1. Slightly less efficient, but otherwise the optimization procedure will not directly check
+#' these values.
+#' @param use.fix.par DEFAULT: TRUE. This specifies an approximate fitting of mixed effect model (Kang et al. 2009). Much
+#' more efficient, as the optimization of h2 only needs to be performed once for the null model rather than every locus. 
+#' Technically less powerful, though in practice it has proven to be almost equal to the exact procedure.
+#' @param scan.seed DEFAULT: 1. If imputations are used, the sampling procedure is a random process. Specifying a seed allows 
+#' consistent results across runs and machines. This is reset over scans, so that the same imputations are used for each scan.
+#' @param scan.seed DEFAULT: 1.
+#' @param do.augment DEFAULT: FALSE. Augments the data with null observations for genotype groups. This is an approximately Bayesian 
+#' approach to applying a prior to the data, and can help control highly influential data points.
+#' @param use.augment.weights DEFAULT: FALSE. Specify non-equal weights on the augmented data points. This allows for the inclusion of
+#' augmented data points to all genotype classes while reducing their overall contribution to the data.
+#' @param use.full.null DEFAULT: FALSE. Draws augmented data points from the null model. This allows for the inclusion of null data points
+#' that do not influence the estimation of other model parameters as much.
+#' @param added.data.points DEFAULT: 1. If augment weights are being used, this specifies how many data points should be added in total.
+#' @param impute.on DEFAULT: "SUBJECT.NAME". Name of the column in the data to match to the genome cache for imputations. 
+#' Usually "SUBJECT.NAME", the individual. If there are multiple observations of the same genome, this can specify that
+#' every individual with the same genome receives the same imputation - as is the case for inbred individuals.
 #' @export
+#' @examples run.positional.scans()
 run.positional.scans <- function(sim.object, keep.full.scans=TRUE,
                                  genomecache, data,
                                  model=c("additive", "full", "diplolasso"),
-                                 use.par="h2", use.multi.impute=TRUE, num.imp=10, brute=TRUE, use.fix.par=FALSE, 
-                                 seed=1, scan.seed=1, do.augment=FALSE,
+                                 use.par="h2", use.multi.impute=TRUE, num.imp=11, brute=TRUE, use.fix.par=FALSE, 
+                                 scan.seed=1, do.augment=FALSE,
                                  use.augment.weights=FALSE, use.full.null=FALSE, added.data.points=1, impute.on="SUBJECT.NAME",
                                  ...){
+  model <- model[1]
+  
   y.matrix <- sim.object$y.matrix
   formula <- sim.object$formula
   weights <- sim.object$weights
@@ -79,7 +136,6 @@ run.positional.scans <- function(sim.object, keep.full.scans=TRUE,
   }
   max.results <- rep(NA, num.scans)
   
-  set.seed(seed)
   peak.loci.vec <- rep(NA, num.scans)
   iteration.formula <- formula(paste0("new.y ~ ", unlist(strsplit(formula, split="~"))[-1]))
   for(i in 1:num.scans){
