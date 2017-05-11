@@ -26,7 +26,7 @@ genome.plotter.to.pdf <- function(scan.object, chr=c(1:19, "X"), use.lod=TRUE,
                                   pdf.output.path, pdf.height=5, pdf.width=9){
   scale <- scale[1]
   pdf(pdf.output.path, height=pdf.height, width=pdf.width)
-  genome.plotter.whole(non.mi.scan.list=list(scan.object), use.lod=use.lod,
+  genome.plotter.whole(scan.list=list(scan.object), use.lod=use.lod,
                        scale=scale, main.colors=main.col, use.legend=FALSE,
                        main=main,
                        y.max.manual=y.max.manual,
