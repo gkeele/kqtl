@@ -71,7 +71,7 @@ pairwise.cor.snp.scan <- function(data, formula, K,
   null.K <- K
   
   # Grabbing the design matrix (vector) of the point SNP
-  point.X <- X.list[[point.locus]][null.data$SUBJECT.NAME,, drop=FALSE]
+  point.X <- X.list[[point.locus]][as.character(null.data$SUBJECT.NAME),, drop=FALSE]
   
   r2.vec <- rep(0, length(loci))
   for(i in 1:length(loci)){
