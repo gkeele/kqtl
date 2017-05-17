@@ -4,7 +4,7 @@
 \alias{genome.plotter.chr}
 \title{Plot single chromosome windows of haplotype-based genome scan}
 \usage{
-genome.plotter.chr(scan.object, chr, use.lod = TRUE, scale = c("Mb", "cM"),
+genome.plotter.chr(scan.object, chr, use.lod = FALSE, scale = c("Mb", "cM"),
   main.col = "black", median.band.col = "gray88", main = "",
   y.max.manual = NULL, hard.thresholds = NULL, thresholds.col = "red")
 }
@@ -14,7 +14,7 @@ on median are plotted.}
 
 \item{chr}{The chromosome to be plotted.}
 
-\item{use.lod}{DEFAULT: TRUE. Plots either the LOD score or the -log10 p-value.}
+\item{use.lod}{DEFAULT: FALSE. Plots either the LOD score or the -log10 p-value.}
 
 \item{scale}{DEFAULT: "Mb". Specifies the scale of genomic position to be plotted. Either Mb or cM can be used.}
 

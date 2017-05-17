@@ -4,7 +4,7 @@
 \alias{genome.plotter.to.pdf}
 \title{Plot whole genome and single chromosome windows of haplotype-based genome scan in a PDF output document}
 \usage{
-genome.plotter.to.pdf(scan.object, chr = c(1:19, "X"), use.lod = TRUE,
+genome.plotter.to.pdf(scan.object, chr = c(1:19, "X"), use.lod = FALSE,
   scale = c("Mb", "cM"), main.col = "black", median.band.col = "gray88",
   main = "", y.max.manual = NULL, hard.thresholds = NULL,
   thresholds.col = "red", pdf.output.path, pdf.height = 5, pdf.width = 9)
@@ -15,7 +15,7 @@ on median are plotted.}
 
 \item{chr}{DEFAULT: c(1:19, "X"). The chromosomes to be plotted. DEFAULT is all the mouse chromosomes.}
 
-\item{use.lod}{DEFAULT: TRUE. Plots either the LOD score or the -log10 p-value.}
+\item{use.lod}{DEFAULT: FALSE. Plots either the LOD score or the -log10 p-value.}
 
 \item{scale}{DEFAULT: "Mb". Specifies the scale of genomic position to be plotted. Either Mb or cM are expected.}
 

@@ -7,7 +7,7 @@
 #' @param scan.object A scan.h2lmm() object (ROP or multiple imputations). If multiple imputations, median and confidence interval 
 #' on median are plotted.
 #' @param chr DEFAULT: c(1:19, "X"). The chromosomes to be plotted. DEFAULT is all the mouse chromosomes.
-#' @param use.lod DEFAULT: TRUE. Plots either the LOD score or the -log10 p-value.
+#' @param use.lod DEFAULT: FALSE. Plots either the LOD score or the -log10 p-value.
 #' @param scale DEFAULT: "Mb". Specifies the scale of genomic position to be plotted. Either Mb or cM are expected.
 #' @param main.colors DEFAULT: "black". The color of the main association score to be plotted.
 #' @param median.band.col DEFAULT: "gray88". The color of the 95\% confident band plotted around the median.
@@ -20,7 +20,7 @@
 #' @param pdf.width DEFAULT: 9. The width of an individual pages of the PDF.
 #' @export
 #' @examples genome.plotter.to.pdf()
-genome.plotter.to.pdf <- function(scan.object, chr=c(1:19, "X"), use.lod=TRUE,
+genome.plotter.to.pdf <- function(scan.object, chr=c(1:19, "X"), use.lod=FALSE,
                                   scale=c("Mb", "cM"), main.col="black", median.band.col="gray88", main="", y.max.manual=NULL,
                                   hard.thresholds=NULL, thresholds.col="red",
                                   pdf.output.path, pdf.height=5, pdf.width=9){
@@ -48,7 +48,7 @@ genome.plotter.to.pdf <- function(scan.object, chr=c(1:19, "X"), use.lod=TRUE,
 #' @param scan.object A scan.h2lmm() object (ROP or multiple imputations). If multiple imputations, median and confidence interval 
 #' on median are plotted.
 #' @param chr The chromosome to be plotted.
-#' @param use.lod DEFAULT: TRUE. Plots either the LOD score or the -log10 p-value.
+#' @param use.lod DEFAULT: FALSE. Plots either the LOD score or the -log10 p-value.
 #' @param scale DEFAULT: "Mb". Specifies the scale of genomic position to be plotted. Either Mb or cM can be used.
 #' @param main.colors DEFAULT: "black". The color of the main association score to be plotted.
 #' @param median.band.col DEFAULT: "gray88". The color of the 95\% confident band plotted around the median.
@@ -58,7 +58,7 @@ genome.plotter.to.pdf <- function(scan.object, chr=c(1:19, "X"), use.lod=TRUE,
 #' @param thresholds.col DEFAULT: "red". Set the colors of the specified thresholds.
 #' @export
 #' @examples genome.plotter.chr()
-genome.plotter.chr <- function(scan.object, chr, use.lod=TRUE,
+genome.plotter.chr <- function(scan.object, chr, use.lod=FALSE,
                                scale=c("Mb", "cM"), main.col="black", median.band.col="gray88",
                                main="",
                                y.max.manual=NULL,
@@ -139,7 +139,7 @@ genome.plotter.chr <- function(scan.object, chr, use.lod=TRUE,
 #' This function takes the genome scan output from scan.h2lmm() and flexibly plots out the genome scan.
 #'
 #' @param scan.list A list of scan.h2lmm() objects that are to be plotted within the same genome scan plot.
-#' @param use.lod DEFAULT: TRUE. Plots either the LOD score or the -log10 p-value.
+#' @param use.lod DEFAULT: FALSE. Plots either the LOD score or the -log10 p-value.
 #' @param just.these.chr DEFAULT: NULL. Specifies a subset of the chromosomes to be plotted. NULL results in all chromosomes being plotted.
 #' @param scale DEFAULT: "Mb". Specifies the scale of genomic position to be plotted. Either Mb or cM are expected.
 #' @param main.colors DEFAULT: "black". The color of the main association score to be plotted.
@@ -151,7 +151,7 @@ genome.plotter.chr <- function(scan.object, chr, use.lod=TRUE,
 #' @param thresholds.col DEFAULT: "red". Set the colors of the specified thresholds.
 #' @export
 #' @examples genome.plotter.whole()
-genome.plotter.whole <- function(scan.list, use.lod=TRUE, just.these.chr=NULL,
+genome.plotter.whole <- function(scan.list, use.lod=FALSE, just.these.chr=NULL,
                                  scale="Mb", main.colors=c("black", "gray48", "blue"),
                                  use.legend=TRUE, main="",
                                  my.legend.cex=0.6,

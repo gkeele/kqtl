@@ -4,7 +4,7 @@
 \alias{genome.plotter.whole}
 \title{Plot one or more haplotype-based genome scans flexibly (whole genomes or subset of chromosomes)}
 \usage{
-genome.plotter.whole(scan.list, use.lod = TRUE, just.these.chr = NULL,
+genome.plotter.whole(scan.list, use.lod = FALSE, just.these.chr = NULL,
   scale = "Mb", main.colors = c("black", "gray48", "blue"),
   use.legend = TRUE, main = "", my.legend.cex = 0.6,
   y.max.manual = NULL, hard.thresholds = NULL, thresholds.col = "red")
@@ -12,7 +12,7 @@ genome.plotter.whole(scan.list, use.lod = TRUE, just.these.chr = NULL,
 \arguments{
 \item{scan.list}{A list of scan.h2lmm() objects that are to be plotted within the same genome scan plot.}
 
-\item{use.lod}{DEFAULT: TRUE. Plots either the LOD score or the -log10 p-value.}
+\item{use.lod}{DEFAULT: FALSE. Plots either the LOD score or the -log10 p-value.}
 
 \item{just.these.chr}{DEFAULT: NULL. Specifies a subset of the chromosomes to be plotted. NULL results in all chromosomes being plotted.}
 
