@@ -216,7 +216,9 @@ genome.plotter.whole <- function(scan.list, use.lod=TRUE, just.these.chr=NULL,
   
   shift.left <- min(pos[chr==chr.types[1]])
 
-  this.title <- c(main, paste0(scan.list[[1]]$formula, " + locus (", scan.list[[1]]$model.type, ")"))
+  this.title <- c(main, 
+                  paste0(scan.list[[1]]$formula, " + locus (", scan.list[[1]]$model.type, ")"),
+                  paste("n =", length(scan.list[[1]]$fit0$y)))
   
   plot(pos[pre.chr==chr.types[1]], outcome[pre.chr==chr.types[1]], 
        xlim=c(shift.left, sum(max.pos)+(length(chr.types)-1)), 
