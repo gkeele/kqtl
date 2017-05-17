@@ -249,7 +249,7 @@ genome.plotter.whole <- function(scan.list, use.lod=FALSE, just.these.chr=NULL,
         compare.shift <- 0
         compare.outcome <- unlist(scan.list[[i]]["LOD"])
         if(!is.null(just.these.chr)){
-          compare.outcome <- outcome[keep.chr]
+          compare.outcome <- compare.outcome[keep.chr]
         }
         compare.outcome <- compare.outcome[order.i]
         for(j in 1:length(chr.types)){
@@ -261,7 +261,7 @@ genome.plotter.whole <- function(scan.list, use.lod=FALSE, just.these.chr=NULL,
         compare.shift <- 0
         compare.outcome <- -log10(unlist(scan.list[[i]]["p.value"]))
         if(!is.null(just.these.chr)){
-          compare.outcome <- outcome[keep.chr]
+          compare.outcome <- compare.outcome[keep.chr]
         }
         compare.outcome <- compare.outcome[order.i]
         for(j in 1:length(chr.types)){
