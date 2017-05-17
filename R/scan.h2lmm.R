@@ -247,6 +247,7 @@ scan.h2lmm <- function(genomecache, data, formula, K=NULL,
                            weights=weights)
           LOD.vec[i] <- log10(exp(fit1$logLik - fit0$logLik))
           p.vec[i] <- pchisq(q=-2*(fit0$logLik - fit1$logLik), df=fit1$rank-fit0$rank, lower.tail=FALSE)
+          df[i] <- fit1$rank
         }
         else{
           fit1 <- lmmbygls.diplolasso(locus.formula, data=data, 
