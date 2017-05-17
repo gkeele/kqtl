@@ -357,7 +357,8 @@ snp.genome.plotter.whole <- function(snp.scan, just.these.chr=NULL,
   
   shift.left <- min(pos[chr==chr.types[1]])
   this.title <- c(title,
-                  paste0(main.object$formula, " + SNP (", main.object$model.type, ")"))
+                  paste0(main.object$formula, " + SNP (", main.object$model.type, ")"),
+                  paste("n =", length(main.object$fit0$y)))
 
   plot(1,
        xlim=c(shift.left, sum(max.pos)+(length(chr.types)-1)),
