@@ -74,7 +74,7 @@ run.threshold.scans <- function(sim.threshold.object, keep.full.scans=TRUE,
                                 genomecache, data,
                                 model=c("additive", "full", "diplolasso"),
                                 use.par="h2", use.multi.impute=TRUE, num.imp=10, brute=TRUE, use.fix.par=FALSE, 
-                                seed=1, scan.seed=1, do.augment=FALSE, chr="all",
+                                scan.seed=1, do.augment=FALSE, chr="all",
                                 use.augment.weights=FALSE, use.full.null=FALSE, added.data.points=1, ...){
   y.matrix <- sim.threshold.object$y.matrix
   formula <- sim.threshold.object$formula
@@ -101,7 +101,6 @@ run.threshold.scans <- function(sim.threshold.object, keep.full.scans=TRUE,
   }
   max.results <- rep(NA, num.scans)
   
-  set.seed(seed)
   iteration.formula <- formula(paste0("new.y ~ ", unlist(strsplit(formula, split="~"))[-1]))
   for(i in 1:num.scans){
     new.y <- data.frame(new.y=y.matrix[,i], SUBJECT.NAME=colnames(K))
