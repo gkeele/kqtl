@@ -245,7 +245,11 @@ genome.plotter.whole <- function(scan.list, use.lod=TRUE, just.these.chr=NULL,
     for(i in 2:length(scan.list)){
       if(use.lod){
         compare.shift <- 0
-        compare.outcome <- unlist(scan.list[[i]]["LOD"])[keep.chr][order.i]
+        compare.outcome <- unlist(scan.list[[i]]["LOD"])
+        if(!is.null(just.these.chr)){
+          compare.outcome <- outcome[keep.chr]
+        }
+        compare.outcome <- compare.outcome[order.i]
         for(j in 1:length(chr.types)){
           points(pos[pre.chr==chr.types[j]] + compare.shift, compare.outcome[pre.chr==chr.types[j]], type="l", col=main.colors[i], lwd=1.5)
           compare.shift <- compare.shift + max.pos[j]
@@ -253,7 +257,11 @@ genome.plotter.whole <- function(scan.list, use.lod=TRUE, just.these.chr=NULL,
       }
       if(!use.lod){
         compare.shift <- 0
-        compare.outcome <- -log10(unlist(scan.list[[i]]["p.value"]))[keep.chr][order.i]
+        compare.outcome <- -log10(unlist(scan.list[[i]]["p.value"]))
+        if(!is.null(just.these.chr)){
+          compare.outcome <- outcome[keep.chr]
+        }
+        compare.outcome <- compare.outcome[order.i]
         for(j in 1:length(chr.types)){
           points(pos[pre.chr==chr.types[j]] + compare.shift, compare.outcome[pre.chr==chr.types[j]], type="l", col=main.colors[i], lwd=1.5)
           compare.shift <- compare.shift + max.pos[j]
