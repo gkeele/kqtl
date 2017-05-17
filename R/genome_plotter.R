@@ -461,7 +461,8 @@ snp.genome.plotter.w.r2 <- function(snp.scan, r2.object,
   }
   
   this.title <- c(title,
-                  paste0(main.object$formula, " + SNP (", main.object$model.type, ")"))
+                  paste0(main.object$formula, " + SNP (", main.object$model.type, ")"),
+                  paste("n =", length(main.object$fit0$y)))
   this.xlab <- paste0("Chr ", chr, " Position (", scale, ")")
   
   red2blue <- colorRampPalette(c("red", "blue"))
