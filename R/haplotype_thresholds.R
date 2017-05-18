@@ -29,7 +29,12 @@ generate.null.bootstrap.matrix <- function(scan.object, use.REML=TRUE, num.sampl
     
     sim.y.matrix <- matrix(NA, nrow=n, ncol=num.samples)
     for(i in 1:num.samples){
-      u <- c(mnormt::rmnorm(1, mean=rep(0, n), varcov=K*tau2))
+      if(is.null(K)){
+        u <- rep(0, n)
+      }
+      else{
+        u <- c(mnormt::rmnorm(1, mean=rep(0, n), varcov=K*tau2))
+      }
       if(is.null(weights)){
         e <- rnorm(n=n, mean=0, sd=sqrt(sigma2))
       }
