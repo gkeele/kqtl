@@ -48,6 +48,7 @@ generate.null.bootstrap.matrix <- function(scan.object, use.REML=TRUE, num.sampl
         e <- c(mnormt::rmnorm(1, mean=rep(0, n), varcov=diag(1/weights)*sigma2))
       }
       sim.y.matrix[,i] <- Xb + u + e
+      rownames(sim.y.matrix) <- names(scan.object$fit0$y)
     }
   }
   else{
@@ -125,7 +126,7 @@ run.threshold.scans <- function(sim.threshold.object, keep.full.scans=TRUE,
   
   iteration.formula <- formula(paste0("new.y ~ ", unlist(strsplit(formula, split="~"))[-1]))
   for(i in 1:num.scans){
-    new.y <- data.frame(new.y=y.matrix[,i], SUBJECT.NAME=colnames(K))
+    new.y <- data.frame(new.y=y.matrix[,i], SUBJECT.NAME=rownames(y.matrix))
     this.data <- merge(x=new.y, y=data, by="SUBJECT.NAME", all.x=TRUE)
     
     this.scan <- scan.h2lmm(genomecache=genomecache, data=this.data, formula=iteration.formula, K=K, model=model,
