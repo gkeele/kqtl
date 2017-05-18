@@ -4,38 +4,49 @@
 #' from the null model of no locus effect.
 #'
 #' @param scan.object A scan.h2lmm() object.
-#' @param use.REML DEFAULT: FALSE. Determines whether the variance components for the parametric sampling are 
+#' @param use.REML DEFAULT: TRUE. Determines whether the variance components for the parametric sampling are 
 #' based on maximizing the likelihood (ML) or the residual likelihood (REML).
 #' @param num.samples The number of parametric bootstrap samples to return.
 #' @param seed DEFAULT: 1. The sampling process is random, thus a seed must be set for samples to be the same
 #' across machines.
 #' @export
 #' @examples generate.null.bootstrap.matrix()
-generate.null.bootstrap.matrix <- function(scan.object, use.REML=FALSE, num.samples, seed=1){
-  if(use.REML){
-    null.fit <- scan.object$fit0.REML
-  }
-  else{
-    null.fit <- scan.object$fit0
-  }
-  set.seed(seed)
-  
-  Xb <- null.fit$x %*% null.fit$coefficients
-  sim.y.matrix <- matrix(NA, nrow=length(Xb), ncol=num.samples)
-  for(i in 1:num.samples){
-    u <- c(mnormt::rmnorm(1, mean=rep(0, nrow(null.fit$x)), varcov=null.fit$K*null.fit$tau2.mle))
-    if(is.null(null.fit$weights)){
-      e <- rnorm(n=nrow(null.fit$x), mean=0, sd=sqrt(null.fit$sigma2.mle))
+generate.null.bootstrap.matrix <- function(scan.object, use.REML=TRUE, num.samples, seed=1){
+  if(class(scan.object$fit0) != "lmerMod"){
+    Xb <- scan.object$fit0$x %*% scan.object$fit0$coefficients
+    n <- nrow(scan.object$fit0$x)
+    K <- scan.object$fit0$K
+    weights <- scan.object$fit0$weights
+    if(use.REML){
+      tau2 <- scan.object$fit0.REML$tau2.mle
+      sigma2 <- scan.object$fit0.REML$sigma2.mle
     }
     else{
-      e <- c(mnormt::rmnorm(1, mean=rep(0, nrow(null.fit$x)), varcov=diag(1/null.fit$weights)*null.fit$sigma2.mle))
+      tau2 <- scan.object$fit0$tau2.mle
+      sigma2 <- scan.object$fit0$sigma2.mle  
     }
-    sim.y.matrix[,i] <- Xb + u + e
+    set.seed(seed)
+    
+    sim.y.matrix <- matrix(NA, nrow=n, ncol=num.samples)
+    for(i in 1:num.samples){
+      u <- c(mnormt::rmnorm(1, mean=rep(0, n), varcov=K*tau2))
+      if(is.null(weights)){
+        e <- rnorm(n=n, mean=0, sd=sqrt(sigma2))
+      }
+      else{
+        e <- c(mnormt::rmnorm(1, mean=rep(0, n), varcov=diag(1/weights)*sigma2))
+      }
+      sim.y.matrix[,i] <- Xb + u + e
+    }
   }
+  else{
+    stop("Need to add lmer-based functionality!!")
+  }
+  
   sim.threshold.object <- list(y.matrix=sim.y.matrix,
                                formula=scan.object$formula,
-                               weights=null.fit$weights,
-                               K=null.fit$K)
+                               weights=weights,
+                               K=K)
   return(sim.threshold.object)
 }
 

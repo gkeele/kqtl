@@ -4,13 +4,13 @@
 \alias{generate.null.bootstrap.matrix}
 \title{Returns a matrix of parametric bootstrap samples from the null model of no locus effect}
 \usage{
-generate.null.bootstrap.matrix(scan.object, use.REML = FALSE, num.samples,
+generate.null.bootstrap.matrix(scan.object, use.REML = TRUE, num.samples,
   seed = 1)
 }
 \arguments{
 \item{scan.object}{A scan.h2lmm() object.}
 
-\item{use.REML}{DEFAULT: FALSE. Determines whether the variance components for the parametric sampling are 
+\item{use.REML}{DEFAULT: TRUE. Determines whether the variance components for the parametric sampling are 
 based on maximizing the likelihood (ML) or the residual likelihood (REML).}
 
 \item{num.samples}{The number of parametric bootstrap samples to return.}
