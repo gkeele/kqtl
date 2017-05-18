@@ -18,8 +18,14 @@ generate.null.bootstrap.matrix <- function(scan.object, use.REML=TRUE, num.sampl
     K <- scan.object$fit0$K
     weights <- scan.object$fit0$weights
     if(use.REML){
-      tau2 <- scan.object$fit0.REML$tau2.mle
-      sigma2 <- scan.object$fit0.REML$sigma2.mle
+      if(is.null(K)){
+        tau2 <- 0
+        sigma2 <- scan.object$fit0$sigma2.mle*(n/(n - 1))
+      }
+      else{
+        tau2 <- scan.object$fit0.REML$tau2.mle
+        sigma2 <- scan.object$fit0.REML$sigma2.mle
+      }
     }
     else{
       tau2 <- scan.object$fit0$tau2.mle
