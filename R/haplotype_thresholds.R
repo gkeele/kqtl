@@ -128,7 +128,7 @@ run.threshold.scans <- function(sim.threshold.object, keep.full.scans=TRUE,
   for(i in 1:num.scans){
     new.y <- data.frame(new.y=y.matrix[,i], SUBJECT.NAME=rownames(y.matrix))
     this.data <- merge(x=new.y, y=data, by="SUBJECT.NAME", all.x=TRUE)
-    
+
     this.scan <- scan.h2lmm(genomecache=genomecache, data=this.data, formula=iteration.formula, K=K, model=model,
                             use.par=use.par, use.multi.impute=use.multi.impute, num.imp=num.imp, chr=chr, brute=brute, use.fix.par=use.fix.par, seed=scan.seed, do.augment=do.augment, 
                             weights=weights, use.augment.weights=use.augment.weights, use.full.null=use.full.null, added.data.points=added.data.points,
