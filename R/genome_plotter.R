@@ -216,11 +216,20 @@ genome.plotter.whole <- function(scan.list, use.lod=FALSE, just.these.chr=NULL,
   
   shift.left <- min(pos[chr==chr.types[1]])
 
-  this.title <- c(main, 
-                  paste0(scan.list[[1]]$formula, " + locus (", scan.list[[1]]$model.type, ")"),
-                  paste("n =", ifelse(is.null(scan.list[[1]]$fit0$weights), 
-                                      length(scan.list[[1]]$fit0$y),
-                                      sum(scan.list[[1]]$fit0$weights))))
+  ### Handling the annoying differences between lmer and lm objects
+  if(class(scan.list[[1]]$fit0) != "lmerMod"){
+    this.title <- c(main, 
+                    paste0(scan.list[[1]]$formula, " + locus (", scan.list[[1]]$model.type, ")"),
+                    paste("n =", ifelse(is.null(scan.list[[1]]$fit0$weights), 
+                                        length(scan.list[[1]]$fit0$y),
+                                        sum(scan.list[[1]]$fit0$weights))))
+  }
+  else{
+    this.title <- c(main, 
+                    paste0(scan.list[[1]]$formula, " + locus (", scan.list[[1]]$model.type, ")"),
+                    paste("n =", sum(scan.list[[1]]$fit0@resp$weights)))
+  }
+  
   
   plot(pos[pre.chr==chr.types[1]], outcome[pre.chr==chr.types[1]], 
        xlim=c(shift.left, sum(max.pos)+(length(chr.types)-1)), 
