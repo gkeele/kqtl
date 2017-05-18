@@ -42,14 +42,17 @@ lmmbygls <- function(formula, data, K=NULL, eigen.K=NULL, fix.par=NULL,
   
   m[[1L]] <- quote(stats::model.frame)
   m <- eval.parent(m)
-  if (method == "model.frame"){
+  if(method == "model.frame"){
     return(m)    
   }
   Terms <- attr(m, "terms")
+  
   y <- model.response(m)
   X <- model.matrix(Terms, m, contrasts)
   n <- nrow(X)
   q <- ncol(X)
+  
+  ids <- data$SUBJECT.NAMES
 
   if(is.null(fix.par)){
     if(is.null(K)){ ## No kinship effect setting: K - NULL, eigen.K - NULL
@@ -179,8 +182,10 @@ lmmbygls <- function(formula, data, K=NULL, eigen.K=NULL, fix.par=NULL,
   }
   fit$na.action <- attr(m, "na.action")
   if(!is.null(K)){
-    names(y) <- rownames(K)
-    rownames(X) <- rownames(K)
+    names(y) <- rownames(X) <- rownames(K)
+  }
+  else{
+    names(y) <- rownames(X) <- ids
   }
   fit$weights <- weights
   fit$x <- X
