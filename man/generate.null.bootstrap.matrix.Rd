@@ -15,7 +15,7 @@ based on maximizing the likelihood (ML) or the residual likelihood (REML).}
 
 \item{num.samples}{The number of parametric bootstrap samples to return.}
 
-\item{seed}{DEFAULT: 1. The sampling process is random, thus a seed must be set for samples to be the same
+\item{seed}{DEFAULT: 1. The sampling process is random, thus a seed must be set for samples to be consistent
 across machines.}
 }
 \description{
