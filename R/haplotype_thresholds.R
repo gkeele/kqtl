@@ -109,8 +109,8 @@ generate.perm.matrix <- function(scan.object, use.REML=TRUE, num.samples, seed=1
   }
   sim.threshold.object <- list(y.matrix=perm.y.matrix,
                                formula=scan.object$formula,
-                               #weights=null.fit$weights[perm.y.ranks],
-                               weights=null.fit$weights,
+                               #weights=weights[perm.y.ranks],
+                               weights=weights,
                                K=null.fit$K)
   return(sim.threshold.object)
 }
