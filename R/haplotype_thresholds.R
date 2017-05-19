@@ -31,9 +31,9 @@ generate.null.bootstrap.matrix <- function(scan.object, use.REML=TRUE, num.sampl
       tau2 <- scan.object$fit0$tau2.mle
       sigma2 <- scan.object$fit0$sigma2.mle  
     }
-    set.seed(seed)
-    
     sim.y.matrix <- matrix(NA, nrow=n, ncol=num.samples)
+    
+    set.seed(seed)
     for(i in 1:num.samples){
       if(is.null(K)){
         u <- rep(0, n)
@@ -63,31 +63,54 @@ generate.null.bootstrap.matrix <- function(scan.object, use.REML=TRUE, num.sampl
 }
 
 #' @export
-generate.parametric.perm.matrix <- function(scan.object, use.REML, num.samples, seed=1){
-  if(use.REML){
-    null.fit <- scan.object$fit0.REML
-  }
-  else{
-    null.fit <- scan.object$fit0
-  }
-  set.seed(seed)
-  
-  Xb <- null.fit$x %*% null.fit$coefficients
-  perm.y.matrix <- matrix(NA, nrow=length(Xb), ncol=num.samples)
-  for(i in 1:num.samples){
-    u <- c(mnormt::rmnorm(1, mean=rep(0, nrow(null.fit$x)), varcov=null.fit$K*null.fit$tau2.mle))
-    if(is.null(null.fit$weights)){
-      e <- rnorm(n=nrow(null.fit$x), mean=0, sd=sqrt(null.fit$sigma2.mle))
+generate.perm.matrix <- function(scan.object, use.REML=TRUE, num.samples, seed=1){
+  if(class(scan.object$fit0) != "lmerMod"){
+    Xb <- scan.object$fit0$x %*% scan.object$fit0$coefficients
+    n <- nrow(scan.object$fit0$x)
+    K <- scan.object$fit0$K
+    weights <- scan.object$fit0$weights
+    if(use.REML){
+      if(is.null(K)){
+        tau2 <- 0
+        sigma2 <- scan.object$fit0$sigma2.mle*(n/(n - 1))
+      }
+      else{
+        tau2 <- scan.object$fit0.REML$tau2.mle
+        sigma2 <- scan.object$fit0.REML$sigma2.mle
+      }
     }
     else{
-      e <- c(mnormt::rmnorm(1, mean=rep(0, nrow(null.fit$x)), varcov=diag(1/null.fit$weights)*null.fit$sigma2.mle))
+      tau2 <- scan.object$fit0$tau2.mle
+      sigma2 <- scan.object$fit0$sigma2.mle  
     }
-    perm.y.ranks <- order(Xb + u + e)
-    perm.y.matrix[,i] <- null.fit$y[perm.y.ranks]
+    perm.y.matrix <- matrix(NA, nrow=n, ncol=num.samples)
+    
+    set.seed(seed)  
+    for(i in 1:num.samples){
+      if(is.null(K)){
+        u <- rep(0, n)
+      }
+      else{
+        u <- c(mnormt::rmnorm(1, mean=rep(0, n), varcov=K*tau2))
+      }
+      if(is.null(weights)){
+        e <- rnorm(n=n, mean=0, sd=sqrt(sigma2))
+      }
+      else{
+        e <- c(mnormt::rmnorm(1, mean=rep(0, n), varcov=diag(1/weights)*sigma2))
+      }
+      perm.y.ranks <- order(Xb + u + e)
+      perm.y.matrix[,i] <- scan.object$fit0$y[perm.y.ranks]
+      rownames(perm.y.matrix) <- names(scan.object$fit0$y)
+    }
+  }
+  else{
+    stop("Need to add lmer-based functionality!!")
   }
   sim.threshold.object <- list(y.matrix=perm.y.matrix,
                                formula=scan.object$formula,
-                               weights=null.fit$weights[perm.y.ranks], # Keeping the weights matched with outcomes
+                               #weights=null.fit$weights[perm.y.ranks],
+                               weights=null.fit$weights,
                                K=null.fit$K)
   return(sim.threshold.object)
 }
