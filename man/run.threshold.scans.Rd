@@ -6,7 +6,8 @@
 \usage{
 run.threshold.scans(sim.threshold.object, keep.full.scans = TRUE, genomecache,
   data, model = c("additive", "full", "diplolasso"),
-  use.multi.impute = TRUE, num.imp = 11, scan.seed = 1, ...)
+  use.multi.impute = TRUE, num.imp = 11, chr = "all", scan.seed = 1,
+  ...)
 }
 \arguments{
 \item{sim.threshold.object}{An object created by either generate.null.bootstrap.matrix() or generate.perm.matrix().}
@@ -29,6 +30,8 @@ diplotype probabilities. The diplolasso option specifies the DiploLASSO model.}
 \item{use.multi.impute}{DEFAULT: TRUE. This option specifies whether to use ROP or multiple imputations.}
 
 \item{num.imp}{DEFAULT: 11. IF multiple imputations are used, this specifies the number of imputations to perform.}
+
+\item{chr}{DEFAULT: "all". The chromosomes to conduct scans over.}
 
 \item{scan.seed}{DEFAULT: 1. The sampling process is random, thus a seed must be set for samples to be consistent
 across machines.}

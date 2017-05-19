@@ -147,6 +147,7 @@ generate.perm.matrix <- function(scan.object, use.REML=TRUE, num.samples, seed=1
 #' diplotype probabilities. The diplolasso option specifies the DiploLASSO model.
 #' @param use.multi.impute DEFAULT: TRUE. This option specifies whether to use ROP or multiple imputations.
 #' @param num.imp DEFAULT: 11. IF multiple imputations are used, this specifies the number of imputations to perform.
+#' @param chr DEFAULT: "all". The chromosomes to conduct scans over.
 #' @param scan.seed DEFAULT: 1. The sampling process is random, thus a seed must be set for samples to be consistent
 #' across machines.
 #' @export
@@ -154,7 +155,7 @@ generate.perm.matrix <- function(scan.object, use.REML=TRUE, num.samples, seed=1
 run.threshold.scans <- function(sim.threshold.object, keep.full.scans=TRUE,
                                 genomecache, data,
                                 model=c("additive", "full", "diplolasso"),
-                                use.multi.impute=TRUE, num.imp=11, 
+                                use.multi.impute=TRUE, num.imp=11, chr="all", 
                                 scan.seed=1, ...){
   y.matrix <- sim.threshold.object$y.matrix
   formula <- sim.threshold.object$formula
@@ -188,7 +189,7 @@ run.threshold.scans <- function(sim.threshold.object, keep.full.scans=TRUE,
 
     this.scan <- scan.h2lmm(genomecache=genomecache, data=this.data, formula=iteration.formula, K=K, model=model,
                             use.multi.impute=use.multi.impute, num.imp=num.imp, seed=scan.seed,
-                            weights=weights,
+                            weights=weights, chr=chr,
                             ...)
     if(keep.full.scans){
       full.results[i,] <- this.scan$p.value
