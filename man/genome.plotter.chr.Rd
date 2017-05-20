@@ -6,8 +6,8 @@
 \usage{
 genome.plotter.chr(scan.object, chr, use.lod = FALSE, scale = c("Mb", "cM"),
   main.col = "black", median.band.col = "gray88", main = "",
-  y.max.manual = NULL, hard.thresholds = NULL, thresholds.col = "red",
-  thresholds.legend = NULL)
+  y.max.manual = NULL, my.legend.cex = 0.6, hard.thresholds = NULL,
+  thresholds.col = "red", thresholds.legend = NULL)
 }
 \arguments{
 \item{scan.object}{A scan.h2lmm() object (ROP or multiple imputations). If multiple imputations, median and confidence interval 
@@ -24,6 +24,8 @@ on median are plotted.}
 \item{main}{DEFAULT: "". Adds a title above the model.}
 
 \item{y.max.manual}{DEFAULT: NULL. Manually adds a max y-value. Allows multiple genome scans to easily be on the same scale.}
+
+\item{my.legend.cex}{DEFAULT: 0.6. Specifies the size of the text in the legend.}
 
 \item{hard.thresholds}{DEFAULT: NULL. Specify one or more horizontal threshold lines.}
 

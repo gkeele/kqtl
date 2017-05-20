@@ -56,6 +56,7 @@ genome.plotter.to.pdf <- function(scan.object, chr=c(1:19, "X"), use.lod=FALSE,
 #' @param median.band.col DEFAULT: "gray88". The color of the 95\% confident band plotted around the median.
 #' @param main DEFAULT: "". Adds a title above the model.
 #' @param y.max.manual DEFAULT: NULL. Manually adds a max y-value. Allows multiple genome scans to easily be on the same scale.
+#' @param my.legend.cex DEFAULT: 0.6. Specifies the size of the text in the legend.
 #' @param hard.thresholds DEFAULT: NULL. Specify one or more horizontal threshold lines.
 #' @param thresholds.col DEFAULT: "red". Set the colors of the specified thresholds.
 #' @param thresholds.legend DEFAULT: NULL. If non-NULL, string arguments used as labels in thresholds legend. If NULL,
@@ -65,7 +66,7 @@ genome.plotter.to.pdf <- function(scan.object, chr=c(1:19, "X"), use.lod=FALSE,
 genome.plotter.chr <- function(scan.object, chr, use.lod=FALSE,
                                scale=c("Mb", "cM"), main.col="black", median.band.col="gray88",
                                main="",
-                               y.max.manual=NULL,
+                               y.max.manual=NULL, my.legend.cex=0.6,
                                hard.thresholds=NULL, thresholds.col="red", thresholds.legend=NULL){
   scale <- scale[1]
   MI <- all.CI <- CI <- NULL

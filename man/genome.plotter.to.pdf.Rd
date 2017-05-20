@@ -8,7 +8,7 @@ genome.plotter.to.pdf(scan.object, chr = c(1:19, "X"), use.lod = FALSE,
   scale = c("Mb", "cM"), main.col = "black", median.band.col = "gray88",
   main = "", y.max.manual = NULL, hard.thresholds = NULL,
   thresholds.col = "red", thresholds.legend = NULL, pdf.output.path,
-  pdf.height = 5, pdf.width = 9)
+  pdf.height = 5, pdf.width = 9, ...)
 }
 \arguments{
 \item{scan.object}{A scan.h2lmm() object (ROP or multiple imputations). If multiple imputations, median and confidence interval 
