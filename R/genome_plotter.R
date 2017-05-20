@@ -199,7 +199,7 @@ genome.plotter.whole <- function(scan.list, use.lod=FALSE, just.these.chr=NULL,
   chr.types <- levels(pre.chr)
   
   # Finding max y of plot window
-  y.max <- ceiling(max(outcome, hard.thresholds)) 
+  y.max <- ceiling(max(outcome, max(hard.thresholds))) 
   if(length(scan.list) > 1){
     for(i in 2:length(scan.list)){
       if(use.lod){
