@@ -25,19 +25,19 @@
 genome.plotter.to.pdf <- function(scan.object, chr=c(1:19, "X"), use.lod=FALSE,
                                   scale=c("Mb", "cM"), main.col="black", median.band.col="gray88", main="", y.max.manual=NULL,
                                   hard.thresholds=NULL, thresholds.col="red", thresholds.legend=NULL,
-                                  pdf.output.path, pdf.height=5, pdf.width=9){
+                                  pdf.output.path, pdf.height=5, pdf.width=9, ...){
   scale <- scale[1]
   pdf(pdf.output.path, height=pdf.height, width=pdf.width)
   genome.plotter.whole(scan.list=list(scan.object), use.lod=use.lod,
                        scale=scale, main.colors=main.col, use.legend=FALSE,
                        main=main,
                        y.max.manual=y.max.manual,
-                       hard.thresholds=hard.thresholds, thresholds.col=thresholds.col, thresholds.legend=thresholds.legend)
+                       hard.thresholds=hard.thresholds, thresholds.col=thresholds.col, thresholds.legend=thresholds.legend, ...)
   for(i in 1:length(chr)){
     genome.plotter.chr(scan.object=scan.object, chr=chr[i], use.lod=use.lod,
                        scale=scale, main.col=main.col, median.band.col=median.band.col,
                        main=main, y.max.manual=y.max.manual, 
-                       hard.thresholds=hard.thresholds, thresholds.col=thresholds.col, thresholds.legend=thresholds.legend)
+                       hard.thresholds=hard.thresholds, thresholds.col=thresholds.col, thresholds.legend=thresholds.legend, ...)
   }
   dev.off()
 }
