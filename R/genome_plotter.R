@@ -302,7 +302,8 @@ genome.plotter.whole <- function(scan.list, use.lod=FALSE, just.these.chr=NULL,
     }
   }
   if(!is.null(thresholds.legend)){
-    legend("topleft", legend=thresholds.legend, col=thresholds.col, lty=rep(2, length(thresholds.legend)))
+    legend("topleft", legend=thresholds.legend, col=thresholds.col, lty=rep(2, length(thresholds.legend)),
+           bty="n", cex=my.legend.cex)
   }
 }
 
