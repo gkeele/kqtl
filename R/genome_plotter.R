@@ -15,6 +15,8 @@
 #' @param y.max.manual DEFAULT: NULL. Manually adds a max y-value. Allows multiple genome scans to easily be on the same scale.
 #' @param hard.thresholds DEFAULT: NULL. Specify one or more horizontal threshold lines.
 #' @param thresholds.col DEFAULT: "red". Set the colors of the specified thresholds.
+#' @param thresholds.legend DEFAULT: NULL. If non-NULL, string arguments used as labels in thresholds legend. If NULL,
+#' no threshols legend is used.
 #' @param pdf.output.path That path of the PDF file to be generated.
 #' @param pdf.height DEFAULT: 5. The height of an individual pages of the PDF.
 #' @param pdf.width DEFAULT: 9. The width of an individual pages of the PDF.
@@ -22,7 +24,7 @@
 #' @examples genome.plotter.to.pdf()
 genome.plotter.to.pdf <- function(scan.object, chr=c(1:19, "X"), use.lod=FALSE,
                                   scale=c("Mb", "cM"), main.col="black", median.band.col="gray88", main="", y.max.manual=NULL,
-                                  hard.thresholds=NULL, thresholds.col="red",
+                                  hard.thresholds=NULL, thresholds.col="red", thresholds.legend=NULL,
                                   pdf.output.path, pdf.height=5, pdf.width=9){
   scale <- scale[1]
   pdf(pdf.output.path, height=pdf.height, width=pdf.width)
@@ -30,12 +32,12 @@ genome.plotter.to.pdf <- function(scan.object, chr=c(1:19, "X"), use.lod=FALSE,
                        scale=scale, main.colors=main.col, use.legend=FALSE,
                        main=main,
                        y.max.manual=y.max.manual,
-                       hard.thresholds=hard.thresholds, thresholds.col=thresholds.col)
+                       hard.thresholds=hard.thresholds, thresholds.col=thresholds.col, thresholds.legend=thresholds.legend)
   for(i in 1:length(chr)){
     genome.plotter.chr(scan.object=scan.object, chr=chr[i], use.lod=use.lod,
                        scale=scale, main.col=main.col, median.band.col=median.band.col,
-                       main=main, y.max.manual=y.max.manual, hard.thresholds=hard.thresholds,
-                       thresholds.col=thresholds.col)
+                       main=main, y.max.manual=y.max.manual, 
+                       hard.thresholds=hard.thresholds, thresholds.col=thresholds.col, thresholds.legend=thresholds.legend)
   }
   dev.off()
 }
@@ -56,16 +58,18 @@ genome.plotter.to.pdf <- function(scan.object, chr=c(1:19, "X"), use.lod=FALSE,
 #' @param y.max.manual DEFAULT: NULL. Manually adds a max y-value. Allows multiple genome scans to easily be on the same scale.
 #' @param hard.thresholds DEFAULT: NULL. Specify one or more horizontal threshold lines.
 #' @param thresholds.col DEFAULT: "red". Set the colors of the specified thresholds.
+#' @param thresholds.legend DEFAULT: NULL. If non-NULL, string arguments used as labels in thresholds legend. If NULL,
+#' no threshols legend is used.
 #' @export
 #' @examples genome.plotter.chr()
 genome.plotter.chr <- function(scan.object, chr, use.lod=FALSE,
                                scale=c("Mb", "cM"), main.col="black", median.band.col="gray88",
                                main="",
                                y.max.manual=NULL,
-                               hard.thresholds=NULL, thresholds.col="red"){
+                               hard.thresholds=NULL, thresholds.col="red", thresholds.legend=NULL){
   scale <- scale[1]
   MI <- all.CI <- CI <- NULL
-  if(length(thresholds.col) < length(hard.thresholds)){ rep(thresholds.col, length(hard.thresholds)) }
+  if(length(thresholds.col) < length(hard.thresholds)){ thresholds.col <- rep(thresholds.col, length(hard.thresholds)) }
   
   if(use.lod){
     all.outcome <- scan.object$LOD
@@ -131,6 +135,10 @@ genome.plotter.chr <- function(scan.object, chr, use.lod=FALSE,
     for(i in 1:length(hard.thresholds)){
       abline(h=hard.thresholds[i], col=thresholds.col[i], lty=2)
     }
+  }
+  if(!is.null(thresholds.legend)){
+    legend("topleft", legend=thresholds.legend, col=thresholds.col, lty=rep(2, length(thresholds.legend)),
+           bty="n", cex=my.legend.cex)
   }
 }
 

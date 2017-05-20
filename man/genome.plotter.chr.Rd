@@ -6,7 +6,8 @@
 \usage{
 genome.plotter.chr(scan.object, chr, use.lod = FALSE, scale = c("Mb", "cM"),
   main.col = "black", median.band.col = "gray88", main = "",
-  y.max.manual = NULL, hard.thresholds = NULL, thresholds.col = "red")
+  y.max.manual = NULL, hard.thresholds = NULL, thresholds.col = "red",
+  thresholds.legend = NULL)
 }
 \arguments{
 \item{scan.object}{A scan.h2lmm() object (ROP or multiple imputations). If multiple imputations, median and confidence interval 
@@ -27,6 +28,9 @@ on median are plotted.}
 \item{hard.thresholds}{DEFAULT: NULL. Specify one or more horizontal threshold lines.}
 
 \item{thresholds.col}{DEFAULT: "red". Set the colors of the specified thresholds.}
+
+\item{thresholds.legend}{DEFAULT: NULL. If non-NULL, string arguments used as labels in thresholds legend. If NULL,
+no threshols legend is used.}
 
 \item{main.colors}{DEFAULT: "black". The color of the main association score to be plotted.}
 }
