@@ -149,6 +149,8 @@ genome.plotter.chr <- function(scan.object, chr, use.lod=FALSE,
 #' @param y.max.manual DEFAULT: NULL. Manually adds a max y-value. Allows multiple genome scans to easily be on the same scale.
 #' @param hard.thresholds DEFAULT: NULL. Specify one or more horizontal threshold lines.
 #' @param thresholds.col DEFAULT: "red". Set the colors of the specified thresholds.
+#' @param thresholds.legend DEFAULT: NULL. If non-NULL, string arguments used as labels in thresholds legend. If NULL,
+#' no threshols legend is used.
 #' @export
 #' @examples genome.plotter.whole()
 genome.plotter.whole <- function(scan.list, use.lod=FALSE, just.these.chr=NULL,
@@ -156,9 +158,9 @@ genome.plotter.whole <- function(scan.list, use.lod=FALSE, just.these.chr=NULL,
                                  use.legend=TRUE, main="",
                                  my.legend.cex=0.6,
                                  y.max.manual=NULL,
-                                 hard.thresholds=NULL, thresholds.col="red")
+                                 hard.thresholds=NULL, thresholds.col="red", thresholds.legend=NULL)
 {
-  if(length(thresholds.col) < length(hard.thresholds)){ rep(thresholds.col, length(hard.thresholds)) }
+  if(length(thresholds.col) < length(hard.thresholds)){ thresholds.col <- rep(thresholds.col, length(hard.thresholds)) }
   main.object <- scan.list[[1]]
   if(use.lod){
     outcome <- main.object$LOD
@@ -298,6 +300,9 @@ genome.plotter.whole <- function(scan.list, use.lod=FALSE, just.these.chr=NULL,
     for(i in 1:length(hard.thresholds)){
       abline(h=hard.thresholds[i], col=thresholds.col[i], lty=2)
     }
+  }
+  if(!is.null(thresholds.legend)){
+    legend("topleft", legend=thresholds.legend, col=thresholds.col, lty=rep(2, length(thresholds.legend)))
   }
 }
 

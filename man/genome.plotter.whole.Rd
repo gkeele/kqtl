@@ -7,7 +7,8 @@
 genome.plotter.whole(scan.list, use.lod = FALSE, just.these.chr = NULL,
   scale = "Mb", main.colors = c("black", "gray48", "blue"),
   use.legend = TRUE, main = "", my.legend.cex = 0.6,
-  y.max.manual = NULL, hard.thresholds = NULL, thresholds.col = "red")
+  y.max.manual = NULL, hard.thresholds = NULL, thresholds.col = "red",
+  thresholds.legend = NULL)
 }
 \arguments{
 \item{scan.list}{A list of scan.h2lmm() objects that are to be plotted within the same genome scan plot.}
@@ -31,6 +32,9 @@ genome.plotter.whole(scan.list, use.lod = FALSE, just.these.chr = NULL,
 \item{hard.thresholds}{DEFAULT: NULL. Specify one or more horizontal threshold lines.}
 
 \item{thresholds.col}{DEFAULT: "red". Set the colors of the specified thresholds.}
+
+\item{thresholds.legend}{DEFAULT: NULL. If non-NULL, string arguments used as labels in thresholds legend. If NULL,
+no threshols legend is used.}
 }
 \description{
 This function takes the genome scan output from scan.h2lmm() and flexibly plots out the genome scan.
