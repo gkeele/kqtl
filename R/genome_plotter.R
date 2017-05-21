@@ -327,13 +327,19 @@ genome.plotter.whole <- function(scan.list, use.lod=FALSE, just.these.chr=NULL,
 #' @param title DEFAULT: "". Manually adds a max ylim to the plot. Allows multiple genome scans to easily be on the same scale.
 #' @param alt.col DEFAULT: NULL. Allows for a custom color vector for individual SNPs.
 #' @param hard.thresholds DEFAULT: NULL. Specify one or more horizontal threshold lines.
+#' @param thresholds.col DEFAULT: "red". Set the colors of the specified thresholds.
+#' @param thresholds.legend DEFAULT: NULL. If non-NULL, string arguments used as labels in thresholds legend. If NULL,
+#' @param my.legend.cex DEFAULT: 0.6. Specifies the size of the text in the legend.
+#' @param my.legend.pos DEFAULT: "topright". Specified position of the legend on the plot.
 #' @export
 #' @examples snp.genome.plotter.whole()
 snp.genome.plotter.whole <- function(snp.scan, just.these.chr=NULL,
                                      scale="Mb",
                                      y.max.manual=NULL, title="", alt.col=NULL,
-                                     hard.thresholds=NULL)
-{
+                                     hard.thresholds=NULL, thresholds.col="red", thresholds.legend=NULL,
+                                     my.legend.cex=0.6, my.legend.pos="topright"){
+  
+  if(length(thresholds.col) < length(hard.thresholds)){ thresholds.col <- rep(thresholds.col, length(hard.thresholds)) }
   main.object <- snp.scan
   outcome <- -log10(main.object$p.value)
   plot.this <- "p.value"
@@ -429,6 +435,16 @@ snp.genome.plotter.whole <- function(snp.scan, just.these.chr=NULL,
     axis.label <- chr.types
   }
   axis(side=1, tick=F, line=NA, at=label.spots, labels=axis.label, cex.axis=0.7, padj=-3.5)
+  
+  if(!is.null(hard.thresholds)){
+    for(i in 1:length(hard.thresholds)){
+      abline(h=hard.thresholds[i], col=thresholds.col[i], lty=2)
+    }
+  }
+  if(!is.null(thresholds.legend)){
+    legend(my.legend.pos, legend=thresholds.legend, col=thresholds.col, lty=rep(2, length(thresholds.legend)),
+           bty="n", cex=my.legend.cex)
+  }
 }
 
 #' Plot a single chromosome window of a SNP-based genome scan overlayed with r^2 information

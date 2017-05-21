@@ -6,7 +6,9 @@
 \usage{
 snp.genome.plotter.whole(snp.scan, just.these.chr = NULL, scale = "Mb",
   y.max.manual = NULL, title = "", alt.col = NULL,
-  hard.thresholds = NULL)
+  hard.thresholds = NULL, thresholds.col = "red",
+  thresholds.legend = NULL, my.legend.cex = 0.6,
+  my.legend.pos = "topright")
 }
 \arguments{
 \item{snp.scan}{An imputed.snp.scan.h2lmm() object.}
@@ -22,6 +24,14 @@ snp.genome.plotter.whole(snp.scan, just.these.chr = NULL, scale = "Mb",
 \item{alt.col}{DEFAULT: NULL. Allows for a custom color vector for individual SNPs.}
 
 \item{hard.thresholds}{DEFAULT: NULL. Specify one or more horizontal threshold lines.}
+
+\item{thresholds.col}{DEFAULT: "red". Set the colors of the specified thresholds.}
+
+\item{thresholds.legend}{DEFAULT: NULL. If non-NULL, string arguments used as labels in thresholds legend. If NULL,}
+
+\item{my.legend.cex}{DEFAULT: 0.6. Specifies the size of the text in the legend.}
+
+\item{my.legend.pos}{DEFAULT: "topright". Specified position of the legend on the plot.}
 }
 \description{
 This function takes the genome scan output from imputed.snp.scan.h2lmm() and plots the whole genome or single chromosome zoom-ins.
