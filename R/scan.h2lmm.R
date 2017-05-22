@@ -91,7 +91,7 @@ scan.h2lmm <- function(genomecache, data, formula, K=NULL,
     augment.n <- ifelse(model=="additive", num.founders, num.founders + choose(num.founders, 2))
     augment.indicator <- c(rep(0, original.n), rep(1, augment.n))
     if(!use.full.null){
-      data <- make.simple.augment.data(data=data, augment.n=augment.n)
+      data <- make.simple.augment.data(data=data, formula=null.formula, augment.n=augment.n)
       K <- make.simple.augment.K(K=K, augment.n=augment.n)
     }
     if(use.full.null){
