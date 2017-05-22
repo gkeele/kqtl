@@ -112,9 +112,18 @@ make.simple.augment.data <- function(data, formula, augment.n){
   data <- rbind(data, partial.augment.data)
   return(data)
 }
-make.augment.weights <- function(data, augment.n, added.data.points){
-  weights <- c(rep(1, nrow(data) - augment.n), 
-               rep(augment.n/added.data.points, augment.n))
+make.augment.weights <- function(data, weights, augment.n, added.data.points){
+  if(added.data.points == augment.n & is.null(weights)){
+    weights <- NULL
+  }
+  else if(added.data.points != augment.n & is.null(weights)){
+    weights <- rep(1, nrow(data) - augment.n, rep(augment.n/added.data.points, augment.n))
+    names(weights) <- as.character(data$SUJBECT.NAME)
+  }
+  else if(added.data.points != augment.n & !is.null(weights)){
+    weights <- c(weights, rep(augment.n/added.data.points, augment.n))
+    names(weights) <- as.character(data$SUJBECT.NAME)
+  }
   return(weights)
 }
 
