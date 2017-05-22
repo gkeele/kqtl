@@ -92,6 +92,7 @@ scan.h2lmm <- function(genomecache, data, formula, K=NULL,
     augment.indicator <- c(rep(0, original.n), rep(1, augment.n))
     if(!use.full.null){
       data <- make.simple.augment.data(data=data, formula=formula, augment.n=augment.n)
+      data <- data.frame(data, augment.indicator=augment.indicator)
       K <- make.simple.augment.K(K=K, augment.n=augment.n)
       if(!is.null(weights)){
         weights <- c(weights, rep(1, augment.n))
@@ -213,7 +214,7 @@ scan.h2lmm <- function(genomecache, data, formula, K=NULL,
     }
     if(!use.multi.impute){
       if(model %in% c("additive", "full")){
-        X <- h$getLocusMatrix(loci[i], model=model, subjects=data$SUBJECT.NAME[1:original.n])
+        X <- h$getLocusMatrix(loci[i], model=model, subjects=as.character(data$SUBJECT.NAME[1:original.n]))
         max.column <- which.max(colSums(X, na.rm=TRUE))[1]
         X <- X[,-max.column]
       }
