@@ -95,7 +95,7 @@ scan.h2lmm <- function(genomecache, data, formula, K=NULL,
       K <- make.simple.augment.K(K=K, augment.n=augment.n)
       if(!is.null(weights)){
         weights <- c(weights, rep(1, augment.n))
-        names(weights)[original.n+1, original.n+1+augment.n] <- paste0("augment.obs", 1:augment.n)
+        names(weights)[(original.n+1):(original.n+1+augment.n)] <- paste0("augment.obs", 1:augment.n)
       }
     }
     if(use.full.null){
