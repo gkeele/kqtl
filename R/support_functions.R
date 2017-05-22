@@ -120,7 +120,7 @@ make.augment.weights <- function(data, weights, augment.n, added.data.points){
     weights <- c(rep(1, nrow(data) - augment.n), rep(added.data.points/augment.n, augment.n))
     names(weights) <- as.character(data$SUBJECT.NAME)
   }
-  else if(added.data.points != augment.n & !is.null(weights)){
+  else if(!is.null(weights)){
     weights <- c(weights, rep(added.data.points/augment.n, augment.n))
     names(weights) <- as.character(data$SUBJECT.NAME)
   }
