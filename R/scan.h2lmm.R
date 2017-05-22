@@ -92,7 +92,7 @@ scan.h2lmm <- function(genomecache, data, formula, K=NULL,
     augment.indicator <- c(rep(0, original.n), rep(1, augment.n))
     if(!use.full.null){
       data <- make.simple.augment.data(data=data, formula=formula, augment.n=augment.n)
-      K <- make.simple.augment.K(K=K, augment.n=augment.n, original.n=original.n)
+      K <- make.simple.augment.K(K=K, augment.n=augment.n)
     }
     if(use.full.null){
       no.augment.K <- K
