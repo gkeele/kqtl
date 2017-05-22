@@ -37,8 +37,6 @@
 #' when using the mean of multiple individuals with the same genome.
 #' @param do.augment DEFAULT: FALSE. Augments the data with null observations for genotype groups. This is an approximately Bayesian 
 #' approach to applying a prior to the data, and can help control highly influential data points.
-#' @param use.augment.weights DEFAULT: FALSE. Specify non-equal weights on the augmented data points. This allows for the inclusion of
-#' augmented data points to all genotype classes while reducing their overall contribution to the data.
 #' @param use.full.null DEFAULT: FALSE. Draws augmented data points from the null model. This allows for the inclusion of null data points
 #' that do not influence the estimation of other model parameters as much.
 #' @param added.data.points DEFAULT: 1. If augment weights are being used, this specifies how many data points should be added in total.
@@ -51,7 +49,7 @@ scan.h2lmm <- function(genomecache, data, formula, K=NULL,
                        model=c("additive", "full", "diplolasso"), diplolasso.refit=FALSE,
                        use.par="h2", use.multi.impute=TRUE, num.imp=11, chr="all", brute=TRUE, use.fix.par=TRUE, 
                        seed=1, impute.on="SUBJECT.NAME",
-                       weights=NULL, do.augment=FALSE, use.augment.weights=FALSE, use.full.null=FALSE, added.data.points=1, 
+                       weights=NULL, do.augment=FALSE, use.full.null=FALSE, added.data.points=1, 
                        just.these.loci=NULL,
                        print.locus.fit=FALSE,
                        ...){ # diplolasso and diplolasso refit not work correctly
@@ -101,13 +99,7 @@ scan.h2lmm <- function(genomecache, data, formula, K=NULL,
       data <- make.full.null.augment.data(formula=formula, data=data, no.augment.K=no.augment.K, use.par=use.par, brute=brute,
                                           original.n=original.n, augment.n=augment.n, weights=weights)
     }
-    # if(!is.null(weights)){
-    #   weights <- c(weights, rep(1, augment.n))
-    #   names(weights)[(original.n+1):(original.n+augment.n)] <- paste0("augment.obs", 1:augment.n)
-    # }
-    #if(use.augment.weights){
-      weights <- make.augment.weights(data=data, weights=weights, augment.n=augment.n, added.data.points=added.data.points)
-    #}
+    weights <- make.augment.weights(data=data, weights=weights, augment.n=augment.n, added.data.points=added.data.points)
   }
   
   ###### Null model

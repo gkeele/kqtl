@@ -8,9 +8,9 @@ scan.h2lmm(genomecache, data, formula, K = NULL, model = c("additive",
   "full", "diplolasso"), diplolasso.refit = FALSE, use.par = "h2",
   use.multi.impute = TRUE, num.imp = 11, chr = "all", brute = TRUE,
   use.fix.par = TRUE, seed = 1, impute.on = "SUBJECT.NAME",
-  weights = NULL, do.augment = FALSE, use.augment.weights = FALSE,
-  use.full.null = FALSE, added.data.points = 1, just.these.loci = NULL,
-  print.locus.fit = FALSE, ...)
+  weights = NULL, do.augment = FALSE, use.full.null = FALSE,
+  added.data.points = 1, just.these.loci = NULL, print.locus.fit = FALSE,
+  ...)
 }
 \arguments{
 \item{genomecache}{The path to the genome cache directory. The genome cache is a particularly structured
@@ -63,9 +63,6 @@ when using the mean of multiple individuals with the same genome.}
 
 \item{do.augment}{DEFAULT: FALSE. Augments the data with null observations for genotype groups. This is an approximately Bayesian 
 approach to applying a prior to the data, and can help control highly influential data points.}
-
-\item{use.augment.weights}{DEFAULT: FALSE. Specify non-equal weights on the augmented data points. This allows for the inclusion of
-augmented data points to all genotype classes while reducing their overall contribution to the data.}
 
 \item{use.full.null}{DEFAULT: FALSE. Draws augmented data points from the null model. This allows for the inclusion of null data points
 that do not influence the estimation of other model parameters as much.}
