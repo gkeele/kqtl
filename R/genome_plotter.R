@@ -460,13 +460,21 @@ snp.genome.plotter.whole <- function(snp.scan, just.these.chr=NULL,
 #' @param alt.col DEFAULT: NULL. Allows for a custom color vector for individual SNPs.
 #' @param this.cex DEFAULT: 1. Allows for the adjustment of the cex value for the main plot.
 #' @param hard.thresholds DEFAULT: NULL. Specify one or more horizontal threshold lines.
+#' @param thresholds.col DEFAULT: "red". Set the colors of the specified thresholds.
+#' @param thresholds.legend DEFAULT: NULL. If non-NULL, string arguments used as labels in thresholds legend. If NULL,
+#' @param my.legend.cex DEFAULT: 0.6. Specifies the size of the text in the legend.
+#' @param my.legend.pos DEFAULT: "topright". Specified position of the legend on the plot.
+#' @param r2.bounds DEFAULT: NULL. If NULL, no interval is depicted on the plot. If set to a value in [0,1], will include interval
+#' based on the given r2 on the plot.
 #' @export
 #' @examples snp.genome.plotter.w.r2()
 snp.genome.plotter.w.r2 <- function(snp.scan, r2.object,
                                     scale="Mb",
                                     y.max.manual=NULL, title="", alt.col=NULL, this.cex=1,
-                                    hard.thresholds=NULL)
-{
+                                    hard.thresholds=NULL, thresholds.col="red", thresholds.legend=NULL,
+                                    my.legend.cex=0.6, my.legend.pos="topleft",
+                                    r2.bounds=NULL){
+  if(length(thresholds.col) < length(hard.thresholds)){ thresholds.col <- rep(thresholds.col, length(hard.thresholds)) }
   main.object <- snp.scan
 
   outcome <- -log10(main.object$p.value)
@@ -512,16 +520,38 @@ snp.genome.plotter.w.r2 <- function(snp.scan, r2.object,
   
   r2.col <- these.colors[ceiling(r2.object$r2*999.1)]
   
-  plot(x=pos, y=outcome,
+  plot(0, pch='',
        xlim=c(min.pos, max.pos),
        ylim=c(0, y.max+1),
-       pch=20, cex=this.cex, col=r2.col,
        yaxt="n", xlab=this.xlab, ylab=this.ylab, main=this.title,
        frame.plot=F)
+  if(!is.null(r2.bounds)){
+    r2.interval <- extract.r2.interval(scan.object=snp.scan, r2.scan.object=r2.object, r2.level=r2.bounds)
+    if(scale == "cM"){
+      low.locus.pos <- r2.interval$lb.cM
+      high.locus.pos <- r2.interval$ub.cM
+    }
+    else if(scale == "Mb"){
+      low.locus.pos <- r2.interval$lb.Mb
+      high.locus.pos <- r2.interval$ub.Mb
+    }
+    polygon(c(rep(low.locus.pos, 2), rep(high.locus.pos, 2)), c(0, rep(y.max, 2), 0), col="gray", border=NA)
+  }
+  points(x=pos, y=outcome, col=r2.col, pch=20, cex=this.cex)
   points(x=point.locus.pos, y=point.locus.outcome, 
          bg="red", pch=21, cex=1.5)
   axis(side=2, at=0:y.max, las=2)
-
+  
+  if(!is.null(hard.thresholds)){
+    for(i in 1:length(hard.thresholds)){
+      abline(h=hard.thresholds[i], col=thresholds.col[i], lty=2)
+    }
+  }
+  if(!is.null(thresholds.legend)){
+    legend(my.legend.pos, legend=thresholds.legend, col=thresholds.col, lty=rep(2, length(thresholds.legend)),
+           bty="n", cex=my.legend.cex)
+  }
+  
   plotrix::color.legend(xl=floor(0.75*max.pos), yb=y.max, xr=max.pos, yt=y.max+0.5, legend=c(0, 0.25, 0.5, 0.75, 1), rect.col=these.colors, align="rb", gradient="x")  
   text(x=(max.pos - floor(0.75*max.pos))/2 + floor(0.75*max.pos),
        y=y.max+0.75,

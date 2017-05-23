@@ -234,6 +234,7 @@ calc.mi.LRT <- function(){
 }
 ###########################
 
+#' @export
 straineff.mapping.matrix <- function(M=8){
   T <- M*(M+1)/2
   mapping <- matrix(rep(0, T*M), M, T)
@@ -251,6 +252,7 @@ straineff.mapping.matrix <- function(M=8){
   }
   return(t(mapping))
 }
+
 run.imputation <- function(diplotype.probs, impute.map){
   diplotype.probs <- data.frame(original.order=1:nrow(diplotype.probs), SUBJECT.NAME=rownames(diplotype.probs), diplotype.probs, stringsAsFactors=FALSE)
   diplotype.probs <- merge(x=diplotype.probs, y=impute.map, by="SUBJECT.NAME")
