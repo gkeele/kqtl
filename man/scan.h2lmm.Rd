@@ -5,12 +5,11 @@
 \title{Run a haplotype-based genome scan from probabilities stored in a genome cache directory}
 \usage{
 scan.h2lmm(genomecache, data, formula, K = NULL, model = c("additive",
-  "full", "diplolasso"), diplolasso.refit = FALSE, use.par = "h2",
-  use.multi.impute = TRUE, num.imp = 11, chr = "all", brute = TRUE,
-  use.fix.par = TRUE, seed = 1, impute.on = "SUBJECT.NAME",
-  weights = NULL, do.augment = FALSE, use.full.null = FALSE,
-  added.data.points = 1, just.these.loci = NULL, print.locus.fit = FALSE,
-  ...)
+  "full"), use.par = "h2", use.multi.impute = TRUE, num.imp = 11,
+  chr = "all", brute = TRUE, use.fix.par = TRUE, seed = 1,
+  impute.on = "SUBJECT.NAME", weights = NULL, do.augment = FALSE,
+  use.full.null = FALSE, added.data.points = 1, just.these.loci = NULL,
+  print.locus.fit = FALSE, ...)
 }
 \arguments{
 \item{genomecache}{The path to the genome cache directory. The genome cache is a particularly structured
@@ -30,10 +29,7 @@ are included in the formula) or a fixed effect model (equivalent to lm).}
 
 \item{model}{DEFAULT: additive. Specifies how to model the founder haplotype probabilities. The additive options specifies
 use of haplotype dosages, and is most commonly used. The full option regresses the phenotype on the actual
-diplotype probabilities. The diplolasso option specifies the DiploLASSO model.}
-
-\item{diplolasso.refit}{DEFAULT: FALSE. If the DiploLASSO model is being run, this option re-runs the model on the
-with the reduced set of dominance parameters unshrunk.}
+diplotype probabilities.}
 
 \item{use.par}{DEFAULT: "h2". The parameterization of the likelihood to be used.}
 
