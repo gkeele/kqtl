@@ -15,9 +15,7 @@
 #' are included in the formula) or a fixed effect model (equivalent to lm).
 #' @param model DEFAULT: additive. Specifies how to model the founder haplotype probabilities. The additive options specifies
 #' use of haplotype dosages, and is most commonly used. The full option regresses the phenotype on the actual
-#' diplotype probabilities. The diplolasso option specifies the DiploLASSO model.
-#' @param diplolasso.refit DEFAULT: FALSE. If the DiploLASSO model is being run, this option re-runs the model on the
-#' with the reduced set of dominance parameters unshrunk.
+#' diplotype probabilities.
 #' @param use.par DEFAULT: "h2". The parameterization of the likelihood to be used. 
 #' @param use.multi.impute DEFAULT: TRUE. This option specifies whether to use ROP or multiple imputations.
 #' @param num.imp DEFAULT: 11. IF multiple imputations are used, this specifies the number of imputations to perform.
@@ -46,16 +44,14 @@
 #' @export
 #' @examples scan.h2lmm()
 scan.h2lmm <- function(genomecache, data, formula, K=NULL,
-                       model=c("additive", "full", "diplolasso"), diplolasso.refit=FALSE,
+                       model=c("additive", "full"),
                        use.par="h2", use.multi.impute=TRUE, num.imp=11, chr="all", brute=TRUE, use.fix.par=TRUE, 
                        seed=1, impute.on="SUBJECT.NAME",
                        weights=NULL, do.augment=FALSE, use.full.null=FALSE, added.data.points=1, 
                        just.these.loci=NULL,
                        print.locus.fit=FALSE,
-                       ...){ # diplolasso and diplolasso refit not work correctly
+                       ...){
   model <- model[1]
-  # Defaults if DiploLASSO is not used
-  fit0.glmnet <- diplolasso.penalty.factor <- NULL
   
   h <- DiploprobReader$new(genomecache)
   founders <- h$getFounders()
@@ -108,9 +104,6 @@ scan.h2lmm <- function(genomecache, data, formula, K=NULL,
   if(use.lmer & !is.null(K)){
     stop("Cannot use LMER sparse random effects AND a non-sparse random effect", call.=FALSE)
   }
-  if(use.lmer & model == "diplolasso"){
-    stop("Cannot use DiploLASSO with LMER currently", call.=FALSE)
-  }
   
   if(use.lmer){
     fit0 <- lmmbylmer(formula=null.formula, data=data, REML=FALSE, weights=weights)
@@ -137,23 +130,6 @@ scan.h2lmm <- function(genomecache, data, formula, K=NULL,
         fit0 <- lmmbygls(null.formula, data=data, eigen.K=eigen.K, K=K, use.par=use.par, weights=weights, brute=brute)
         fit0.REML <- lmmbygls(null.formula, data=data, eigen.K=eigen.K, K=K, use.par="h2.REML", weights=weights, brute=brute)
       }
-    }
-    ## Null model for diplolasso
-    if(model == "diplolasso"){
-      if(fit0$h2 == 0 & is.null(weights)){
-        this.y <- fit0$y
-        this.x <- fit0$x
-      }
-      else{
-        this.y <- fit0$M %*% fit0$y
-        this.x <- fit0$M %*% fit0$x
-      }
-      fit0.glmnet <- glmnet::glmnet(y=this.y,
-                                    x=cbind(this.x, h$getLocusMatrix(locus=h$getLoci()[1], model="additive")[1:length(this.y),]),
-                                    nlambda=3, lambda.min=.9, family="gaussian",
-                                    penalty.factor=c(rep(0, ncol(fit0$x) - 1), rep(1, choose(num.founders, 2))), intercept=TRUE,
-                                    standardize=FALSE)
-      diplolasso.penalty.factor <- c(rep(0, ncol(fit0$x) - 1 + num.founders - 1), rep(1, choose(num.founders, 2)))
     }
     ####### EMMA or EMMAX  
     if(use.fix.par){
@@ -196,8 +172,7 @@ scan.h2lmm <- function(genomecache, data, formula, K=NULL,
       fit1 <- multi.imput.lmmbygls(num.imp=num.imp, data=data, formula=formula, founders=founders,
                                    diplotype.probs=diplotype.prob.matrix, 
                                    model=model, use.lmer=use.lmer, impute.map=impute.map,
-                                   diplolasso.refit=diplolasso.refit, diplolasso.penalty.factor=diplolasso.penalty.factor,
-                                   use.par=use.par, fix.par=fix.par, fit0=fit0, fit0.glmnet=fit0.glmnet, do.augment=do.augment, 
+                                   use.par=use.par, fix.par=fix.par, fit0=fit0, do.augment=do.augment, 
                                    brute=brute, seed=seed, weights=weights) 
       MI.LOD[,i] <- fit1$LOD
       MI.p.value[,i] <- fit1$p.value
@@ -205,17 +180,9 @@ scan.h2lmm <- function(genomecache, data, formula, K=NULL,
       p.vec[i] <- median(fit1$p.value)
     }
     if(!use.multi.impute){
-      if(model %in% c("additive", "full")){
-        X <- h$getLocusMatrix(loci[i], model=model, subjects=as.character(data$SUBJECT.NAME[1:original.n]))
-        max.column <- which.max(colSums(X, na.rm=TRUE))[1]
-        X <- X[,-max.column]
-      }
-      if(model == "diplolasso"){
-        X.dosages <- h$getLocusMatrix(loci[i], model="additive", subjects=data$SUBJECT.NAME[1:original.n])
-        max.column <- which.max(colSums(X.dosages))[1]
-        X <- cbind(X.dosages[,-max.column],
-                   h$getLocusMatrix(loci[i], model="full", subjects=data$SUBJECT.NAME[1:original.n])[,-(1:num.founders)])
-      }
+      X <- h$getLocusMatrix(loci[i], model=model, subjects=as.character(data$SUBJECT.NAME[1:original.n]))
+      max.column <- which.max(colSums(X, na.rm=TRUE))[1]
+      X <- X[,-max.column]
       colnames(X) <- gsub(pattern="/", replacement=".", x=colnames(X), fixed=TRUE)
       locus.formula <- make.alt.formula(formula=formula, X=X, do.augment=do.augment)
       if(do.augment){
@@ -236,36 +203,14 @@ scan.h2lmm <- function(genomecache, data, formula, K=NULL,
         p.vec[i] <- pchisq(q=-2*(as.numeric(logLik(fit0)) - as.numeric(logLik(fit1))), df=length(fixef(fit1))-length(fixef(fit0)), lower.tail=FALSE)
       }
       else{
-        if(model != "diplolasso"){
-          fit1 <- lmmbygls(formula=locus.formula, data=data, 
-                           eigen.K=fit0$eigen.K, K=fit0$K, 
-                           use.par="h2", fix.par=fix.par, M=fit0$M, logDetV=fit0$logDetV,
-                           brute=brute, 
-                           weights=weights)
-          LOD.vec[i] <- log10(exp(fit1$logLik - fit0$logLik))
-          p.vec[i] <- pchisq(q=-2*(fit0$logLik - fit1$logLik), df=fit1$rank-fit0$rank, lower.tail=FALSE)
-          df[i] <- fit1$rank
-        }
-        else{
-          fit1 <- lmmbygls.diplolasso(locus.formula, data=data, 
-                                      eigen.K=fit0$eigen.K, K=fit0$K,
-                                      use.par="h2", fix.par=fix.par, M=fit0$M, logDetV=fit0$logDetV,
-                                      brute=brute, 
-                                      diplolasso.refit=diplolasso.refit, diplolasso.penalty.factor=diplolasso.penalty.factor,
-                                      weights=weights, founders=founders)
-          if(diplolasso.refit){
-            LOD.vec[i] <- log10(exp(fit1$logLik - fit0$logLik))
-            p.vec[i] <- pchisq(q=-2*(fit0$logLik - fit1$logLik), df=fit1$rank-fit0$rank, lower.tail=FALSE)
-            df[i] <- fit1$rank
-          }
-          else{
-            SSR.0 <- deviance(fit0.glmnet)[1] - 0.5*fit0$logDetV
-            df.0 <- fit0.glmnet$df[1]
-            LOD.vec[i] <- SSR.0 - fit1$SSR
-            p.vec[i] <- pchisq(q=SSR.0 - fit1$SSR, df=fit1$rank - df.0, lower.tail=FALSE)
-            df[i] <- fit1$rank
-          }
-        }
+        fit1 <- lmmbygls(formula=locus.formula, data=data, 
+                         eigen.K=fit0$eigen.K, K=fit0$K, 
+                         use.par="h2", fix.par=fix.par, M=fit0$M, logDetV=fit0$logDetV,
+                         brute=brute, 
+                         weights=weights)
+        LOD.vec[i] <- log10(exp(fit1$logLik - fit0$logLik))
+        p.vec[i] <- pchisq(q=-2*(fit0$logLik - fit1$logLik), df=fit1$rank-fit0$rank, lower.tail=FALSE)
+        df[i] <- fit1$rank
       }
     }
     if(print.locus.fit){ cat(paste("locus", i, "out of", length(loci)), "\n") }

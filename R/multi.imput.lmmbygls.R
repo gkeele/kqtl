@@ -1,11 +1,10 @@
 multi.imput.lmmbygls <- function(num.imp, data, formula,
                                  founders=founders, diplotype.probs, K=NULL, fit0=NULL, fit0.glmnet=NULL,
-                                 use.par, fix.par=NULL, model=c("additive", "full", "diplolasso"),
-                                 use.lmer, impute.map, diplolasso.refit=FALSE, diplolasso.penalty.factor=NULL,
+                                 use.par, fix.par=NULL, model=c("additive", "full"),
+                                 use.lmer, impute.map,
                                  brute=TRUE, seed=1, do.augment,
                                  weights=NULL){
-  
-  model <- model[1]
+  model <- model[1]  
   eigen.K <- logDetV <- M <- NULL
   if(is.null(fit0)){
     null.formula <- make.null.formula(formula=formula, do.augment=do.augment)
@@ -36,29 +35,16 @@ multi.imput.lmmbygls <- function(num.imp, data, formula,
         diplotype.probs[diplotype.probs < 0] <- 0
         diplotype.probs <- t(apply(diplotype.probs, 1, function(x) x/sum(x)))
       }
-      #X <- t(apply(diplotype.probs, 1, function(x) rmultinom(1, 1, x))) %*% full.to.dosages
       X <- run.imputation(diplotype.probs=diplotype.probs, impute.map=impute.map) %*% full.to.dosages
       max.column <- which.max(colSums(X))[1]
       X <- X[,-max.column]
       colnames(X) <- gsub(pattern="/", replacement=".", x=founders, fixed=TRUE)[-max.column]
     }
     if(model == "full"){
-      #X <- t(apply(diplotype.probs, 1, function(x) rmultinom(1, 1, x)))
       X <- run.imputation(diplotype.probs=diplotype.probs, impute.map=impute.map)
       max.column <- which.max(colSums(X))[1]
       X <- X[,-max.column]
       colnames(X) <- gsub(pattern="/", replacement=".", x=colnames(diplotype.probs), fixed=TRUE)[-max.column]
-    }
-    if(model=="diplolasso"){
-      num.founders <- length(founders)
-      #dip.draw <- t(apply(diplotype.probs, 1, function(x) rmultinom(1, 1, x)))
-      dip.draw <- run.imputation(diplotype.probs=diplotype.probs, impute.map=impute.map)
-      X.add <- dip.draw %*% full.to.dosages
-      #max.column <- which.max(colSums(X.add))[1]
-      X <- cbind(X.add,#[, -max.column], 
-                 dip.draw[,-(1:num.founders)])
-      colnames(X) <- gsub(pattern="/", replacement=".", x=c(founders,#[-max.column], 
-                                                            colnames(diplotypes[,-(1:num.founders)])), fixed=TRUE) 
     }
 
     locus.formula <- make.alt.formula(formula=formula, X=X, do.augment=do.augment)
@@ -70,32 +56,13 @@ multi.imput.lmmbygls <- function(num.imp, data, formula,
       imp.df[i] <- length(fixef(fit1))
     }
     else{
-      if(model != "diplolasso"){
-        fit1 <- lmmbygls(locus.formula, data=data, eigen.K=eigen.K, K=K,
-                         logDetV=logDetV, M=M, 
-                         use.par="h2", fix.par=fix.par,
-                         brute=brute, weights=weights)
-        imp.logLik[i] <- fit1$logLik
-        imp.h2[i] <- fit1$h2
-        imp.df[i] <- fit1$rank
-      }
-      else{
-        fit1 <- lmmbygls.diplolasso(locus.formula, data=data, eigen.K=eigen.K, K=K,
-                                    logDetV=logDetV, M=M, 
-                                    use.par="h2", fix.par=fix.par, 
-                                    diplolasso.refit=diplolasso.refit, diplolasso.penalty.factor=diplolasso.penalty.factor, founders=founders,
-                                    brute=brute, weights=weights)
-        if(diplolasso.refit){
-          imp.logLik[i] <- fit1$logLik
-          imp.h2[i] <- fit1$h2
-          imp.df[i] <- fit1$rank
-        }
-        else{
-          imp.logLik[i] <- fit1$SSR
-          imp.h2[i] <- fit1$h2
-          imp.df[i] <- fit1$df
-        }
-      }
+      fit1 <- lmmbygls(locus.formula, data=data, eigen.K=eigen.K, K=K,
+                       logDetV=logDetV, M=M, 
+                       use.par="h2", fix.par=fix.par,
+                       brute=brute, weights=weights)
+      imp.logLik[i] <- fit1$logLik
+      imp.h2[i] <- fit1$h2
+      imp.df[i] <- fit1$rank
     }
   }
   ## Summarizing over imputations
@@ -104,15 +71,8 @@ multi.imput.lmmbygls <- function(num.imp, data, formula,
     imp.p.value <- pchisq(q=-2*(as.numeric(logLik(fit0)) - imp.logLik), df=imp.df - length(fixef(fit0)), lower.tail=FALSE)
   }
   else{
-    if(model == "diplolasso" & diplolasso.refit){
-      imp.LOD <- log10(exp(fit0.glmnet$SSR - imp.logLik))
-      fstat <- ((fit0.glmnet$SSR - imp.logLik)/(imp.df - fit0.glmnet$df[1]))/(imp.logLik/(length(y) - imp.df))
-      imp.p.value <- 1 - pf(fstat, (imp.df - fit0.glmnet$df[1]), (length(y) - imp.df))
-    }
-    else{
-      imp.LOD <- log10(exp(imp.logLik - fit0$logLik))
-      imp.p.value <- pchisq(q=-2*(fit0$logLik - imp.logLik), df=imp.df - fit0$rank, lower.tail=FALSE)
-    }
+    imp.LOD <- log10(exp(imp.logLik - fit0$logLik))
+    imp.p.value <- pchisq(q=-2*(fit0$logLik - imp.logLik), df=imp.df - fit0$rank, lower.tail=FALSE)
   }
   return(list(h2=imp.h2, 
               LOD=imp.LOD,
@@ -133,7 +93,6 @@ multi.imput.lmmbygls.random <- function(num.imp, data, this.formula,
   imp.logLik <- imp.h2 <- imp.p.value <- rep(0, num.imp)
 
   null.data <- data
-  use.diplolasso <- FALSE
   for(i in 1:num.imp) {
     set.seed(seed)
     if(model=="additive"){
