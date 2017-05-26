@@ -175,37 +175,24 @@ make.imputed.design.matrix.list.for.all.loci <- function(loci, loci.chr, n, mode
                                                          allele.dir, mapping.matrix,
                                                          founders, exclusion.freq){
   p <- length(loci)
-  if(model == "additive"){
-    X.list <- rep(list(matrix(NA, nrow=n, ncol=1)), p)
-    for(i in 1:p){
-      probs <- h$getLocusMatrix(locus=loci[i], model="full")
-      X.list[[i]] <- extract.imputed.design.matrix.from.doqtl.genotype(probs=probs, allele.dir=allele.dir, 
+  num.col <- ifelse(model == "additive", 1, 2)
+  X.list <- rep(list(matrix(NA, nrow=n, ncol=num.col)), p)
+  for(i in 1:p){
+    probs <- h$getLocusMatrix(locus=loci[i], model="full")
+    X.list[[i]] <- extract.imputed.design.matrix.from.doqtl.genotype(probs=probs, allele.dir=allele.dir, 
                                                                        snp=loci[i], snp.chr=loci.chr[i], model=model, 
                                                                        founders=founders, mapping.matrix=mapping.matrix)
-      rownames(X.list[[i]]) <- rownames(probs)
-      colnames(X.list[[i]]) <- "SNP"
-    }
-    names(X.list) <- loci
+  }
+  names(X.list) <- loci
     
-    # Removing low frequency alleles
-    if(model == "additive"){
-      keep.loci.index <- unlist(lapply(X.list, function(x) sum(x)/(2*length(x)))) > exclusion.freq
-    }
-    else if(model == "full"){
-      keep.loci.index <- unlist(lapply(X.list, function(x) (2*sum(x[,1]) + sum(x[,2]))/(2*nrow(x)))) > exclusion.freq
-    }
-    X.list[which(!keep.loci.index)] <- NULL
-    return(X.list)
+  # Removing low frequency alleles
+  if(model == "additive"){
+    keep.loci.index <- unlist(lapply(X.list, function(x) sum(x)/(2*length(x)))) > exclusion.freq
   }
-  if(model == "full"){
-    X.list <- rep(list(matrix(NA, nrow=n, ncol=2)), p)
-    for(i in 1:p){
-      X.list[[i]] <- extract.imputed.design.matrix.from.doqtl.genotype(probs=probs, allele.dir=allele.dir, 
-                                                                       snp=loci[i], snp.chr=loci.chr[i], model=model, 
-                                                                       founders=founders, mapping.matrix=mapping.matrix)
-      rownames(X.list[[i]]) <- rownames(probs)
-      colnames(X.list[[i]]) <- c("SNP_het", "SNP_hom")
-    }
+  else if(model == "full"){
+    keep.loci.index <- unlist(lapply(X.list, function(x) (2*sum(x[,1]) + sum(x[,2]))/(2*nrow(x)))) > exclusion.freq
   }
+  X.list[which(!keep.loci.index)] <- NULL
+  return(X.list)
 }
 
