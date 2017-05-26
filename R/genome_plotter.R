@@ -205,8 +205,8 @@ genome.plotter.whole <- function(scan.list, use.lod=FALSE, just.these.chr=NULL,
   pre.chr <- pre.chr[order.i]
   pos <- pos[order.i]
   
-  min.pos <- tapply(pos, pre.chr, function(x) min(x))
-  max.pos <- tapply(pos, pre.chr, function(x) max(x))
+  min.pos <- tapply(pos, pre.chr, function(x) min(x, na.rm=TRUE))
+  max.pos <- tapply(pos, pre.chr, function(x) max(x, na.rm=TRUE))
   chr.types <- levels(pre.chr)
   
   # Finding max y of plot window
@@ -225,7 +225,7 @@ genome.plotter.whole <- function(scan.list, use.lod=FALSE, just.these.chr=NULL,
     y.max <- y.max.manual
   }
   
-  shift.left <- min(pos[chr==chr.types[1]])
+  shift.left <- min(pos[chr==chr.types[1]], na.rm=TRUE)
 
   ### Handling the annoying differences between lmer and lm objects
   if(class(scan.list[[1]]$fit0) != "lmerMod"){
@@ -241,7 +241,7 @@ genome.plotter.whole <- function(scan.list, use.lod=FALSE, just.these.chr=NULL,
                     paste("n =", sum(scan.list[[1]]$fit0@resp$weights)))
   }
   
-  
+  browser()
   plot(pos[pre.chr==chr.types[1]], outcome[pre.chr==chr.types[1]], 
        xlim=c(shift.left, sum(max.pos)+(length(chr.types)-1)), 
        ylim=c(-0.1, y.max), 
@@ -255,8 +255,8 @@ genome.plotter.whole <- function(scan.list, use.lod=FALSE, just.these.chr=NULL,
     for(i in 2:length(chr.types)){
       this.pos <- pos[pre.chr==chr.types[i]] + shift
       if(i %% 2 == 0){
-        polygon(x=c(min(this.pos), min(this.pos):max(this.pos), max(this.pos)), 
-                y=c(0, rep(y.max, length(min(this.pos):max(this.pos))), 0), border=NA, col="gray88")
+        polygon(x=c(min(this.pos, na.rm=TRUE), min(this.pos, na.rm=TRUE):max(this.pos, na.rm=TRUE), max(this.pos, na.rm=TRUE)), 
+                y=c(0, rep(y.max, length(min(this.pos, na.rm=TRUE):max(this.pos, na.rm=TRUE))), 0), border=NA, col="gray88")
       }
       label.spots <- c(label.spots, min.pos[i] + shift + (max.pos[i] - min.pos[i])/2)
       points(this.pos, outcome[pre.chr==chr.types[i]], type="l", lwd=1.5, col=main.colors[1])

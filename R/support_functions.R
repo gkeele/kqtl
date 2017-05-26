@@ -25,10 +25,15 @@ make.alt.formula <- function(formula, X, do.augment){
   this.formula <- as.formula(paste(this.formula.string, paste(gsub(pattern="/", replacement=".", x=colnames(X), fixed=TRUE), collapse=" + "), sep=" + "))
   return(this.formula)
 }
-make.snp.alt.formula <- function(formula){
+make.snp.alt.formula <- function(formula, model){
   this.formula.string <- Reduce(paste, deparse(formula))
   this.formula.string <- paste0("y ~ ", unlist(strsplit(this.formula.string, split="~"))[-1])
-  this.formula <- as.formula(paste(this.formula.string, "SNP", sep=" + "))
+  if(model == "additive"){
+    this.formula <- as.formula(paste(this.formula.string, "SNP", sep=" + "))
+  }
+  else if(model == "full"){
+    this.formula <- as.formula(paste(this.formula.string, "SNP_aa", "SNP_Aa", sep=" + "))
+  }
   return(this.formula)
 }
 remove.whitespace.formula <- function(formula){

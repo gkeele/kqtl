@@ -80,7 +80,7 @@ imputed.snp.scan.h2lmm <- function(data, formula, K,
   
   formula.string <- Reduce(paste, deparse(formula))
   null.formula <- make.null.formula(formula=formula, do.augment=FALSE)
-  locus.formula <- make.snp.alt.formula(formula=formula)
+  locus.formula <- make.snp.alt.formula(formula=formula, model=model)
   original.n <- nrow(data)
   
   ## Fitting null model
@@ -136,53 +136,46 @@ imputed.snp.scan.h2lmm <- function(data, formula, K,
   return(output)
 }
 
-read.in.genotype.dir <- function(genotype.dir, genotype.file.prefix, chr){
-  if(chr == "all"){ chr <- c(1:20, "X") }
-  for(i in 1:length(chr)){
-    this.genotype.data <- read.table(paste(genotype.dir, paste(genotype.file.prefix, chr[i], "geno", sep="."), sep="/"), header=TRUE)
-    colnames(this.genotype.data)[1] <- "SUBJECT.NAME"
-    if(i == 1){
-      genotype.data <- this.genotype.data
-      chr.vec <- rep(chr[i], ncol(this.genotype.data)-1)
-    }
-    if(i > 1){
-      genotype.data <- merge(genotype.data, this.genotype.data, by="SUBJECT.NAME")
-      chr.vec <- c(chr.vec, rep(chr[i], ncol(this.genotype.data)-1))
-    }
-  }
-  return(list(genotype.data=genotype.data, chr=chr.vec))
-}
-
 extract.imputed.design.matrix.from.doqtl.genotype <- function(probs, allele.dir, 
                                                               snp, snp.chr, model, 
                                                               founders, mapping.matrix){
+  grep.command <- paste0("grep -A 3 '", snp, "' ", 
+                         paste0(allele.dir, "/chr", snp.chr, ".alleles"))
+  founder.alleles.table <- system(grep.command, intern=TRUE)
+  founder.alleles.table <- matrix(unlist(strsplit(x=founder.alleles.table[-1], split="\t", fixed=TRUE)), nrow=3, byrow=TRUE)[,-1] # Remove column of "allele"
+  founder.alleles.table <- founder.alleles.table[founder.alleles.table[,1] != "NA",] # Remove NA row
+  founder.alleles <- founder.alleles.table[,1][apply(founder.alleles.table[,-1], 2, function(x) which.max(x))]
+  ref.allele <- founder.alleles.table[1,1]
+  ref.allele.founder.count <- as.numeric(founder.alleles == ref.allele)
+  full.ref.allele.count <- as.vector(mapping.matrix %*% matrix(ref.allele.founder.count, ncol=1)) # count of reference allele per 36 diplotypes
+  full.genotypes <- cbind(as.numeric(full.ref.allele.count == 2), 
+                          as.numeric(full.ref.allele.count == 1), 
+                          as.numeric(full.ref.allele.count == 0))
+  colnames(full.genotypes) <- c("ref.hom", "het", "alt.hom")
+  genotype.probs <- probs %*% full.genotypes
+  if((2*sum(genotype.probs[,1] + sum(genotype.probs[,2])))/(2*nrow(genotype.probs)) > 0.5){
+    X <- cbind(genotype.probs[,3], genotype.probs[,2])
+  }
+  else{
+    X <- cbind(genotype.probs[,1], genotype.probs[,2])
+  }
+  colnames(X) <- c("SNP_aa", "SNP_Aa")
+  # Converting to count of minor allele
   if(model == "additive"){
-    grep.command <- paste0("grep -A 3 '", snp, "' ", 
-                           paste0(allele.dir, "/chr", snp.chr, ".alleles"))
-    founder.alleles.table <- system(grep.command, intern=TRUE)
-    founder.alleles.table <- matrix(unlist(strsplit(x=founder.alleles.table[-1], split="\t", fixed=TRUE)), nrow=3, byrow=TRUE)[,-1] # Remove column of "allele"
-    founder.alleles.table <- founder.alleles.table[founder.alleles.table[,1] != "NA",] # Remove NA row
-    founder.alleles <- founder.alleles.table[,1][apply(founder.alleles.table[,-1], 2, function(x) which.max(x))]
-    ref.allele <- founder.alleles.table[1,1]
-    ref.allele.founder.count <- as.numeric(founder.alleles == ref.allele)
-    full.ref.allele.count <- as.vector(mapping.matrix %*% matrix(ref.allele.founder.count, ncol=1))
-    snp.count <- probs %*% matrix(full.ref.allele.count, ncol=1)
-    # Converting to count of minor allele
-    if(sum(snp.count)/(2*length(snp.count)) > 0.5){
-      snp.count <- 2 - snp.count
-    }
+    snp.count <- 2*X[,1] + X[,2]
     X <- matrix(snp.count, ncol=1)
-    rownames(X) <- rownames(probs)
     colnames(X) <- "SNP"
   }
+  rownames(X) <- rownames(probs)
   return(X)
 }
+
 
 make.imputed.design.matrix.list.for.all.loci <- function(loci, loci.chr, n, model, h, 
                                                          allele.dir, mapping.matrix,
                                                          founders, exclusion.freq){
   p <- length(loci)
-  if(model=="additive"){
+  if(model == "additive"){
     X.list <- rep(list(matrix(NA, nrow=n, ncol=1)), p)
     for(i in 1:p){
       probs <- h$getLocusMatrix(locus=loci[i], model="full")
@@ -198,6 +191,16 @@ make.imputed.design.matrix.list.for.all.loci <- function(loci, loci.chr, n, mode
     keep.loci.index <- unlist(lapply(X.list, function(x) sum(x)/(2*length(x)))) > exclusion.freq
     X.list[which(!keep.loci.index)] <- NULL
     return(X.list)
+  }
+  if(model == "full"){
+    X.list <- rep(list(matrix(NA, nrow=n, ncol=2)), p)
+    for(i in 1:p){
+      X.list[[i]] <- extract.imputed.design.matrix.from.doqtl.genotype(probs=probs, allele.dir=allele.dir, 
+                                                                       snp=loci[i], snp.chr=loci.chr[i], model=model, 
+                                                                       founders=founders, mapping.matrix=mapping.matrix)
+      rownames(X.list[[i]]) <- rownames(probs)
+      colnames(X.list[[i]]) <- c("SNP_het", "SNP_hom")
+    }
   }
 }
 
