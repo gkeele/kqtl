@@ -188,7 +188,12 @@ make.imputed.design.matrix.list.for.all.loci <- function(loci, loci.chr, n, mode
     names(X.list) <- loci
     
     # Removing low frequency alleles
-    keep.loci.index <- unlist(lapply(X.list, function(x) sum(x)/(2*length(x)))) > exclusion.freq
+    if(model == "additive"){
+      keep.loci.index <- unlist(lapply(X.list, function(x) sum(x)/(2*length(x)))) > exclusion.freq
+    }
+    else if(model == "full"){
+      keep.loci.index <- unlist(lapply(X.list, function(x) (2*sum(x[,1]) + sum(x[,2]))/(2*nrow(x)))) > exclusion.freq
+    }
     X.list[which(!keep.loci.index)] <- NULL
     return(X.list)
   }
