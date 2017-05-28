@@ -3,7 +3,7 @@ make.processed.data <- function(formula, random.formula, data, cache.subjects, K
   covariates <- all.variables[-1]
   lh.formula.string <- unlist(strsplit(Reduce(paste, deparse(formula)), split="~"))[1]
   lh.formula.string <- gsub("[[:space:]]", "", lh.formula.string)
-  covariates <- c(covariates, unique(c(pheno.id, geno.id)))
+  covariates <- unique(c(covariates, pheno.id, geno.id))
   formula.string <- paste(lh.formula.string,
                           paste(covariates, collapse="+"),
                           sep="~")
