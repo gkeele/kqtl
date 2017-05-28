@@ -58,7 +58,7 @@ scan.h2lmm <- function(genomecache, data,
   cache.subjects <- rownames(h$getLocusMatrix(loci[1], model="additive"))
   
   data.and.K <- make.processed.data(formula=formula, random.formula=random.formula, data=data, 
-                                    cache.subjects=cache.subjects, K=K, impute.on=geno.id)
+                                    cache.subjects=cache.subjects, K=K, pheno.id=pheno.id, geno.id=geno.id)
   data <- data.and.K$data
   K <- data.and.K$K
   if(!is.null(weights)){ weights <- weights[as.character(data[,pheno.id])] }
