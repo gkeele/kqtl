@@ -121,10 +121,9 @@ scan.h2lmm <- function(genomecache, data,
     else{
       ###### Handling replicates
       if(pheno.id != geno.id){
-        cat(names(data), "\n")
-        print(process.random.formula(geno.id=geno.id))
         Z <- model.matrix(process.random.formula(geno.id=geno.id), data=data)
-        cat("Made it", "\n")
+        cat(dim(Z), "\n")
+        cat(dim(K), "\n")
         eigen.K <- replicates.eigen(Z=Z, K=K)
         K <- Z %*% K %*% t(Z)
         rownames(K) <- colnames(K) <- as.character(data[,pheno.id])
