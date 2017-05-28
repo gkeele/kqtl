@@ -1,5 +1,5 @@
 make.processed.data <- function(formula, random.formula, data, cache.subjects, K, pheno.id, geno.id){
-  all.variables <- c(all.vars(formula), all.vars(random.formula))
+  all.variables <- c(unique(all.vars(formula), all.vars(random.formula)))
   covariates <- all.variables[-1]
   lh.formula.string <- unlist(strsplit(Reduce(paste, deparse(formula)), split="~"))[1]
   lh.formula.string <- gsub("[[:space:]]", "", lh.formula.string)
@@ -9,15 +9,13 @@ make.processed.data <- function(formula, random.formula, data, cache.subjects, K
                           sep="~")
   data <- model.frame(formula(formula.string), data=data)
   names(data) <- c("y", covariates)
-  # selecting those in both data and cache
-  #data <- data[as.character(data$SUBJECT.NAME) %in% cache.subjects,]
-  cache.subjects <- cache.subjects[cache.subjects %in% as.character(data$SUBJECT.NAME)]
-  data <- data[as.character(data$SUBJECT.NAME) %in% cache.subjects,]
-  matching <- match(x=as.character(data$SUBJECT.NAME), table=cache.subjects)
+  # Selecting those in both data and cache
+  cache.subjects <- cache.subjects[cache.subjects %in% as.character(data[,geno.id])]
+  data <- data[as.character(data[,geno.id]) %in% cache.subjects,]
+  matching <- match(x=as.character(data[,geno.id]), table=cache.subjects)
   data <- data[matching,]
   if(!is.null(K)){
-    #data <- data[as.character(data$SUBJECT.NAME) %in% colnames(K),]
-    K <- K[as.character(data$SUBJECT.NAME), as.character(data$SUBJECT.NAME)]
+    K <- K[as.character(data[,geno.id]), as.character(data[,geno.id])]
   }
   if(length(covariates) > 0){
     covariate.matrix <- matrix(NA, nrow=nrow(data), ncol=length(covariates))
