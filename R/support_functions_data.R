@@ -7,6 +7,8 @@ make.processed.data <- function(formula, random.formula, data, cache.subjects, K
   formula.string <- paste(lh.formula.string,
                           paste(covariates, collapse="+"),
                           sep="~")
+  cat(formula.string)
+  cat(names(data))
   data <- model.frame(formula(formula.string), data=data)
   names(data) <- c("y", covariates)
   # Selecting those in both data and cache
