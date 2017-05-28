@@ -241,7 +241,6 @@ genome.plotter.whole <- function(scan.list, use.lod=FALSE, just.these.chr=NULL,
                     paste("n =", sum(scan.list[[1]]$fit0@resp$weights)))
   }
   
-  browser()
   plot(pos[pre.chr==chr.types[1]], outcome[pre.chr==chr.types[1]], 
        xlim=c(shift.left, sum(max.pos)+(length(chr.types)-1)), 
        ylim=c(-0.1, y.max), 
