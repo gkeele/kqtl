@@ -40,7 +40,7 @@ make.simple.augment.K <- function(K, augment.n){
 
 make.simple.augment.data <- function(data, formula, augment.n){
   real.y.names <- data$SUBJECT.NAME
-  all.variables <- all.vars(formula))
+  all.variables <- all.vars(formula)
   covariates <- all.variables[-1]
   augment.y <- rep(mean(data$y), augment.n)
   augment.y.names <- paste0("augment.obs", 1:augment.n)
