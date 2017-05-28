@@ -109,8 +109,8 @@ scan.h2lmm <- function(genomecache, data,
     fit0.REML <- lmmbylmer(formula=null.formula, data=data, REML=TRUE, weights=weights)
     fix.par <- NULL
   }
-  cat("Made it", "\n")
   else{
+    cat("Made it", "\n")
     ## No kinship effect - weights or no weights
     if(is.null(K)){
       fit0 <- lmmbygls(null.formula, data=data, eigen.K=NULL, K=NULL, 
