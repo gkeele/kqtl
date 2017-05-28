@@ -15,7 +15,7 @@ make.processed.data <- function(formula, data, cache.subjects, K, pheno.id, geno
   matching <- match(x=as.character(data[,geno.id]), table=cache.subjects)
   data <- data[matching,]
   if(!is.null(K)){
-    K <- K[as.character(data[,geno.id]), as.character(data[,geno.id])]
+    K <- K[unique(as.character(data[,geno.id])), unique(as.character(data[,geno.id]))]
   }
   if(length(covariates) > 0){
     covariate.matrix <- matrix(NA, nrow=nrow(data), ncol=length(covariates))
