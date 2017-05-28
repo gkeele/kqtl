@@ -43,7 +43,8 @@
 #' @param print.locus.fit DEFAULT: FALSE. If TRUE, prints out how many loci have been fit currently.
 #' @export
 #' @examples scan.h2lmm()
-scan.h2lmm <- function(genomecache, data, formula, K=NULL,
+scan.h2lmm <- function(genomecache, data, 
+                       formula, random.formula=NULL, K=NULL,
                        model=c("additive", "full"),
                        use.par="h2", use.multi.impute=TRUE, num.imp=11, chr="all", brute=TRUE, use.fix.par=TRUE, 
                        seed=1, impute.on="SUBJECT.NAME",
@@ -59,7 +60,8 @@ scan.h2lmm <- function(genomecache, data, formula, K=NULL,
   loci <- h$getLoci()
   cache.subjects <- rownames(h$getLocusMatrix(loci[1], model="additive"))
   
-  data.and.K <- make.processed.data(formula=formula, data=data, cache.subjects=cache.subjects, K=K, impute.on=impute.on)
+  data.and.K <- make.processed.data(formula=formula, random.formula=random.formula, data=data, 
+                                    cache.subjects=cache.subjects, K=K, impute.on=impute.on)
   data <- data.and.K$data
   K <- data.and.K$K
   if(!is.null(weights)){ weights <- weights[as.character(data$SUBJECT.NAME)] }
@@ -85,14 +87,14 @@ scan.h2lmm <- function(genomecache, data, formula, K=NULL,
     augment.n <- ifelse(model=="additive", num.founders, num.founders + choose(num.founders, 2))
     augment.indicator <- c(rep(0, original.n), rep(1, augment.n))
     if(!use.full.null){
-      data <- make.simple.augment.data(data=data, formula=formula, augment.n=augment.n)
+      data <- make.simple.augment.data(data=data, formula=formula, random.formula=random.formula, augment.n=augment.n)
       data <- data.frame(data, augment.indicator=augment.indicator)
       K <- make.simple.augment.K(K=K, augment.n=augment.n)
     }
     if(use.full.null){
       no.augment.K <- K
       K <- make.full.null.augment.K(K=no.augment.K, original.n=original.n, augment.n=augment.n)
-      data <- make.full.null.augment.data(formula=formula, data=data, no.augment.K=no.augment.K, use.par=use.par, brute=brute,
+      data <- make.full.null.augment.data(formula=formula, random.formula=random.formula, data=data, no.augment.K=no.augment.K, use.par=use.par, brute=brute,
                                           original.n=original.n, augment.n=augment.n, weights=weights)
     }
     weights <- make.augment.weights(data=data, weights=weights, augment.n=augment.n, added.data.points=added.data.points)
@@ -113,12 +115,21 @@ scan.h2lmm <- function(genomecache, data, formula, K=NULL,
   else{
     ## No kinship effect - weights or no weights
     if(is.null(K)){
-      fit0 <- lmmbygls(null.formula, data=data, eigen.K=NULL, K=NULL, use.par="h2", fix.par=0, weights=weights, brute=brute)
-      fit0.REML <- lmmbygls(null.formula, data=data, eigen.K=NULL, K=NULL, use.par="h2.REML", fix.par=0, weights=weights, brute=brute)
+      fit0 <- lmmbygls(null.formula, data=data, eigen.K=NULL, K=NULL, 
+                       use.par="h2", fix.par=0, weights=weights, brute=brute)
+      fit0.REML <- lmmbygls(null.formula, data=data, eigen.K=NULL, K=NULL, 
+                            use.par="h2.REML", fix.par=0, weights=weights, brute=brute)
     }
     ## Kinship effect - weights or no weights
     else{
-      ###### This function is made for handling constant weights at all loci
+      ###### Handling replicates
+      if(!is.null(random.formula)){
+        Z <- model.matrix(formula=process.random.formula(random.formula), data=data)
+        eigen.K <- replicates.eigen(Z=Z, K=K)
+        K <- Z %*% K %*% t(Z)
+        rownames(K) <- colnames(K) <- as.character(data$SUBJECT.NAME)
+      }
+      ###### Handling constant weights at all loci
       if(!is.null(weights)){
         J <- weights^(1/2) * t(weights^(1/2) * K)
         eigen.J <- eigen(J)
