@@ -222,6 +222,7 @@ scan.h2lmm <- function(genomecache, data,
         df[i] <- fit1$rank
       }
     }
+    browser()
     if(print.locus.fit){ cat(paste("locus", i, "out of", length(loci)), "\n") }
   }
   names(LOD.vec) <- names(p.vec) <- names(df) <- loci
