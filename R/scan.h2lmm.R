@@ -239,5 +239,6 @@ scan.h2lmm <- function(genomecache, data,
                  formula=formula.string,
                  model.type=model)
   if(length(just.these.loci) == 1){ output$fit1 <- fit1 }
+  if(pheno.id != geno.id){ output$Z <- Z }
   return(output)
 }
