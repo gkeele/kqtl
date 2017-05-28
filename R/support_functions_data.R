@@ -7,7 +7,7 @@ make.processed.data <- function(formula, random.formula, data, cache.subjects, K
   formula.string <- paste(lh.formula.string,
                           paste(covariates, collapse="+"),
                           sep="~")
-  cat(covariate, "\n")
+  cat(covariates, "\n")
   cat(formula.string, "\n")
   cat(names(data), "\n")
   data <- model.frame(formula(formula.string), data=data)
