@@ -121,6 +121,7 @@ scan.h2lmm <- function(genomecache, data,
     else{
       ###### Handling replicates
       if(!is.null(random.formula)){
+        cat(process.random.formula(random.formula), "\n")
         Z <- model.matrix(formula=process.random.formula(random.formula), data=data)
         cat("Made it", "\n")
         eigen.K <- replicates.eigen(Z=Z, K=K)
