@@ -4,12 +4,13 @@
 \alias{scan.h2lmm}
 \title{Run a haplotype-based genome scan from probabilities stored in a genome cache directory}
 \usage{
-scan.h2lmm(genomecache, data, formula, K = NULL, model = c("additive",
-  "full"), use.par = "h2", use.multi.impute = TRUE, num.imp = 11,
-  chr = "all", brute = TRUE, use.fix.par = TRUE, seed = 1,
-  impute.on = "SUBJECT.NAME", weights = NULL, do.augment = FALSE,
-  use.full.null = FALSE, added.data.points = 1, just.these.loci = NULL,
-  print.locus.fit = FALSE, ...)
+scan.h2lmm(genomecache, data, formula, random.formula = NULL, K = NULL,
+  model = c("additive", "full"), use.par = "h2", use.multi.impute = TRUE,
+  num.imp = 11, chr = "all", brute = TRUE, use.fix.par = TRUE,
+  seed = 1, pheno.id = "SUBJECT.NAME", geno.id = "SUBJECT.NAME",
+  weights = NULL, do.augment = FALSE, use.full.null = FALSE,
+  added.data.points = 1, just.these.loci = NULL, print.locus.fit = FALSE,
+  ...)
 }
 \arguments{
 \item{genomecache}{The path to the genome cache directory. The genome cache is a particularly structured
@@ -49,10 +50,6 @@ Technically less powerful, though in practice it has proven to be almost equal t
 
 \item{seed}{DEFAULT: 1. Multiple imputations involve a sampling process of the diplotypes, thus a seed is necessary
 to produce the same results over multiple runs and different machines.}
-
-\item{impute.on}{DEFAULT: "SUBJECT.NAME". Name of the column in the data to match to the genome cache for imputations. 
-Usually "SUBJECT.NAME", the individual. If there are multiple observations of the same genome, this can specify that
-every individual with the same genome receives the same imputation - as is the case for inbred individuals.}
 
 \item{weights}{DEFAULT: NULL. If unspecified, individuals are equally weighted. This option allows for a weighted analysis 
 when using the mean of multiple individuals with the same genome.}

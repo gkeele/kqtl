@@ -28,9 +28,6 @@
 #' Technically less powerful, though in practice it has proven to be almost equal to the exact procedure.
 #' @param seed DEFAULT: 1. Multiple imputations involve a sampling process of the diplotypes, thus a seed is necessary
 #' to produce the same results over multiple runs and different machines.
-#' @param impute.on DEFAULT: "SUBJECT.NAME". Name of the column in the data to match to the genome cache for imputations. 
-#' Usually "SUBJECT.NAME", the individual. If there are multiple observations of the same genome, this can specify that
-#' every individual with the same genome receives the same imputation - as is the case for inbred individuals.
 #' @param weights DEFAULT: NULL. If unspecified, individuals are equally weighted. This option allows for a weighted analysis 
 #' when using the mean of multiple individuals with the same genome.
 #' @param do.augment DEFAULT: FALSE. Augments the data with null observations for genotype groups. This is an approximately Bayesian 
@@ -47,7 +44,7 @@ scan.h2lmm <- function(genomecache, data,
                        formula, random.formula=NULL, K=NULL,
                        model=c("additive", "full"),
                        use.par="h2", use.multi.impute=TRUE, num.imp=11, chr="all", brute=TRUE, use.fix.par=TRUE, 
-                       seed=1, impute.on="SUBJECT.NAME",
+                       seed=1, pheno.id="SUBJECT.NAME", geno.id="SUBJECT.NAME",
                        weights=NULL, do.augment=FALSE, use.full.null=FALSE, added.data.points=1, 
                        just.these.loci=NULL,
                        print.locus.fit=FALSE,
@@ -61,10 +58,10 @@ scan.h2lmm <- function(genomecache, data,
   cache.subjects <- rownames(h$getLocusMatrix(loci[1], model="additive"))
   
   data.and.K <- make.processed.data(formula=formula, random.formula=random.formula, data=data, 
-                                    cache.subjects=cache.subjects, K=K, impute.on=impute.on)
+                                    cache.subjects=cache.subjects, K=K, impute.on=geno.id)
   data <- data.and.K$data
   K <- data.and.K$K
-  if(!is.null(weights)){ weights <- weights[as.character(data$SUBJECT.NAME)] }
+  if(!is.null(weights)){ weights <- weights[as.character(data[,pheno.id])] }
 
   loci.chr <- h$getChromOfLocus(loci)
   if(chr != "all"){
@@ -127,7 +124,7 @@ scan.h2lmm <- function(genomecache, data,
         Z <- model.matrix(formula=process.random.formula(random.formula), data=data)
         eigen.K <- replicates.eigen(Z=Z, K=K)
         K <- Z %*% K %*% t(Z)
-        rownames(K) <- colnames(K) <- as.character(data$SUBJECT.NAME)
+        rownames(K) <- colnames(K) <- as.character(data[,pheno.id])
       }
       ###### Handling constant weights at all loci
       if(!is.null(weights)){
@@ -157,7 +154,7 @@ scan.h2lmm <- function(genomecache, data,
   
   ## Prepping imputation in multiple imputations
   if(use.multi.impute){
-    impute.map <- data.frame(SUBJECT.NAME=data$SUBJECT.NAME, impute.on=data[,impute.on])
+    impute.map <- data.frame(SUBJECT.NAME=data[,pheno.id], impute.on=data[,geno.id])
   }
   
   for(i in 1:length(loci)){
@@ -165,7 +162,7 @@ scan.h2lmm <- function(genomecache, data,
       if(i == 1){ # only at the beginning
         MI.LOD <- MI.p.value <- matrix(NA, nrow=num.imp, ncol=length(loci))
       }
-      diplotype.prob.matrix <- h$getLocusMatrix(loci[i], model="full", subjects=old.data$SUBJECT.NAME)
+      diplotype.prob.matrix <- h$getLocusMatrix(loci[i], model="full", subjects=old.data[,geno.id])
       if(do.augment){
         if(model=="additive"){
           augment.matrix <- matrix(0, nrow=augment.n, ncol=choose(augment.n, 2) + augment.n)
@@ -191,7 +188,7 @@ scan.h2lmm <- function(genomecache, data,
       p.vec[i] <- median(fit1$p.value)
     }
     if(!use.multi.impute){
-      X <- h$getLocusMatrix(loci[i], model=model, subjects=as.character(data$SUBJECT.NAME[1:original.n]))
+      X <- h$getLocusMatrix(loci[i], model=model, subjects=as.character(data[,geno.id][1:original.n]))
       max.column <- which.max(colSums(X, na.rm=TRUE))[1]
       X <- X[,-max.column]
       colnames(X) <- gsub(pattern="/", replacement=".", x=colnames(X), fixed=TRUE)
