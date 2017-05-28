@@ -35,7 +35,6 @@ check.for.lmer.formula <- function(formula){
   return(use.lmer)
 }
 process.random.formula <- function(geno.id){
-  formula.string <- paste0(Reduce(paste, deparse(random.formula)))
   random.formula <- as.formula(paste("~", paste(geno.id, "1", sep=" - ")))
   return(random.formula)
 }
