@@ -1,5 +1,5 @@
-make.processed.data <- function(formula, random.formula, data, cache.subjects, K, pheno.id, geno.id){
-  all.variables <- unique(c(all.vars(formula), all.vars(random.formula)))
+make.processed.data <- function(formula, data, cache.subjects, K, pheno.id, geno.id){
+  all.variables <- all.vars(formula)
   covariates <- all.variables[-1]
   lh.formula.string <- unlist(strsplit(Reduce(paste, deparse(formula)), split="~"))[1]
   lh.formula.string <- gsub("[[:space:]]", "", lh.formula.string)
@@ -38,9 +38,9 @@ make.simple.augment.K <- function(K, augment.n){
   return(K)
 }
 
-make.simple.augment.data <- function(data, formula, random.formula, augment.n){
+make.simple.augment.data <- function(data, formula, augment.n){
   real.y.names <- data$SUBJECT.NAME
-  all.variables <- c(all.vars(formula), all.vars(random.formula))
+  all.variables <- all.vars(formula))
   covariates <- all.variables[-1]
   augment.y <- rep(mean(data$y), augment.n)
   augment.y.names <- paste0("augment.obs", 1:augment.n)
@@ -94,9 +94,9 @@ make.full.null.augment.K <- function(K, augment.n, original.n){
   return(K)
 }
 
-make.full.null.augment.data <- function(formula, random.formula, data, no.augment.K, use.par, brute,
+make.full.null.augment.data <- function(formula, data, no.augment.K, use.par, brute,
                                         original.n, augment.n, weights){
-  all.variables <- c(all.vars(formula), all.vars(random.formula))
+  all.variables <- all.vars(formula)
   covariates <- all.variables[-1]
   
   null.formula.no.augment <- make.null.formula(formula=formula, is.augmented=FALSE)

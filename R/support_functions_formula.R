@@ -34,8 +34,8 @@ check.for.lmer.formula <- function(formula){
   use.lmer <- grepl(pattern="\\([a-zA-Z0-9\\.]+\\|[a-zA-Z0-9\\.]+\\)", x=formula.string, perl=TRUE)
   return(use.lmer)
 }
-process.random.formula <- function(random.formula){
+process.random.formula <- function(geno.id){
   formula.string <- paste0(Reduce(paste, deparse(random.formula)))
-  random.formula <- as.formula(paste(formula.string, "1", sep=" - "))
+  random.formula <- as.formula(paste("~", paste(geno.id, "1", sep=" - ")))
   return(random.formula)
 }
