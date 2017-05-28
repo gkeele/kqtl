@@ -12,6 +12,7 @@ make.processed.data <- function(formula, random.formula, data, cache.subjects, K
   cat(names(data), "\n")
   data <- model.frame(formula(formula.string), data=data)
   names(data) <- c("y", covariates)
+  cat("Made it", "\n")
   # Selecting those in both data and cache
   cache.subjects <- cache.subjects[cache.subjects %in% as.character(data[,geno.id])]
   data <- data[as.character(data[,geno.id]) %in% cache.subjects,]
