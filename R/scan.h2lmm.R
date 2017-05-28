@@ -110,7 +110,6 @@ scan.h2lmm <- function(genomecache, data,
     fix.par <- NULL
   }
   else{
-    cat("Made it", "\n")
     ## No kinship effect - weights or no weights
     if(is.null(K)){
       fit0 <- lmmbygls(null.formula, data=data, eigen.K=NULL, K=NULL, 
@@ -123,6 +122,7 @@ scan.h2lmm <- function(genomecache, data,
       ###### Handling replicates
       if(!is.null(random.formula)){
         Z <- model.matrix(formula=process.random.formula(random.formula), data=data)
+        cat("Made it", "\n")
         eigen.K <- replicates.eigen(Z=Z, K=K)
         K <- Z %*% K %*% t(Z)
         rownames(K) <- colnames(K) <- as.character(data[,pheno.id])
