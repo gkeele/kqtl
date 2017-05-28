@@ -1,5 +1,5 @@
 make.processed.data <- function(formula, random.formula, data, cache.subjects, K, pheno.id, geno.id){
-  all.variables <- c(unique(all.vars(formula), all.vars(random.formula)))
+  all.variables <- unique(c(all.vars(formula), all.vars(random.formula)))
   covariates <- all.variables[-1]
   lh.formula.string <- unlist(strsplit(Reduce(paste, deparse(formula)), split="~"))[1]
   lh.formula.string <- gsub("[[:space:]]", "", lh.formula.string)
