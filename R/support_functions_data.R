@@ -10,12 +10,13 @@ make.processed.data <- function(formula, data, cache.subjects, K, pheno.id, geno
   data <- model.frame(formula(formula.string), data=data)
   names(data) <- c("y", covariates)
   # Selecting those in both data and cache
-  cache.subjects <- cache.subjects[cache.subjects %in% as.character(data[,geno.id])]
-  data <- data[as.character(data[,geno.id]) %in% cache.subjects,]
-  matching <- match(x=as.character(data[,geno.id]), table=cache.subjects)
-  data <- data[matching,]
+  include.subjects <- intersect(unique(as.character(data[,geno.id])), cache.subjects)
+  data <- data[as.character(data[,geno.id]) %in% include.subjects,]
+  #matching <- match(x=as.character(data[,geno.id]), table=include.subjects)
+  #data <- data[matching,]
   if(!is.null(K)){
-    K <- K[unique(as.character(data[,geno.id])), unique(as.character(data[,geno.id]))]
+    ### TODO: further selection based on whether K does not have an individual in cach or data
+    K <- K[include.subjects, include.subjects]
   }
   if(length(covariates) > 0){
     covariate.matrix <- matrix(NA, nrow=nrow(data), ncol=length(covariates))

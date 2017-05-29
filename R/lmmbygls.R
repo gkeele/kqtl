@@ -152,10 +152,6 @@ lmmbygls <- function(formula, data, K=NULL, eigen.K=NULL, fix.par=NULL,
         if(fit$logLik < fit.h2.0$logLik){
           fit <- fit.h2.0
         }
-        fit.h2.1 <- h2.fit(h2=1, logLik.only=FALSE, verbose=FALSE)
-        if(fit$logLik < fit.h2.1$logLik){
-          fit <- fit.h2.1
-        }
       }
     }
     if(use.par[1] == "h2.REML"){
