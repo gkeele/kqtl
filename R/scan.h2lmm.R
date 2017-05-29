@@ -47,7 +47,7 @@ scan.h2lmm <- function(genomecache, data,
                        seed=1, pheno.id="SUBJECT.NAME", geno.id="SUBJECT.NAME",
                        weights=NULL, do.augment=FALSE, use.full.null=FALSE, added.data.points=1, 
                        just.these.loci=NULL,
-                       print.locus.fit=FALSE,
+                       print.locus.fit=FALSE, debug.single.fit=FALSE,
                        ...){
   model <- model[1]
   
@@ -122,14 +122,17 @@ scan.h2lmm <- function(genomecache, data,
       ###### Handling replicates
       if(pheno.id != geno.id){
         Z <- model.matrix(process.random.formula(geno.id=geno.id), data=data)
-        eigen.K <- replicates.eigen(Z=Z, K=K[unique(as.character(data[,geno.id])), unique(as.character(data[,geno.id]))])
+        if(is.null(weights)){
+          eigen.K <- replicates.eigen(Z=Z, K=K)
+        }
         K <- Z %*% K %*% t(Z)
         rownames(K) <- colnames(K) <- as.character(data[,pheno.id])
       }
       ###### Handling constant weights at all loci
       if(!is.null(weights)){
         J <- weights^(1/2) * t(weights^(1/2) * K)
-        eigen.J <- eigen(J)
+        if(pheno.id != geno.id){ eigen.J <- eplicates.eigen(Z=Z, K=J) }
+        else{ eigen.J <- eigen(J) }
         fit0 <- lmmbygls(null.formula, data=data, eigen.K=eigen.J, K=J, use.par=use.par, weights=weights, brute=brute)
         fit0.REML <- lmmbygls(null.formula, data=data, eigen.K=eigen.J, K=J, use.par="h2.REML", weights=weights, brute=brute)
       }
@@ -221,7 +224,7 @@ scan.h2lmm <- function(genomecache, data,
         df[i] <- fit1$rank
       }
     }
-    #browser()
+    if(debug.single.fit){ browser() }
     if(print.locus.fit){ cat(paste("locus", i, "out of", length(loci)), "\n") }
   }
   names(LOD.vec) <- names(p.vec) <- names(df) <- loci
