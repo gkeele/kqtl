@@ -21,13 +21,17 @@
 #' @param num.imp DEFAULT: 11. IF multiple imputations are used, this specifies the number of imputations to perform.
 #' @param chr DEFAULT: "all". Specifies which chromosomes to scan.
 #' @param brute DEFAULT: TRUE. During the optimization to find maximum likelihood parameters, this specifies checking the
-#' boundaries of h2=0 and h2=1. Slightly less efficient, but otherwise the optimization procedure will not directly check
-#' these values.
+#' boundary of h2=0. Slightly less efficient, but otherwise the optimization procedure will not directly check
+#' the boundary.
 #' @param use.fix.par DEFAULT: TRUE. This specifies an approximate fitting of mixed effect model (Kang et al. 2009). Much
 #' more efficient, as the optimization of h2 only needs to be performed once for the null model rather than every locus. 
 #' Technically less powerful, though in practice it has proven to be almost equal to the exact procedure.
 #' @param seed DEFAULT: 1. Multiple imputations involve a sampling process of the diplotypes, thus a seed is necessary
 #' to produce the same results over multiple runs and different machines.
+#' @param pheno.id DEFAULT: "SUBJECT.NAME". The is the individual-level ID that is associated with data points in the phenotype
+#' data. Generally this should be unique for each data point.
+#' @param geno.id DEFAULT: "SUBJECT.NAME". The default represents the situation that each genome is unique. Specifying some other
+#' column allows for replicate genomes, such as in the CC or CC-RIX.
 #' @param weights DEFAULT: NULL. If unspecified, individuals are equally weighted. This option allows for a weighted analysis 
 #' when using the mean of multiple individuals with the same genome.
 #' @param do.augment DEFAULT: FALSE. Augments the data with null observations for genotype groups. This is an approximately Bayesian 
@@ -38,6 +42,8 @@
 #' @param just.these.loci DEFAULT: NULL. Specifies a reduced set of loci to fit. If loci is just one locus, the alternative model fit
 #' will also be output as fit1.
 #' @param print.locus.fit DEFAULT: FALSE. If TRUE, prints out how many loci have been fit currently.
+#' @param debug.single.fit DEFAULT: FALSE. If TRUE, a browser() call is activated after the first locus is fit. This option
+#' allows developers to more easily debug while still using the actual R package.
 #' @export
 #' @examples scan.h2lmm()
 scan.h2lmm <- function(genomecache, data, 

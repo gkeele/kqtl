@@ -4,13 +4,13 @@
 \alias{scan.h2lmm}
 \title{Run a haplotype-based genome scan from probabilities stored in a genome cache directory}
 \usage{
-scan.h2lmm(genomecache, data, formula, random.formula = NULL, K = NULL,
-  model = c("additive", "full"), use.par = "h2", use.multi.impute = TRUE,
-  num.imp = 11, chr = "all", brute = TRUE, use.fix.par = TRUE,
-  seed = 1, pheno.id = "SUBJECT.NAME", geno.id = "SUBJECT.NAME",
-  weights = NULL, do.augment = FALSE, use.full.null = FALSE,
-  added.data.points = 1, just.these.loci = NULL, print.locus.fit = FALSE,
-  ...)
+scan.h2lmm(genomecache, data, formula, K = NULL, model = c("additive",
+  "full"), use.par = "h2", use.multi.impute = TRUE, num.imp = 11,
+  chr = "all", brute = TRUE, use.fix.par = TRUE, seed = 1,
+  pheno.id = "SUBJECT.NAME", geno.id = "SUBJECT.NAME", weights = NULL,
+  do.augment = FALSE, use.full.null = FALSE, added.data.points = 1,
+  just.these.loci = NULL, print.locus.fit = FALSE,
+  debug.single.fit = FALSE, ...)
 }
 \arguments{
 \item{genomecache}{The path to the genome cache directory. The genome cache is a particularly structured
@@ -41,8 +41,8 @@ diplotype probabilities.}
 \item{chr}{DEFAULT: "all". Specifies which chromosomes to scan.}
 
 \item{brute}{DEFAULT: TRUE. During the optimization to find maximum likelihood parameters, this specifies checking the
-boundaries of h2=0 and h2=1. Slightly less efficient, but otherwise the optimization procedure will not directly check
-these values.}
+boundary of h2=0. Slightly less efficient, but otherwise the optimization procedure will not directly check
+the boundary.}
 
 \item{use.fix.par}{DEFAULT: TRUE. This specifies an approximate fitting of mixed effect model (Kang et al. 2009). Much
 more efficient, as the optimization of h2 only needs to be performed once for the null model rather than every locus. 
@@ -50,6 +50,12 @@ Technically less powerful, though in practice it has proven to be almost equal t
 
 \item{seed}{DEFAULT: 1. Multiple imputations involve a sampling process of the diplotypes, thus a seed is necessary
 to produce the same results over multiple runs and different machines.}
+
+\item{pheno.id}{DEFAULT: "SUBJECT.NAME". The is the individual-level ID that is associated with data points in the phenotype
+data. Generally this should be unique for each data point.}
+
+\item{geno.id}{DEFAULT: "SUBJECT.NAME". The default represents the situation that each genome is unique. Specifying some other
+column allows for replicate genomes, such as in the CC or CC-RIX.}
 
 \item{weights}{DEFAULT: NULL. If unspecified, individuals are equally weighted. This option allows for a weighted analysis 
 when using the mean of multiple individuals with the same genome.}
@@ -66,6 +72,9 @@ that do not influence the estimation of other model parameters as much.}
 will also be output as fit1.}
 
 \item{print.locus.fit}{DEFAULT: FALSE. If TRUE, prints out how many loci have been fit currently.}
+
+\item{debug.single.fit}{DEFAULT: FALSE. If TRUE, a browser() call is activated after the first locus is fit. This option
+allows developers to more easily debug while still using the actual R package.}
 }
 \description{
 This function primarily takes a formula, data frame, and genome cache to run a genome scan.
