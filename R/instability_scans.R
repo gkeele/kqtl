@@ -5,7 +5,7 @@ instability.lm.scan <- function(formula, data, num.bs.scans=100,
                                 seed=1,
                                 scale="cM",
                                 pheno.id="SUBJECT.NAME",
-                                use.ROP=TRUE, num.imp=10, just.these.loci=NULL,
+                                use.ROP=TRUE, num.imp=10, just.these.loci=NULL, print.locus.fit=TRUE,
                                 ...){
   
   use.data <- model.frame(formula(paste0(paste0(Reduce(paste, deparse(formula))), "+", pheno.id)), data=data)
@@ -61,11 +61,13 @@ instability.lm.scan <- function(formula, data, num.bs.scans=100,
       bs.data <- merge(this.bs, full.real.data[,-2], by="SUBJECT.NAME", all=FALSE)
 
       this.locus[bs] <- get.f.stat.p.val(qr.alt=qr.alt, qr.null=qr.null, y=bs.data$y)
-      if(use.ROP){
-        cat(paste0("bs: ", bs, ", locus: ", i, " of ", length(loci), "\n"))
-      }
-      if(!use.ROP){
-        cat(paste0("imp: ", imp, ", bs: ", bs, ", locus: ", i, " of ", length(loci), "\n"))
+      if(print.locus.fit){
+        if(use.ROP){
+          cat(paste0("bs: ", bs, ", locus: ", i, " of ", length(loci), "\n"))
+        }
+        if(!use.ROP){
+          cat(paste0("imp: ", imp, ", bs: ", bs, ", locus: ", i, " of ", length(loci), "\n"))
+        }
       }
     }
     return(this.locus)
