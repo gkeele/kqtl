@@ -1,16 +1,16 @@
+#' @export
 null.pvalue.ci.plot <- function(par.bs.scans, conf.level=0.95,
-                             main.label=NULL,
-                             bs.max=NULL,
-                             SIM.object=NULL,
-                             dist.object=NULL,
-                             cache.title="DO-QTL",
-                             formula.title=NULL,
-                             model.title=NULL,
-                             y.max.manual=NULL, y.min.manual=NULL,
-                             give.output=FALSE,
-                             is.sim=FALSE)
+                                main.label=NULL,
+                                bs.max=NULL,
+                                SIM.object=NULL,
+                                dist.object=NULL,
+                                cache.title="DO-QTL",
+                                formula.title=NULL,
+                                model.title=NULL,
+                                y.max.manual=NULL, y.min.manual=NULL,
+                                give.output=FALSE,
+                                is.sim=FALSE)
 {
-  require(EnvStats)
   chr <- par.bs.scans$full.results$chr
   has.X <- FALSE
   if(any(chr=="X")){
@@ -31,7 +31,7 @@ null.pvalue.ci.plot <- function(par.bs.scans, conf.level=0.95,
   chr.types <- levels(pre.chr)
   
   # Calculating confidence intervals
-  these.cis <- apply(par.bs.scans$full.results$p.values, 2, function(x) eexp(-log(x), ci=TRUE, conf.level=conf.level)$interval$limits[c("LCL", "UCL")])
+  these.cis <- apply(par.bs.scans$full.results$p.values, 2, function(x) EnvStats::eexp(-log(x), ci=TRUE, conf.level=conf.level)$interval$limits[c("LCL", "UCL")])
   these.cis <- these.cis[,order.i]
   
   # Finding extremes of y for plot window
@@ -92,7 +92,6 @@ null.pvalue.ci.plot <- function(par.bs.scans, conf.level=0.95,
   for(i in 2:length(this.pos)){
     #browser()
     lines(rep(this.pos[i], 2), -c(log(this.cis[1,i]), log(this.cis[2,i])), col=gray.spectrum[this.diff[i]+1])
-    #points(rep(this.pos[i], 2), c(this.cis[1,i], this.cis[2,i]), pch="-", col=gray.spectrum[this.diff[i]], cex=1)
     if((this.cis[2,i] > 1 & this.cis[1,i] > 1) | (this.cis[2,i] < 1 & this.cis[1,i] < 1)){
       points(this.pos[i], y.max, pch=8, col="red")
     }
@@ -118,11 +117,10 @@ null.pvalue.ci.plot <- function(par.bs.scans, conf.level=0.95,
           points(this.pos[j], y.max, pch=8, col="red")
         }
       }
-      #browser()
       shift <- shift + max.pos[i]
     }
   }
-  abline(h=0, col="red")
+  abline(h=0, col="red", lty=2)
   if(has.X){
     axis.label <- c(chr.types[-length(chr.types)], "X")
   }
@@ -169,8 +167,7 @@ null.pvalue.plot <- function(par.bs.scans, conf.level=0.95,
   
   
   # Confidence intervals
-  require(EnvStats)
-  these.cis <- apply(par.bs.scans$full.results$p.values, 2, function(x) eexp(-log(x), ci=TRUE, conf.level=conf.level)$interval$limits[c("LCL", "UCL")])
+  these.cis <- apply(par.bs.scans$full.results$p.values, 2, function(x) EnvStats::eexp(-log(x), ci=TRUE, conf.level=conf.level)$interval$limits[c("LCL", "UCL")])
   these.cis <- these.cis[,order.i]
   
   midpoint.ci <- colMeans(these.cis)
