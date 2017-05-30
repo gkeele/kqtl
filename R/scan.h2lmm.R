@@ -137,7 +137,7 @@ scan.h2lmm <- function(genomecache, data,
       ###### Handling constant weights at all loci
       if(!is.null(weights)){
         J <- weights^(1/2) * t(weights^(1/2) * K)
-        if(pheno.id != geno.id){ eigen.J <- eplicates.eigen(Z=Z, K=J) }
+        if(pheno.id != geno.id){ eigen.J <- replicates.eigen(Z=Z, K=J) }
         else{ eigen.J <- eigen(J) }
         fit0 <- lmmbygls(null.formula, data=data, eigen.K=eigen.J, K=J, use.par=use.par, weights=weights, brute=brute)
         fit0.REML <- lmmbygls(null.formula, data=data, eigen.K=eigen.J, K=J, use.par="h2.REML", weights=weights, brute=brute)
@@ -248,6 +248,6 @@ scan.h2lmm <- function(genomecache, data,
                  formula=formula.string,
                  model.type=model)
   if(length(just.these.loci) == 1){ output$fit1 <- fit1 }
-  if(pheno.id != geno.id){ output$Z <- Z }
+  if(pheno.id != geno.id){ rownames(Z) <- as.character(data[, pheno.id]); output$Z <- Z }
   return(output)
 }
