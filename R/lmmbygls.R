@@ -177,12 +177,8 @@ lmmbygls <- function(formula, data, K=NULL, eigen.K=NULL, fix.par=NULL,
     fit$model <- m
   }
   fit$na.action <- attr(m, "na.action")
-  # if(!is.null(K)){
-  #   names(y) <- rownames(X) <- rownames(K)
-  # }
-  # else{
-    names(y) <- rownames(X) <- ids
-  # }
+
+  names(y) <- rownames(X) <- ids
   fit$weights <- weights
   fit$x <- X
   fit$y <- y
