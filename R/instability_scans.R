@@ -3,7 +3,6 @@ instability.lm.scan <- function(formula, data, num.bs.scans=100,
                                 genomecache,
                                 model=c("additive", "full"),
                                 seed=1,
-                                scale="cM",
                                 pheno.id="SUBJECT.NAME",
                                 use.ROP=TRUE, num.imp=10, just.these.loci=NULL, print.locus.fit=TRUE,
                                 ...){
@@ -28,7 +27,8 @@ instability.lm.scan <- function(formula, data, num.bs.scans=100,
   full.results <- matrix(NA, nrow=num.bs.scans, ncol=length(loci))
   colnames(full.results) <- loci
   these.chr <- h$getChromOfLocus(loci)
-  these.pos <- h$getLocusStart(loci, scale=scale)
+  these.pos <- list(cM=h$getLocusStart(loci, scale="cM"),
+                    Mb=h$getLocusStart(loci, scale="Mb"))
   founders <- gsub(pattern="/", replacement=".", x=h$getFounders(), fixed=TRUE)
   ##### closures (functions defined within function)
   get.qr.null <- function(){

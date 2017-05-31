@@ -197,7 +197,6 @@ scan.h2lmm <- function(genomecache, data,
       p.vec[i] <- median(fit1$p.value)
     }
     if(!use.multi.impute){
-      #X <- h$getLocusMatrix(loci[i], model=model, subjects=as.character(data[,geno.id][1:original.n]))
       X <- h$getLocusMatrix(loci[i], model=model, subjects=as.character(data[,geno.id]))
       max.column <- which.max(colSums(X, na.rm=TRUE))[1]
       X <- X[,-max.column]

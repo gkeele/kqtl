@@ -1,5 +1,5 @@
 #' @export
-null.pvalue.ci.plot <- function(par.bs.scans, conf.level=0.95,
+null.pvalue.ci.plot <- function(par.bs.scans, conf.level=0.95, scale="Mb",
                                 main.label=NULL,
                                 bs.max=NULL,
                                 SIM.object=NULL,
@@ -18,7 +18,7 @@ null.pvalue.ci.plot <- function(par.bs.scans, conf.level=0.95,
     chr[chr=="X"] <- length(unique(chr))
   }
   
-  pos <-par.bs.scans$full.results$pos
+  pos <-par.bs.scans$full.results$pos[[scale]]
   
   pre.chr <- as.factor(as.numeric(chr))
   order.i <- order(pre.chr, pos)
