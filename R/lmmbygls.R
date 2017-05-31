@@ -23,7 +23,7 @@ gls.fit <- function(X, y, M, logDetV, rotate=TRUE, ...){
 }
 
 lmmbygls <- function(formula, data, K=NULL, eigen.K=NULL, fix.par=NULL,
-                     M=NULL, logDetV=NULL, weights,
+                     M=NULL, logDetV=NULL, weights, pheno.id,
                      use.par=c("h2", "h2.REML"), 
                      brute=TRUE,
                      subset, na.action,
@@ -52,7 +52,7 @@ lmmbygls <- function(formula, data, K=NULL, eigen.K=NULL, fix.par=NULL,
   n <- nrow(X)
   q <- ncol(X)
   
-  ids <- data$SUBJECT.NAME
+  ids <- data[,pheno.id]
 
   if(is.null(fix.par)){
     if(is.null(K)){ ## No kinship effect setting: K - NULL, eigen.K - NULL

@@ -118,9 +118,9 @@ scan.h2lmm <- function(genomecache, data,
   else{
     ## No kinship effect - weights or no weights
     if(is.null(K)){
-      fit0 <- lmmbygls(null.formula, data=data, eigen.K=NULL, K=NULL, 
+      fit0 <- lmmbygls(null.formula, data=data, eigen.K=NULL, K=NULL, pheno.id=pheno.id,
                        use.par="h2", fix.par=0, weights=weights, brute=brute)
-      fit0.REML <- lmmbygls(null.formula, data=data, eigen.K=NULL, K=NULL, 
+      fit0.REML <- lmmbygls(null.formula, data=data, eigen.K=NULL, K=NULL, pheno.id=pheno.id,
                             use.par="h2.REML", fix.par=0, weights=weights, brute=brute)
     }
     ## Kinship effect - weights or no weights
@@ -139,13 +139,13 @@ scan.h2lmm <- function(genomecache, data,
         J <- weights^(1/2) * t(weights^(1/2) * K)
         if(pheno.id != geno.id){ eigen.J <- replicates.eigen(Z=Z, K=J) }
         else{ eigen.J <- eigen(J) }
-        fit0 <- lmmbygls(null.formula, data=data, eigen.K=eigen.J, K=J, use.par=use.par, weights=weights, brute=brute)
-        fit0.REML <- lmmbygls(null.formula, data=data, eigen.K=eigen.J, K=J, use.par="h2.REML", weights=weights, brute=brute)
+        fit0 <- lmmbygls(null.formula, data=data, pheno.id=pheno.id, eigen.K=eigen.J, K=J, use.par=use.par, weights=weights, brute=brute)
+        fit0.REML <- lmmbygls(null.formula, data=data, pheno.id=pheno.id, eigen.K=eigen.J, K=J, use.par="h2.REML", weights=weights, brute=brute)
       }
       else{
         if(pheno.id == geno.id){ eigen.K <- eigen(K) }
-        fit0 <- lmmbygls(null.formula, data=data, eigen.K=eigen.K, K=K, use.par=use.par, weights=weights, brute=brute)
-        fit0.REML <- lmmbygls(null.formula, data=data, eigen.K=eigen.K, K=K, use.par="h2.REML", weights=weights, brute=brute)
+        fit0 <- lmmbygls(null.formula, data=data, pheno.id=pheno.id, eigen.K=eigen.K, K=K, use.par=use.par, weights=weights, brute=brute)
+        fit0.REML <- lmmbygls(null.formula, data=data, pheno.id=pheno.id, eigen.K=eigen.K, K=K, use.par="h2.REML", weights=weights, brute=brute)
       }
     }
     ####### EMMA or EMMAX  
@@ -163,7 +163,7 @@ scan.h2lmm <- function(genomecache, data,
   
   ## Prepping imputation in multiple imputations
   if(use.multi.impute){
-    impute.map <- data.frame(SUBJECT.NAME=data[,pheno.id], impute.on=data[,geno.id])
+    impute.map <- data.frame(pheno.id=data[,pheno.id], impute.on=data[,geno.id])
   }
   
   for(i in 1:length(loci)){
@@ -187,7 +187,7 @@ scan.h2lmm <- function(genomecache, data,
         rownames(diplotype.prob.matrix) <- c(sample.names, paste0("augment.obs", 1:augment.n))
       }
       fit1 <- multi.imput.lmmbygls(num.imp=num.imp, data=data, formula=formula, founders=founders,
-                                   diplotype.probs=diplotype.prob.matrix, 
+                                   diplotype.probs=diplotype.prob.matrix, pheno.id=pheno.id,
                                    model=model, use.lmer=use.lmer, impute.map=impute.map,
                                    use.par=use.par, fix.par=fix.par, fit0=fit0, do.augment=do.augment, 
                                    brute=brute, seed=seed, weights=weights) 

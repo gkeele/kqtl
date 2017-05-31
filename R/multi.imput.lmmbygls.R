@@ -1,4 +1,4 @@
-multi.imput.lmmbygls <- function(num.imp, data, formula,
+multi.imput.lmmbygls <- function(num.imp, data, formula, pheno.id,
                                  founders=founders, diplotype.probs, K=NULL, fit0=NULL, fit0.glmnet=NULL,
                                  use.par, fix.par=NULL, model=c("additive", "full"),
                                  use.lmer, impute.map,
@@ -12,7 +12,7 @@ multi.imput.lmmbygls <- function(num.imp, data, formula,
       fit0 <- lmmbylmer(null.formula, data=data, REML=FALSE, weights=weights)
     }
     else{
-      fit0 <- lmmbygls(null.formula, data=data, K=K, use.par=use.par, brute=brute, weights=weights)
+      fit0 <- lmmbygls(null.formula, data=data, pheno.id=pheno.id, K=K, use.par=use.par, brute=brute, weights=weights)
       K <- fit0$K
     }
   }
@@ -56,7 +56,7 @@ multi.imput.lmmbygls <- function(num.imp, data, formula,
       imp.df[i] <- length(fixef(fit1))
     }
     else{
-      fit1 <- lmmbygls(locus.formula, data=data, eigen.K=eigen.K, K=K,
+      fit1 <- lmmbygls(locus.formula, data=data, pheno.id=pheno.id, eigen.K=eigen.K, K=K,
                        logDetV=logDetV, M=M, 
                        use.par="h2", fix.par=fix.par,
                        brute=brute, weights=weights)
