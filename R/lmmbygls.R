@@ -36,7 +36,7 @@ lmmbygls <- function(formula, data, K=NULL, eigen.K=NULL, fix.par=NULL,
   call <- match.call()
   m <- match.call(expand.dots = FALSE)
   m$W <- m$K <- m$eigen.K <- m$fix.par <- m$use.par <- NULL
-  m$M <- m$logDetV <- m$weights <- NULL
+  m$M <- m$logDetV <- m$weights <- m$pheno.id <- NULL
   m$method <- m$model <- m$x <- m$y <- m$contrasts <- m$verbose <- NULL
   m$brute <- m$... <- NULL
   

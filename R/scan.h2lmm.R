@@ -109,7 +109,6 @@ scan.h2lmm <- function(genomecache, data,
   if(use.lmer & !is.null(K)){
     stop("Cannot use LMER sparse random effects AND a non-sparse random effect", call.=FALSE)
   }
-  
   if(use.lmer){
     fit0 <- lmmbylmer(formula=null.formula, data=data, REML=FALSE, weights=weights)
     fit0.REML <- lmmbylmer(formula=null.formula, data=data, REML=TRUE, weights=weights)
@@ -156,7 +155,6 @@ scan.h2lmm <- function(genomecache, data,
       fix.par <- NULL
     }
   }
-
   MI.LOD <- MI.p.value <- NULL
   LOD.vec <- p.vec <- df <- rep(NA, length(loci))
   null.data <- data
@@ -165,7 +163,6 @@ scan.h2lmm <- function(genomecache, data,
   if(use.multi.impute){
     impute.map <- data.frame(pheno.id=data[,pheno.id], impute.on=data[,geno.id])
   }
-  
   for(i in 1:length(loci)){
     if(use.multi.impute){
       if(i == 1){ # only at the beginning
