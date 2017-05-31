@@ -220,7 +220,7 @@ scan.h2lmm <- function(genomecache, data,
         p.vec[i] <- pchisq(q=-2*(as.numeric(logLik(fit0)) - as.numeric(logLik(fit1))), df=length(fixef(fit1))-length(fixef(fit0)), lower.tail=FALSE)
       }
       else{
-        fit1 <- lmmbygls(formula=locus.formula, data=data, 
+        fit1 <- lmmbygls(formula=locus.formula, data=data, pheno.id=pheno.id,
                          eigen.K=fit0$eigen.K, K=fit0$K, 
                          use.par="h2", fix.par=fix.par, M=fit0$M, logDetV=fit0$logDetV,
                          brute=brute, 
