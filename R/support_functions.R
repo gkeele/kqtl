@@ -119,9 +119,6 @@ process_eigen_decomposition <- function(eigen.decomp, tol=1e-6){
     }
     eigen.decomp$values <- pmax(eigen.decomp$values, 0)
   }
-  #keep <- eigen.decomp$values > 0
-  #eigen.decomp$values <- eigen.decomp$values[keep]
-  #eigen.decomp$vectors <- eigen.decomp$vectors[,keep]
   return(eigen.decomp)
 }
 
