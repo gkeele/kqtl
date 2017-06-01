@@ -127,9 +127,9 @@ scan.h2lmm <- function(genomecache, data,
       ###### Handling replicates
       if(pheno.id != geno.id){
         Z <- model.matrix(process.random.formula(geno.id=geno.id), data=data)
-        if(is.null(weights)){
-          eigen.K <- replicates.eigen(Z=Z, K=K)
-        }
+        #if(is.null(weights)){
+        #  eigen.K <- replicates.eigen(Z=Z, K=K)
+        #}
         K <- Z %*% K %*% t(Z)
         rownames(K) <- colnames(K) <- as.character(data[,pheno.id])
       }
@@ -142,7 +142,9 @@ scan.h2lmm <- function(genomecache, data,
         fit0.REML <- lmmbygls(null.formula, data=data, pheno.id=pheno.id, eigen.K=eigen.J, K=J, use.par="h2.REML", weights=weights, brute=brute)
       }
       else{
-        if(pheno.id == geno.id){ eigen.K <- eigen(K) }
+        #if(pheno.id == geno.id){ eigen.K <- eigen(K) }
+        eigen.K <- eigen(K)
+        eigen.K <- process_eigen_decomposition(eigen.decomp=eigen.K)
         fit0 <- lmmbygls(null.formula, data=data, pheno.id=pheno.id, eigen.K=eigen.K, K=K, use.par=use.par, weights=weights, brute=brute)
         fit0.REML <- lmmbygls(null.formula, data=data, pheno.id=pheno.id, eigen.K=eigen.K, K=K, use.par="h2.REML", weights=weights, brute=brute)
       }
