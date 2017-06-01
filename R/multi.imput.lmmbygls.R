@@ -1,10 +1,11 @@
 multi.imput.lmmbygls <- function(num.imp, data, formula, pheno.id,
                                  founders=founders, diplotype.probs, K=NULL, fit0=NULL, fit0.glmnet=NULL,
-                                 use.par, fix.par=NULL, model=c("additive", "full"),
+                                 use.par, fix.par=NULL, model=c("additive", "full"), p.value.method=c("LRT", "ANOVA"),
                                  use.lmer, impute.map,
                                  brute=TRUE, seed=1, do.augment,
                                  weights=NULL){
-  model <- model[1]  
+  model <- model[1]
+  p.value.method <- p.value.method[1]
   eigen.K <- logDetV <- M <- NULL
   if(is.null(fit0)){
     null.formula <- make.null.formula(formula=formula, do.augment=do.augment)
@@ -25,7 +26,7 @@ multi.imput.lmmbygls <- function(num.imp, data, formula, pheno.id,
   }
   full.to.dosages <- straineff.mapping.matrix()
   
-  imp.logLik <- imp.h2 <- imp.df <- rep(0, num.imp)
+  imp.logLik <- imp.h2 <- imp.df <- imp.LOD <- imp.p.value <- rep(0, num.imp)
 
   null.data <- data
   set.seed(seed)
@@ -63,16 +64,16 @@ multi.imput.lmmbygls <- function(num.imp, data, formula, pheno.id,
       imp.logLik[i] <- fit1$logLik
       imp.h2[i] <- fit1$h2
       imp.df[i] <- fit1$rank
+      
+      if(use.lmer){
+        imp.LOD[i] <- log10(exp(imp.logLik - as.numeric(logLik(fit0))))
+        imp.p.value[i] <- pchisq(q=-2*(as.numeric(logLik(fit0)) - imp.logLik), df=imp.df - length(fixef(fit0)), lower.tail=FALSE)
+      }
+      else{
+        imp.LOD[i] <- log10(exp(imp.logLik - fit0$logLik))
+        imp.p.value[i] <- get.p.value(fit0=fit0, fit1=fit1, method=p.value.method)
+      }
     }
-  }
-  ## Summarizing over imputations
-  if(use.lmer){
-    imp.LOD <- log10(exp(imp.logLik - as.numeric(logLik(fit0))))
-    imp.p.value <- pchisq(q=-2*(as.numeric(logLik(fit0)) - imp.logLik), df=imp.df - length(fixef(fit0)), lower.tail=FALSE)
-  }
-  else{
-    imp.LOD <- log10(exp(imp.logLik - fit0$logLik))
-    imp.p.value <- pchisq(q=-2*(fit0$logLik - imp.logLik), df=imp.df - fit0$rank, lower.tail=FALSE)
   }
   return(list(h2=imp.h2, 
               LOD=imp.LOD,

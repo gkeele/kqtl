@@ -128,3 +128,18 @@ replicates.eigen <- function(Z, K) {
               vectors=qr.Q(qr(Z %*% eigen$vectors))))
 }
 
+get.p.value <- function(fit0, fit1, method=c("LRT", "ANOVA")){
+  method <- method[1]
+  if(method == "LRT"){
+    p.value <- pchisq(q=-2*(fit0$logLik - fit1$logLik), df=fit1$rank-fit0$rank, lower.tail=FALSE)
+  }
+  if(method == "ANOVA"){
+    class(fit0) <- class(fit1) <- "lm"
+    p.value <- anova(fit0, fit1)$`Pr(>F)`
+  }
+  return(p.value)
+}
+
+
+
+

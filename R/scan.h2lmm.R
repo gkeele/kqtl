@@ -49,6 +49,7 @@
 scan.h2lmm <- function(genomecache, data, 
                        formula, K=NULL,
                        model=c("additive", "full"),
+                       p.value.method=c("LRT", "ANOVA"),
                        use.par="h2", use.multi.impute=TRUE, num.imp=11, chr="all", brute=TRUE, use.fix.par=TRUE, 
                        seed=1, pheno.id="SUBJECT.NAME", geno.id="SUBJECT.NAME",
                        weights=NULL, do.augment=FALSE, use.full.null=FALSE, added.data.points=1, 
@@ -56,6 +57,7 @@ scan.h2lmm <- function(genomecache, data,
                        print.locus.fit=FALSE, debug.single.fit=FALSE,
                        ...){
   model <- model[1]
+  p.value.method <- p.value.method[1]
   
   h <- DiploprobReader$new(genomecache)
   founders <- h$getFounders()
@@ -106,6 +108,10 @@ scan.h2lmm <- function(genomecache, data,
   ###### Null model
   ## check for LMER notation
   use.lmer <- check.for.lmer.formula(null.formula)
+  if(use.lmer & p.value.method == "ANOVA"){
+    cat("ANOVA not currently supported with our implementation of LMER, swithcing to LRT\n")
+    p.value.method <- "LRT"
+  }
   if(use.lmer & !is.null(K)){
     stop("Cannot use LMER sparse random effects AND a non-sparse random effect", call.=FALSE)
   }
@@ -181,7 +187,8 @@ scan.h2lmm <- function(genomecache, data,
       }
       fit1 <- multi.imput.lmmbygls(num.imp=num.imp, data=data, formula=formula, founders=founders,
                                    diplotype.probs=diplotype.prob.matrix, pheno.id=pheno.id,
-                                   model=model, use.lmer=use.lmer, impute.map=impute.map,
+                                   model=model, p.value.method=p.value.method, 
+                                   use.lmer=use.lmer, impute.map=impute.map,
                                    use.par=use.par, fix.par=fix.par, fit0=fit0, do.augment=do.augment, 
                                    brute=brute, seed=seed, weights=weights) 
       MI.LOD[,i] <- fit1$LOD
@@ -219,7 +226,7 @@ scan.h2lmm <- function(genomecache, data,
                          brute=brute, 
                          weights=weights)
         LOD.vec[i] <- log10(exp(fit1$logLik - fit0$logLik))
-        p.vec[i] <- pchisq(q=-2*(fit0$logLik - fit1$logLik), df=fit1$rank-fit0$rank, lower.tail=FALSE)
+        p.vec[i] <- get.p.value(fit0=fit0, fit1=fit1, method=p.value.method)
         df[i] <- fit1$rank
       }
     }
