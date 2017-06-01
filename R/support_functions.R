@@ -135,7 +135,7 @@ get.p.value <- function(fit0, fit1, method=c("LRT", "ANOVA")){
   }
   if(method == "ANOVA"){
     class(fit0) <- class(fit1) <- "lm"
-    p.value <- anova(fit0, fit1)$`Pr(>F)`
+    p.value <- anova(fit0, fit1)$`Pr(>F)`[2]
   }
   return(p.value)
 }
