@@ -96,7 +96,7 @@ straineff.mapping.matrix <- function(M=8){
 run.imputation <- function(diplotype.probs, impute.map){
   pheno.id <- names(impute.map)[1]
   geno.id <- names(impute.map)[2]
-  diplotype.probs <- data.frame(1:nrow(diplotype.probs), rownames(diplotype.probs), diplotype.probs, stringsAsFactors=FALSE)
+  diplotype.probs <- data.frame(1:nrow(diplotype.probs), rownames(diplotype.probs), diplotype.probs, row.names=NULL, stringsAsFactors=FALSE)
   names(diplotype.probs)[1:2] <- c("original.order", geno.id)
   diplotype.probs <- merge(x=diplotype.probs, y=impute.map, by=geno.id)
   diplotype.probs <- diplotype.probs[order(diplotype.probs$original.order),]

@@ -76,7 +76,7 @@ scan.h2lmm <- function(genomecache, data,
   if(!is.null(weights)){ weights <- weights[as.character(data[,pheno.id])] }
 
   loci.chr <- h$getChromOfLocus(loci)
-  if(chr != "all"){
+  if(chr[1] != "all"){
     loci.chr <- h$getChromOfLocus(loci)
     loci <- loci[loci.chr %in% chr]
   }
