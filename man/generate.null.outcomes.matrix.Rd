@@ -10,7 +10,7 @@ generate.null.outcomes.matrix(scan.object, method = c("bootstrap",
 \arguments{
 \item{scan.object}{A scan.h2lmm() object.}
 
-\item{method}{DEFAULT: "bootstrap". "bootstrap" specifies parametric bootstraps from the null model. "permutations" specifies
+\item{method}{DEFAULT: "bootstrap". "bootstrap" specifies parametric bootstraps from the null model. "permutation" specifies
 parametric permutations that respect the structure of the data. Permutations are more appropriate if the data have highly
 influential data points.}
 

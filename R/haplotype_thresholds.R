@@ -4,7 +4,7 @@
 #' from the null model of no locus effect.
 #'
 #' @param scan.object A scan.h2lmm() object.
-#' @param method DEFAULT: "bootstrap". "bootstrap" specifies parametric bootstraps from the null model. "permutations" specifies
+#' @param method DEFAULT: "bootstrap". "bootstrap" specifies parametric bootstraps from the null model. "permutation" specifies
 #' parametric permutations that respect the structure of the data. Permutations are more appropriate if the data have highly
 #' influential data points.
 #' @param use.REML DEFAULT: TRUE. Determines whether the variance components for the parametric sampling are 
@@ -64,7 +64,7 @@ generate.null.outcomes.matrix <- function(scan.object, method=c("bootstrap", "pe
       if(method == "bootstrap"){
         sim.y.matrix[,i] <- y.sample
       }
-      if(method == "permutations"){
+      if(method == "permutation"){
         perm.y.ranks <- order(y.sample)
         sim.y.matrix[,i] <- scan.object$fit0$y[perm.y.ranks]
       }
