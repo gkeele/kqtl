@@ -66,11 +66,11 @@ multi.imput.lmmbygls <- function(num.imp, data, formula, pheno.id,
       imp.df[i] <- fit1$rank
       
       if(use.lmer){
-        imp.LOD[i] <- log10(exp(imp.logLik - as.numeric(logLik(fit0))))
+        imp.LOD[i] <- log10(exp(imp.logLik[i] - as.numeric(logLik(fit0))))
         imp.p.value[i] <- pchisq(q=-2*(as.numeric(logLik(fit0)) - imp.logLik), df=imp.df - length(fixef(fit0)), lower.tail=FALSE)
       }
       else{
-        imp.LOD[i] <- log10(exp(imp.logLik - fit0$logLik))
+        imp.LOD[i] <- log10(exp(imp.logLik[i] - fit0$logLik))
         imp.p.value[i] <- get.p.value(fit0=fit0, fit1=fit1, method=p.value.method)
       }
     }
