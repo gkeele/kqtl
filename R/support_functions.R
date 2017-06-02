@@ -94,17 +94,20 @@ straineff.mapping.matrix <- function(M=8){
 }
 
 run.imputation <- function(diplotype.probs, impute.map){
-  diplotype.probs <- data.frame(original.order=1:nrow(diplotype.probs), SUBJECT.NAME=rownames(diplotype.probs), diplotype.probs, stringsAsFactors=FALSE)
-  diplotype.probs <- merge(x=diplotype.probs, y=impute.map, by="SUBJECT.NAME")
+  pheno.id <- names(impute.map)[1]
+  geno.id <- names(impute.map)[2]
+  diplotype.probs <- data.frame(1:nrow(diplotype.probs), rownames(diplotype.probs), diplotype.probs, stringsAsFactors=FALSE)
+  names(diplotype.probs)[1:2] <- c("original.order", pheno.id)
+  diplotype.probs <- merge(x=diplotype.probs, y=impute.map, by=geno.id)
   diplotype.probs <- diplotype.probs[order(diplotype.probs$original.order),]
   diplotype.probs <- diplotype.probs[, names(diplotype.probs) != "original.order"]
+  rownames(diplotype.probs) <- diplotype.probs[,geno.id]
   
-  imputable.diplotype.probs <- diplotype.probs[as.integer(rownames(unique(data.frame(diplotype.probs[,"impute.on"])))),]
-  rownames(imputable.diplotype.probs) <- imputable.diplotype.probs[, "impute.on"]
+  imputable.diplotype.probs <- diplotype.probs[(unique(as.character(rownames(diplotype.probs)))),]
   imputable.diplotype.probs <- imputable.diplotype.probs[,!(names(imputable.diplotype.probs) %in% names(impute.map))]
   imputation <- t(apply(imputable.diplotype.probs, 1, function(x) rmultinom(1, 1, x)))
-  full.imputation <- imputation[as.character(impute.map[, "impute.on"]),]
-  rownames(full.imputation) <- impute.map[, "SUBJECT.NAME"]
+  full.imputation <- imputation[as.character(impute.map[, geno.id]),]
+  rownames(full.imputation) <- impute.map[, pheno.id]
   return(full.imputation)
 }
   

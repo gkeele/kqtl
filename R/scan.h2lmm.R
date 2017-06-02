@@ -176,7 +176,8 @@ scan.h2lmm <- function(genomecache, data,
   null.data <- data
   
   ## Prepping link between phenotype and genotype (necessary for imputation in multiple imputations)
-  impute.map <- data.frame(pheno.id=data[,pheno.id], impute.on=data[,geno.id])
+  impute.map <- data.frame(data[,pheno.id], data[,geno.id])
+  names(impute.map) <- c(pheno.id, geno.id)
 
   for(i in 1:length(loci)){
     if(use.multi.impute){
