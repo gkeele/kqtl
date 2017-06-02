@@ -51,8 +51,8 @@ generate.null.outcomes.matrix <- function(scan.object, method=c("bootstrap", "pe
       if(!is.null(K)){
         ## Handling potential replicates
         u <- c(mnormt::rmnorm(1, mean=rep(0, nrow(K)), varcov=K*tau2))
-        names(u) <- unique(impute.map$impute.on)
-        u <- u[impute.map$impute.on]
+        names(u) <- unique(impute.map[,2])
+        u <- u[impute.map[,2]]
       }
       if(is.null(weights)){
         e <- rnorm(n=n, mean=0, sd=sqrt(sigma2))
