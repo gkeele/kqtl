@@ -1,9 +1,12 @@
-#' Returns a matrix of parametric bootstrap samples from the null model of no locus effect
+#' Returns a matrix of outcome samples, either permutations or from the null model of no locus effect
 #'
-#' This function takes an scan.h2lmm() object, and returns a specified number of paratmetric bootstrap samples
+#' This function takes an scan.h2lmm() object, and returns a specified number of outcome samples, either permutations or
 #' from the null model of no locus effect.
 #'
 #' @param scan.object A scan.h2lmm() object.
+#' @param method DEFAULT: "bootstrap". "bootstrap" specifies parametric bootstraps from the null model. "permutations" specifies
+#' parametric permutations that respect the structure of the data. Permutations are more appropriate if the data have highly
+#' influential data points.
 #' @param use.REML DEFAULT: TRUE. Determines whether the variance components for the parametric sampling are 
 #' based on maximizing the likelihood (ML) or the residual likelihood (REML).
 #' @param num.samples The number of parametric bootstrap samples to return.
@@ -11,7 +14,8 @@
 #' across machines.
 #' @export
 #' @examples generate.null.bootstrap.matrix()
-generate.null.bootstrap.matrix <- function(scan.object, use.REML=TRUE, num.samples, seed=1){
+generate.null.outcomes.matrix <- function(scan.object, method=c("bootstrap", "permutation"), use.REML=TRUE, num.samples, seed=1){
+  method <- method[1]
   if(class(scan.object$fit0) != "lmerMod"){
     Xb <- scan.object$fit0$x %*% scan.object$fit0$coefficients
     n <- nrow(scan.object$fit0$x)
@@ -33,13 +37,22 @@ generate.null.bootstrap.matrix <- function(scan.object, use.REML=TRUE, num.sampl
     }
     sim.y.matrix <- matrix(NA, nrow=n, ncol=num.samples)
     
+    if(is.null(K)){
+      u <- rep(0, n)
+    }
+    else{
+      original.K <- K
+      impute.map <- scan.object$impute.map
+      K <- reduce.large.K(large.K=K, impute.map=impute.map)
+    }
+    
     set.seed(seed)
     for(i in 1:num.samples){
-      if(is.null(K)){
-        u <- rep(0, n)
-      }
-      else{
-        u <- c(mnormt::rmnorm(1, mean=rep(0, n), varcov=K*tau2))
+      if(!is.null(K)){
+        ## Handling potential replicates
+        u <- c(mnormt::rmnorm(1, mean=rep(0, nrow(K)), varcov=K*tau2))
+        names(u) <- unique(impute.map$impute.on)
+        u <- u[impute.map$impute.on]
       }
       if(is.null(weights)){
         e <- rnorm(n=n, mean=0, sd=sqrt(sigma2))
@@ -47,85 +60,34 @@ generate.null.bootstrap.matrix <- function(scan.object, use.REML=TRUE, num.sampl
       else{
         e <- c(mnormt::rmnorm(1, mean=rep(0, n), varcov=diag(1/weights)*sigma2))
       }
-      sim.y.matrix[,i] <- Xb + u + e
-      rownames(sim.y.matrix) <- names(scan.object$fit0$y)
+      y.sample <- Xb + u + e
+      if(method == "bootstrap"){
+        sim.y.matrix[,i] <- y.sample
+      }
+      if(method == "permutations"){
+        perm.y.ranks <- order(y.sample)
+        sim.y.matrix[,i] <- scan.object$fit0$y[perm.y.ranks]
+      }
     }
+    rownames(sim.y.matrix) <- names(scan.object$fit0$y)
   }
   else{
     stop("Need to add lmer-based functionality!!")
   }
-  
   sim.threshold.object <- list(y.matrix=sim.y.matrix,
                                formula=scan.object$formula,
                                weights=weights,
-                               K=K)
+                               K=original.K,
+                               method=method)
   return(sim.threshold.object)
 }
 
-#' Returns a matrix of (parametric) permutaions of the outcome
-#'
-#' This function takes an scan.h2lmm() object, and returns a specified number of permutation samples. When the
-#' the null model contains covariates or there is a genetic relationship matrix, permutations are returned based
-#' the maintains the structure of the data according to the null model.
-#'
-#' @param scan.object A scan.h2lmm() object.
-#' @param use.REML DEFAULT: TRUE. Determines whether the variance components for the parametric sampling are 
-#' based on maximizing the likelihood (ML) or the residual likelihood (REML).
-#' @param num.samples The number of permutation samples to return.
-#' @param seed DEFAULT: 1. The sampling process is random, thus a seed must be set for samples to be consistent
-#' across machines.
-#' @export
-#' @examples generate.perm.matrix()
-generate.perm.matrix <- function(scan.object, use.REML=TRUE, num.samples, seed=1){
-  if(class(scan.object$fit0) != "lmerMod"){
-    Xb <- scan.object$fit0$x %*% scan.object$fit0$coefficients
-    n <- nrow(scan.object$fit0$x)
-    K <- scan.object$fit0$K
-    weights <- scan.object$fit0$weights
-    if(use.REML){
-      if(is.null(K)){
-        tau2 <- 0
-        sigma2 <- scan.object$fit0$sigma2.mle*(n/(n - 1))
-      }
-      else{
-        tau2 <- scan.object$fit0.REML$tau2.mle
-        sigma2 <- scan.object$fit0.REML$sigma2.mle
-      }
-    }
-    else{
-      tau2 <- scan.object$fit0$tau2.mle
-      sigma2 <- scan.object$fit0$sigma2.mle  
-    }
-    perm.y.matrix <- matrix(NA, nrow=n, ncol=num.samples)
-    
-    set.seed(seed)  
-    for(i in 1:num.samples){
-      if(is.null(K)){
-        u <- rep(0, n)
-      }
-      else{
-        u <- c(mnormt::rmnorm(1, mean=rep(0, n), varcov=K*tau2))
-      }
-      if(is.null(weights)){
-        e <- rnorm(n=n, mean=0, sd=sqrt(sigma2))
-      }
-      else{
-        e <- c(mnormt::rmnorm(1, mean=rep(0, n), varcov=diag(1/weights)*sigma2))
-      }
-      perm.y.ranks <- order(Xb + u + e)
-      perm.y.matrix[,i] <- scan.object$fit0$y[perm.y.ranks]
-      rownames(perm.y.matrix) <- names(scan.object$fit0$y)
-    }
-  }
-  else{
-    stop("Need to add lmer-based functionality!!")
-  }
-  sim.threshold.object <- list(y.matrix=perm.y.matrix,
-                               formula=scan.object$formula,
-                               #weights=weights[perm.y.ranks],
-                               weights=weights,
-                               K=K)
-  return(sim.threshold.object)
+reduce.large.K <- function(large.K, impute.map){
+  map.order <- match(impute.map$pheno.id, table=colnames(large.K))
+  impute.map <- impute.map[map.order,]
+  colnames(large.K) <- rownames(large.K) <- impute.map$impute.on
+  K <- large.K[unique(as.character(impute.map$impute.on)), unique(as.character(impute.map$impute.on))]
+  return(K)
 }
 
 #' Runs threshold scans from a matrix of outcomes, either parametric bootstraps from the null model or permutations
