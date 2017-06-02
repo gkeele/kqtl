@@ -16,6 +16,10 @@
 #' @param model DEFAULT: additive. Specifies how to model the founder haplotype probabilities. The additive options specifies
 #' use of haplotype dosages, and is most commonly used. The full option regresses the phenotype on the actual
 #' diplotype probabilities.
+#' @param p.value.method DEFAULT: "LRT". "LRT" specifies a likelihood ratio test, which is flexible to testing fixed
+#' effects in fixed and mixed effect models. "ANOVA" specifies an F-test, which is only valid in fixed effect models.
+#' ANOVA is more conservative in models with low sample sizes, where the asymptotic theory underlying the LRT does not
+#' hold.
 #' @param use.par DEFAULT: "h2". The parameterization of the likelihood to be used. 
 #' @param use.multi.impute DEFAULT: TRUE. This option specifies whether to use ROP or multiple imputations.
 #' @param num.imp DEFAULT: 11. IF multiple imputations are used, this specifies the number of imputations to perform.
@@ -108,13 +112,23 @@ scan.h2lmm <- function(genomecache, data,
   ###### Null model
   ## check for LMER notation
   use.lmer <- check.for.lmer.formula(null.formula)
+  
+  ###### check p-value method
   if(use.lmer & p.value.method == "ANOVA"){
     cat("ANOVA not currently supported with our implementation of LMER, swithcing to LRT\n")
     p.value.method <- "LRT"
   }
+  if(!is.null(K)){
+    cat("standard ANOVA F-test not valid with mixed effect model, swithcing to LRT\n")
+    p.value.method <- "LRT"
+  }
+  
+  ###### check that both sparse random effect and kinship random effect are not being specified together
   if(use.lmer & !is.null(K)){
     stop("Cannot use LMER sparse random effects AND a non-sparse random effect", call.=FALSE)
   }
+  
+  ###### Null model fits
   if(use.lmer){
     fit0 <- lmmbylmer(formula=null.formula, data=data, REML=FALSE, weights=weights)
     fit0.REML <- lmmbylmer(formula=null.formula, data=data, REML=TRUE, weights=weights)
@@ -246,7 +260,8 @@ scan.h2lmm <- function(genomecache, data,
                  fit0.REML=fit0.REML,
                  y=data$y,
                  formula=formula.string,
-                 model.type=model)
+                 model.type=model,
+                 p.value.method=p.value.method)
   if(length(just.these.loci) == 1){ output$fit1 <- fit1 }
   if(pheno.id != geno.id){ rownames(Z) <- as.character(data[, pheno.id]); output$Z <- Z }
   return(output)
