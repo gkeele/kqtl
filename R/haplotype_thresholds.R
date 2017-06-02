@@ -83,10 +83,10 @@ generate.null.outcomes.matrix <- function(scan.object, method=c("bootstrap", "pe
 }
 
 reduce.large.K <- function(large.K, impute.map){
-  map.order <- match(impute.map$pheno.id, table=colnames(large.K))
+  map.order <- match(impute.map[,1], table=colnames(large.K))
   impute.map <- impute.map[map.order,]
-  colnames(large.K) <- rownames(large.K) <- impute.map$impute.on
-  K <- large.K[unique(as.character(impute.map$impute.on)), unique(as.character(impute.map$impute.on))]
+  colnames(large.K) <- rownames(large.K) <- impute.map[,2]
+  K <- large.K[unique(as.character(impute.map[,2])), unique(as.character(impute.map[,2]))]
   return(K)
 }
 
