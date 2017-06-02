@@ -100,7 +100,7 @@ run.imputation <- function(diplotype.probs, impute.map){
   names(diplotype.probs)[1:2] <- c("original.order", geno.id)
   diplotype.probs <- merge(x=diplotype.probs, y=impute.map, by=geno.id)
   diplotype.probs <- diplotype.probs[order(diplotype.probs$original.order),]
-  imputable.diplotype.probs <- diplotype.probs[!duplicated(diplotype.probs[,geno.id]),][,!(names(diplotype.probs) %in% c("original.order", names(impute.map)))]
+  imputable.diplotype.probs <- as.matrix(diplotype.probs[!duplicated(diplotype.probs[,geno.id]),][,!(names(diplotype.probs) %in% c("original.order", names(impute.map)))])
   rownames(imputable.diplotype.probs) <- diplotype.probs[,geno.id][!duplicated(diplotype.probs[,geno.id])]
   
   #diplotype.probs <- diplotype.probs[, names(diplotype.probs) != "original.order"]
@@ -108,7 +108,7 @@ run.imputation <- function(diplotype.probs, impute.map){
   #rownames(diplotype.matrix) <- diplotype.probs[,geno.id]
   #imputable.diplotype.matrix <- diplotype.matrix[(unique(as.character(diplotype.probs[,geno.id]))),]
   
-  imputation <- as.matrix(t(apply(imputable.diplotype.probs, 1, function(x) rmultinom(1, 1, x))))
+  imputation <- t(apply(imputable.diplotype.probs, 1, function(x) rmultinom(1, 1, x)))
   full.imputation <- imputation[as.character(impute.map[, geno.id]),]
   rownames(full.imputation) <- impute.map[, pheno.id]
   return(full.imputation)
