@@ -123,6 +123,8 @@ run.threshold.scans <- function(sim.threshold.object, keep.full.scans=TRUE,
   formula <- sim.threshold.object$formula
   weights <- sim.threshold.object$weights
   K <- sim.threshold.object$K
+  pheno.id <- names(sim.threshold.object$impute.map)[1]
+  geno.id <- names(sim.threshold.object$impute.map)[2]
   
   num.scans <- ncol(y.matrix)
   
@@ -146,11 +148,13 @@ run.threshold.scans <- function(sim.threshold.object, keep.full.scans=TRUE,
   
   iteration.formula <- formula(paste0("new.y ~ ", unlist(strsplit(formula, split="~"))[-1]))
   for(i in 1:num.scans){
-    new.y <- data.frame(new.y=y.matrix[,i], SUBJECT.NAME=rownames(y.matrix))
-    this.data <- merge(x=new.y, y=data, by="SUBJECT.NAME", all.x=TRUE)
+    new.y <- data.frame(y.matrix[,i], rownames(y.matrix))
+    names(new.y) <- c("new.y", pheno.id)
+    this.data <- merge(x=new.y, y=data, by=pheno.id, all.x=TRUE)
 
     this.scan <- scan.h2lmm(genomecache=genomecache, data=this.data, formula=iteration.formula, K=K, model=model,
-                            use.multi.impute=use.multi.impute, num.imp=num.imp, seed=scan.seed,
+                            use.multi.impute=use.multi.impute, num.imp=num.imp, 
+                            pheno.id=pheno.id, geno.id=geno.id, seed=scan.seed,
                             weights=weights, chr=chr,
                             ...)
     if(keep.full.scans){
