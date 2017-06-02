@@ -175,10 +175,9 @@ scan.h2lmm <- function(genomecache, data,
   LOD.vec <- p.vec <- df <- rep(NA, length(loci))
   null.data <- data
   
-  ## Prepping imputation in multiple imputations
-  if(use.multi.impute){
-    impute.map <- data.frame(pheno.id=data[,pheno.id], impute.on=data[,geno.id])
-  }
+  ## Prepping link between phenotype and genotype (necessary for imputation in multiple imputations)
+  impute.map <- data.frame(pheno.id=data[,pheno.id], impute.on=data[,geno.id])
+
   for(i in 1:length(loci)){
     if(use.multi.impute){
       if(i == 1){ # only at the beginning
@@ -261,7 +260,8 @@ scan.h2lmm <- function(genomecache, data,
                  y=data$y,
                  formula=formula.string,
                  model.type=model,
-                 p.value.method=p.value.method)
+                 p.value.method=p.value.method,
+                 impute.map=impute.map)
   if(length(just.these.loci) == 1){ output$fit1 <- fit1 }
   if(pheno.id != geno.id){ rownames(Z) <- as.character(data[, pheno.id]); output$Z <- Z }
   return(output)

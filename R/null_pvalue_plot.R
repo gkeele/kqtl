@@ -1,10 +1,10 @@
 #' @export
-null.pvalue.ci.plot <- function(par.bs.scans, conf.level=0.95, scale="Mb",
+null.pvalue.ci.plot <- function(null.scans, conf.level=0.95, scale="Mb",
                                 main.label=NULL,
                                 bs.max=NULL,
                                 SIM.object=NULL,
                                 dist.object=NULL,
-                                cache.title="DO-QTL",
+                                cache.title,
                                 formula.title=NULL,
                                 model.title=NULL,
                                 y.max.manual=NULL, y.min.manual=NULL,
