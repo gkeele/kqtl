@@ -118,7 +118,7 @@ scan.h2lmm <- function(genomecache, data,
     cat("ANOVA not currently supported with our implementation of LMER, swithcing to LRT\n")
     p.value.method <- "LRT"
   }
-  if(!is.null(K)){
+  if(p.value.method == "ANOVA" & !is.null(K)){
     cat("standard ANOVA F-test not valid with mixed effect model, swithcing to LRT\n")
     p.value.method <- "LRT"
   }
