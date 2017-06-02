@@ -265,40 +265,60 @@ genome.plotter.whole <- function(scan.list, use.lod=FALSE, just.these.chr=NULL,
   
   # Plot other method's statistics
   if(length(scan.list) > 1){
-    for(i in 2:length(scan.list)){
-      if(use.lod){
-        compare.shift <- 0
-        compare.outcome <- unlist(scan.list[[i]]["LOD"])
+      for(i in 2:length(scan.list)){
+        
+        this.scan <- scan.list[[i]]
+        if(use.lod){
+          compar.outcome <- this.scan$LOD
+        }
+        if(!use.lod){
+          compare.outcome <- -log10(this.scan$p.value)
+        }
+        pos <- ifelse(rep(scale=="Mb", length(compare.outcome)), this.scan$pos$Mb, this.scan$pos$cM)
+        
+        ## Resetting for new scan objects
+        chr <- this.scan$chr
         if(!is.null(just.these.chr)){
-          compare.outcome <- compare.outcome[keep.chr]
+            keep.chr <- chr %in% just.these.chr
+            chr <- chr[keep.chr]
+            compare.outcome <- compare.outcome[keep.chr]
+            pos <- pos[keep.chr]
         }
+        
+        has.X <- FALSE
+        if(any(chr=="X")){
+          has.X <- TRUE
+          chr[chr=="X"] <- max(as.numeric(unique(chr[chr != "X"]))) + 1
+        }
+        
+        pre.chr <- as.factor(as.numeric(chr))
+        order.i <- order(pre.chr, pos)
+        
         compare.outcome <- compare.outcome[order.i]
-        for(j in 1:length(chr.types)){
-          points(pos[pre.chr==chr.types[j]] + compare.shift, compare.outcome[pre.chr==chr.types[j]], type="l", col=main.colors[i], lwd=1.5)
-          compare.shift <- compare.shift + max.pos[j]
-        }
-      }
-      if(!use.lod){
-        compare.shift <- 0
-        compare.outcome <- -log10(unlist(scan.list[[i]]["p.value"]))
-        if(!is.null(just.these.chr)){
-          compare.outcome <- compare.outcome[keep.chr]
-        }
-        compare.outcome <- compare.outcome[order.i]
-        for(j in 1:length(chr.types)){
-          points(pos[pre.chr==chr.types[j]] + compare.shift, compare.outcome[pre.chr==chr.types[j]], type="l", col=main.colors[i], lwd=1.5)
-          compare.shift <- compare.shift + max.pos[j]
+        pre.chr <- pre.chr[order.i]
+        pos <- pos[order.i]
+        
+        min.pos <- tapply(pos, pre.chr, function(x) min(x, na.rm=TRUE))
+        max.pos <- tapply(pos, pre.chr, function(x) max(x, na.rm=TRUE))
+        chr.types <- levels(pre.chr)
+        
+        compare.shift <- max.pos[1]
+        points(pos[pre.chr==chr.types[1]], compare.outcome[pre.chr==chr.types[1]], type="l", col=main.colors[i], lwd=1.5)
+        if(length(chr.types) > 1){
+          for(j in 2:length(chr.types)){
+            points(pos[pre.chr==chr.types[j]] + compare.shift, compare.outcome[pre.chr==chr.types[j]], type="l", col=main.colors[i], lwd=1.5)
+            compare.shift <- compare.shift + max.pos[j]
+          }
         }
       }
     }
-  }
-  if(has.X){
-    axis.label <- c(chr.types[-length(chr.types)], "X")
-  }
-  if(!has.X){
-    axis.label <- chr.types
-  }
-  axis(side=1, tick=F, line=NA, at=label.spots, labels=axis.label, cex.axis=0.7, padj=-1.5)
+    if(has.X){
+      axis.label <- c(chr.types[-length(chr.types)], "X")
+    }
+    if(!has.X){
+      axis.label <- chr.types
+    }
+    axis(side=1, tick=F, line=NA, at=label.spots, labels=axis.label, cex.axis=0.7, padj=-1.5)
   if(use.legend){
     legend("topright", legend=names(scan.list), 
            lty=rep(1, length(scan.list)), lwd=c(rep(1.5, length(scan.list))), 
