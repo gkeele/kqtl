@@ -109,7 +109,7 @@ run.imputation <- function(diplotype.probs, impute.map){
   #imputable.diplotype.matrix <- diplotype.matrix[(unique(as.character(diplotype.probs[,geno.id]))),]
   
   imputation <- t(apply(imputable.diplotype.probs, 1, function(x) rmultinom(1, 1, x)))
-  full.imputation <- imputation[as.character(impute.map[, geno.id]),]
+  full.imputation <- as.matrix(imputation[as.character(impute.map[, geno.id]),])
   rownames(full.imputation) <- impute.map[, pheno.id]
   return(full.imputation)
 }
