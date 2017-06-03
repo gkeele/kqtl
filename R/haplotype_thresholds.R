@@ -77,7 +77,7 @@ generate.null.outcomes.matrix <- function(scan.object, method=c("bootstrap", "pe
   sim.threshold.object <- list(y.matrix=sim.y.matrix,
                                formula=scan.object$formula,
                                weights=weights,
-                               K=original.K,
+                               K=K,
                                method=method,
                                impute.map=scan.object$impute.map)
   return(sim.threshold.object)
