@@ -69,7 +69,8 @@ scan.h2lmm <- function(genomecache, data,
   loci <- h$getLoci()
   cache.subjects <- rownames(h$getLocusMatrix(loci[1], model="additive"))
   data.and.K <- make.processed.data(formula=formula, data=data, 
-                                    cache.subjects=cache.subjects, K=K, pheno.id=pheno.id, geno.id=geno.id)
+                                    cache.subjects=cache.subjects, K=K, 
+                                    pheno.id=pheno.id, geno.id=geno.id)
   data <- data.and.K$data
   K <- data.and.K$K
   cache.subjects <- unique(as.character(data[,geno.id]))

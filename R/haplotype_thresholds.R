@@ -78,7 +78,8 @@ generate.null.outcomes.matrix <- function(scan.object, method=c("bootstrap", "pe
                                formula=scan.object$formula,
                                weights=weights,
                                K=original.K,
-                               method=method)
+                               method=method,
+                               impute.map=scan.object$impute.map)
   return(sim.threshold.object)
 }
 
@@ -146,13 +147,14 @@ run.threshold.scans <- function(sim.threshold.object, keep.full.scans=TRUE,
   }
   max.results <- rep(NA, num.scans)
   
-  iteration.formula <- formula(paste0("new.y ~ ", unlist(strsplit(formula, split="~"))[-1]))
+  iteration.formula <- formula(paste0("new_y ~ ", unlist(strsplit(formula, split="~"))[-1]))
   for(i in 1:num.scans){
     new.y <- data.frame(y.matrix[,i], rownames(y.matrix))
-    names(new.y) <- c("new.y", pheno.id)
+    names(new.y) <- c("new_y", pheno.id)
     this.data <- merge(x=new.y, y=data, by=pheno.id, all.x=TRUE)
 
-    this.scan <- scan.h2lmm(genomecache=genomecache, data=this.data, formula=iteration.formula, K=K, model=model,
+    this.scan <- scan.h2lmm(genomecache=genomecache, data=this.data, 
+                            formula=iteration.formula, K=K, model=model,
                             use.multi.impute=use.multi.impute, num.imp=num.imp, 
                             pheno.id=pheno.id, geno.id=geno.id, seed=scan.seed,
                             weights=weights, chr=chr,
