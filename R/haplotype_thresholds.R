@@ -20,8 +20,8 @@ generate.sample.outcomes.matrix <- function(scan.object, model.type=c("null", "a
   model.type <- model.type[1]
   method <- method[1]
   
-  if(model.type == "null"){ fit <- scan.object$fit0 }
-  if(model.type == "alt"){ fit <- scan.object$fit1 }
+  if(model.type == "null"){ fit <- scan.object$fit0; this.chr <- NULL }
+  if(model.type == "alt"){ fit <- scan.object$fit1; this.chr <- scan.object$chr }
   fit0.REML <- scan.object$fit0.REML
   if(class(fit) != "lmerMod"){
     Xb <- fit$x %*% fit$coefficients
@@ -101,7 +101,8 @@ generate.sample.outcomes.matrix <- function(scan.object, model.type=c("null", "a
                                weights=return.weights,
                                K=K,
                                method=method,
-                               impute.map=scan.object$impute.map)
+                               impute.map=scan.object$impute.map,
+                               chr=this.chr)
   return(sim.threshold.object)
 }
 
