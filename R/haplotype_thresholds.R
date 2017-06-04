@@ -59,7 +59,7 @@ generate.sample.outcomes.matrix <- function(scan.object, model.type=c("null", "a
         X <- fit$x
         Sigma <- original.K*tau2 + diag(1/weights)*sigma2
         inv.Sigma <- solve(Sigma)
-        u.BLUP <- (original.K*tau2) %*% inv.Sigma %*% (diag(nrow(K)) - X %*% solve(t(X) %*% inv.Sigma %*% X) %*% t(X) %*% inv.Sigma) %*% fit$y  
+        u.BLUP <- (original.K*tau2) %*% inv.Sigma %*% (diag(nrow(original.K)) - X %*% solve(t(X) %*% inv.Sigma %*% X) %*% t(X) %*% inv.Sigma) %*% fit$y  
       }
     }
     
