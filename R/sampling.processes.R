@@ -1,66 +1,207 @@
-#' Generate parametric bootstrap samples from the alternative model of a particular locus
+#' Returns a matrix of outcome samples, either permutations or from the null model of no locus effect
 #'
-#' This function generates parametric bootstrap samples from the alternative model of a particular locus. These
-#' samples will then be used to estimate a confidence interval for QTL position.
+#' This function takes an scan.h2lmm() object, and returns a specified number of outcome samples, either permutations or
+#' from the null model of no locus effect.
 #'
-#' @param scan.object.w.fit1 A scan.h2lmm() object fit for a single locus. scan.h2lmm() includes the alternative
-#' model fit when a single locus is specified. This alternative fit will be used as the basis for the bootstrap
-#' sampling process.
-#' @param num.samples The number of samples to be generated from the parametric model.
-#' @param seed DEFAULT: 1. The sampling procedure is a random process. Specifying a seed allows consistent results
-#' across runs and machines.
-#' @param use.BLUP DEFAULT: TRUE. If a mixed effect model is specified with a random effect and corresponding kinship
-#' matrix, the random effect could be sampled as well as the unstructured error term. If TRUE, the BLUP of the 
-#' random effect is used, resulting in less random variation over samples, and ultimately narrower intervals.
+#' @param scan.object A scan.h2lmm() object.
+#' @param model.type DEFAULT: "null". "null" specifies sampling processes from the null model. "alt" specifies sampling processes
+#' from the alternative model.
+#' @param method DEFAULT: "bootstrap". "bootstrap" specifies parametric bootstraps from the null model. "permutation" specifies
+#' parametric permutations that can respect the structure of the data. Permutations are more appropriate if the data have highly
+#' influential data points.
+#' @param use.REML DEFAULT: TRUE. Determines whether the variance components for the parametric sampling are 
+#' based on maximizing the likelihood (ML) or the residual likelihood (REML).
+#' @param use.BLUP DEFAULT: FALSE.This results in the BLUP value of the polgyene effect (assuming a GRM has been given) is used,
+#' rather than sampled. This reduces the variation seen across sampling, which can result in narrower positional confidence 
+#' intervals.
+#' @param num.samples The number of parametric bootstrap samples to return.
+#' @param seed DEFAULT: 1. The sampling process is random, thus a seed must be set for samples to be consistent
+#' across machines.
 #' @export
-#' @examples generate.positional.bootstrap.matrix()
-generate.positional.bootstrap.matrix <- function(scan.object.w.fit1, 
-                                                 num.samples, seed=1,
-                                                 use.BLUP=TRUE){
-  alt.fit <- scan.object.w.fit1$fit1
-  Xb <- alt.fit$x %*% alt.fit$coefficients
-  weights <- alt.fit$weights
-  if(is.null(weights)){
-    K <- alt.fit$K
-  }
-  else{
-    K <- diag(sqrt(weights)) %*% alt.fit$K %*% diag(sqrt(weights))
-    colnames(K) <- rownames(K) <- colnames(alt.fit$K)
-  }
-  sim.y.matrix <- matrix(NA, nrow=length(Xb), ncol=num.samples)
-  if(use.BLUP){
-    X <- alt.fit$x
-    Sigma <- K*alt.fit$tau2.mle + diag(1/weights)*alt.fit$sigma2.mle
-    inv.Sigma <- solve(Sigma)
-    u.BLUP <- (K*alt.fit$tau2.mle) %*% inv.Sigma %*% (diag(nrow(K)) - X %*% solve(t(X) %*% inv.Sigma %*% X) %*% t(X) %*% inv.Sigma) %*% alt.fit$y  
-  }
-  set.seed(seed)
-  for(i in 1:num.samples){
-    if(alt.fit$tau2.mle != 0){ 
-      if(use.BLUP){
-        u <- u.BLUP
+#' @examples generate.sample.outcomes.matrix()
+generate.sample.outcomes.matrix <- function(scan.object, model.type=c("null", "alt"), 
+                                            method=c("bootstrap", "permutation"), use.REML=TRUE, 
+                                            use.BLUP=FALSE, num.samples, seed=1){
+  model.type <- model.type[1]
+  method <- method[1]
+  
+  if(model.type == "null"){ fit <- scan.object$fit0; locus <- NULL }
+  if(model.type == "alt"){ fit <- scan.object$fit1; locus <- scan.object$loci }
+  fit0.REML <- scan.object$fit0.REML
+  if(class(fit) != "lmerMod"){
+    Xb <- fit$x %*% fit$coefficients
+    n <- nrow(fit$x)
+    K <- fit$K
+    weights <- fit$weights
+    return.weights <- weights
+    if(is.null(weights)){ 
+      weights <- rep(1, nrow(K)) 
+    }
+    if(use.REML){
+      if(is.null(K)){
+        tau2 <- 0
+        sigma2 <- fit$sigma2.mle*(n/(n - 1))
       }
       else{
-        u <- c(mnormt::rmnorm(1, mean=rep(0, nrow(alt.fit$x)), varcov=K*alt.fit$tau2.mle)) 
+        tau2 <- fit0.REML$tau2.mle
+        sigma2 <- fit0.REML$sigma2.mle
       }
     }
-    else{ u <- rep(0, nrow(alt.fit$x)) }
-    if(is.null(weights)){
-      e <- rnorm(n=nrow(alt.fit$x), mean=0, sd=sqrt(alt.fit$sigma2.mle))
+    else{
+      tau2 <- fit$tau2.mle
+      sigma2 <- fit$sigma2.mle  
+    }
+    sim.y.matrix <- matrix(NA, nrow=n, ncol=num.samples)
+    
+    if(is.null(K)){
+      u <- rep(0, n)
     }
     else{
-      e <- c(mnormt::rmnorm(1, mean=rep(0, nrow(alt.fit$x)), varcov=diag(1/weights)*alt.fit$sigma2.mle))
+      original.K <- K
+      impute.map <- scan.object$impute.map
+      K <- reduce.large.K(large.K=K, impute.map=impute.map)
+      if(use.BLUP){
+        X <- fit$x
+        Sigma <- original.K*tau2 + diag(1/weights)*sigma2
+        inv.Sigma <- solve(Sigma)
+        u.BLUP <- (original.K*tau2) %*% inv.Sigma %*% (diag(nrow(original.K)) - X %*% solve(t(X) %*% inv.Sigma %*% X) %*% t(X) %*% inv.Sigma) %*% fit$y  
+      }
     }
-    sim.y.matrix[,i] <- Xb + u + e
+    
+    set.seed(seed)
+    for(i in 1:num.samples){
+      if(!is.null(K)){
+        ## Handling potential replicates
+        if(use.BLUP){
+          u <- u.BLUP
+        }
+        else{
+          u <- c(mnormt::rmnorm(1, mean=rep(0, nrow(K)), varcov=K*tau2))
+        }
+        names(u) <- unique(impute.map[,2])
+        u <- u[impute.map[,2]]
+      }
+      if(is.null(weights)){
+        e <- rnorm(n=n, mean=0, sd=sqrt(sigma2))
+      }
+      else{
+        e <- c(mnormt::rmnorm(1, mean=rep(0, n), varcov=diag(1/weights)*sigma2))
+      }
+      y.sample <- Xb + u + e
+      if(method == "bootstrap"){
+        sim.y.matrix[,i] <- y.sample
+      }
+      if(method == "permutation"){
+        perm.y.ranks <- order(y.sample)
+        sim.y.matrix[,i] <- fit$y[perm.y.ranks]
+      }
+    }
+    rownames(sim.y.matrix) <- names(fit$y)
   }
-  sim.object <- list(y.matrix=sim.y.matrix,
-                     formula=scan.object.w.fit1$formula,
-                     weights=alt.fit$weights,
-                     K=K,
-                     locus=scan.object.w.fit1$loci,
-                     chr=scan.object.w.fit1$chr)
-  return(sim.object)
+  else{
+    stop("Need to add lmer-based functionality!!")
+  }
+  sim.threshold.object <- list(y.matrix=sim.y.matrix,
+                               formula=scan.object$formula,
+                               weights=return.weights,
+                               K=K,
+                               method=method,
+                               impute.map=scan.object$impute.map,
+                               locus=locus)
+  return(sim.threshold.object)
 }
+
+### Support function that can take a large K with replicates rows/columns, and reduce it down
+reduce.large.K <- function(large.K, impute.map){
+  map.order <- match(impute.map[,1], table=colnames(large.K))
+  impute.map <- impute.map[map.order,]
+  colnames(large.K) <- rownames(large.K) <- impute.map[,2]
+  K <- large.K[unique(as.character(impute.map[,2])), unique(as.character(impute.map[,2]))]
+  return(K)
+}
+
+#' Runs threshold scans from a matrix of outcomes, either parametric bootstraps from the null model or permutations
+#'
+#' This function takes an object produced from either generate.null.bootstrap.matrix() or generate.perm.matrix(), and 
+#' runs genome scans on the outcomes contained in them.
+#'
+#' @param sim.threshold.object An object created by either generate.null.bootstrap.matrix() or generate.perm.matrix().
+#' @param keep.full.scans DEFAULT: TRUE. Returns full genome scans for every outcome sample in the sim.threshold.object. Can be used
+#' for visualization of the procedure, but greatly increases the size of the output object.
+#' @param genomecache The path to the genome cache directory. The genome cache is a particularly structured
+#' directory that stores the haplotype probabilities/dosages at each locus. It has an additive model
+#' subdirectory and a full model subdirectory. Each contains subdirectories for each chromosome, which then
+#' store .RData files for the probabilities/dosages of each locus.
+#' @param data A data frame with outcome and potential covariates. Should also have IDs
+#' that link to IDs in the genome cache, often the individual-level ID named "SUBJECT.NAME".
+#' @param model DEFAULT: additive. Specifies how to model the founder haplotype probabilities. The additive options specifies
+#' use of haplotype dosages, and is most commonly used. The full option regresses the phenotype on the actual
+#' diplotype probabilities.
+#' @param use.multi.impute DEFAULT: TRUE. This option specifies whether to use ROP or multiple imputations.
+#' @param num.imp DEFAULT: 11. IF multiple imputations are used, this specifies the number of imputations to perform.
+#' @param chr DEFAULT: "all". The chromosomes to conduct scans over.
+#' @param scan.seed DEFAULT: 1. The sampling process is random, thus a seed must be set for samples to be consistent
+#' across machines.
+#' @export
+#' @examples run.threshold.scans()
+run.threshold.scans <- function(sim.threshold.object, keep.full.scans=TRUE,
+                                genomecache, data,
+                                model=c("additive", "full"),
+                                use.multi.impute=TRUE, num.imp=11, chr="all", 
+                                scan.seed=1, ...){
+  y.matrix <- sim.threshold.object$y.matrix
+  formula <- sim.threshold.object$formula
+  weights <- sim.threshold.object$weights
+  K <- sim.threshold.object$K
+  pheno.id <- names(sim.threshold.object$impute.map)[1]
+  geno.id <- names(sim.threshold.object$impute.map)[2]
+  
+  num.scans <- ncol(y.matrix)
+  
+  h <- DiploprobReader$new(genomecache)
+  loci <- h$getLoci()
+  loci.chr <- h$getChromOfLocus(loci)
+  if(chr != "all"){
+    loci.chr <- h$getChromOfLocus(loci)
+    loci <- loci[loci.chr %in% chr]
+  }
+  
+  full.results <- these.chr <- these.pos <- NULL
+  if(keep.full.scans){
+    full.results <- matrix(NA, nrow=num.scans, ncol=length(loci))
+    colnames(full.results) <- loci
+    these.chr <- h$getChromOfLocus(loci)
+    these.pos <- list(Mb=h$getLocusStart(loci, scale="Mb"),
+                      cM=h$getLocusStart(loci, scale="cM"))
+  }
+  max.results <- rep(NA, num.scans)
+  
+  iteration.formula <- formula(paste0("new_y ~ ", unlist(strsplit(formula, split="~"))[-1]))
+  for(i in 1:num.scans){
+    new.y <- data.frame(y.matrix[,i], rownames(y.matrix))
+    names(new.y) <- c("new_y", pheno.id)
+    this.data <- merge(x=new.y, y=data, by=pheno.id, all.x=TRUE)
+    
+    this.scan <- scan.h2lmm(genomecache=genomecache, data=this.data, 
+                            formula=iteration.formula, K=K, model=model,
+                            use.multi.impute=use.multi.impute, num.imp=num.imp, 
+                            pheno.id=pheno.id, geno.id=geno.id, seed=scan.seed,
+                            weights=weights, chr=chr,
+                            ...)
+    if(keep.full.scans){
+      full.results[i,] <- this.scan$p.value
+    }
+    max.results[i] <- min(this.scan$p.value)
+    cat("threshold scan:", i, "\n")
+  }
+  return(list(full.results=list(p.values=full.results, 
+                                chr=these.chr, 
+                                pos=these.pos), 
+              max.statistics=max.results))
+}
+
+################# QTL CI methods
+
 
 #' Run single chromosome scans on parametric bootstrap samples from the alternative model of a particular locus
 #'
@@ -79,7 +220,7 @@ generate.positional.bootstrap.matrix <- function(scan.object.w.fit1,
 #' that link to IDs in the genome cache, often the individual-level ID named "SUBJECT.NAME".
 #' @param model DEFAULT: additive. Specifies how to model the founder haplotype probabilities. The additive options specifies
 #' use of haplotype dosages, and is most commonly used. The full option regresses the phenotype on the actual
-#' diplotype probabilities. The diplolasso option specifies the DiploLASSO model.
+#' diplotype probabilities.
 #' @param use.par DEFAULT: "h2". The parameterization of the likelihood to be used.
 #' @param use.multi.impute DEFAULT: TRUE. If TRUE, use multiple imputations of genetic data. If FALSE, use ROP.
 #' @param num.imp DEFAULT: 11. If multiple imputations are used, this specifies the number of imputations to perform.
@@ -99,17 +240,14 @@ generate.positional.bootstrap.matrix <- function(scan.object.w.fit1,
 #' @param use.full.null DEFAULT: FALSE. Draws augmented data points from the null model. This allows for the inclusion of null data points
 #' that do not influence the estimation of other model parameters as much.
 #' @param added.data.points DEFAULT: 1. If augment weights are being used, this specifies how many data points should be added in total.
-#' @param impute.on DEFAULT: "SUBJECT.NAME". Name of the column in the data to match to the genome cache for imputations. 
-#' Usually "SUBJECT.NAME", the individual. If there are multiple observations of the same genome, this can specify that
-#' every individual with the same genome receives the same imputation - as is the case for inbred individuals.
 #' @export
 #' @examples run.positional.scans()
 run.positional.scans <- function(sim.object, keep.full.scans=TRUE,
                                  genomecache, data,
-                                 model=c("additive", "full", "diplolasso"),
+                                 model=c("additive", "full"),
                                  use.par="h2", use.multi.impute=TRUE, num.imp=11, brute=TRUE, use.fix.par=FALSE, 
                                  scan.seed=1, do.augment=FALSE,
-                                 use.augment.weights=FALSE, use.full.null=FALSE, added.data.points=1, impute.on="SUBJECT.NAME",
+                                 use.augment.weights=FALSE, use.full.null=FALSE, added.data.points=1,
                                  ...){
   model <- model[1]
   
@@ -159,7 +297,7 @@ run.positional.scans <- function(sim.object, keep.full.scans=TRUE,
     cat("positional scan:", i, "\n")
   }
   peak.pos <- list(Mb=h$getLocusStart(loci=peak.loci.vec, scale="Mb"),
-                       cM=h$getLocusStart(loci=peak.loci.vec, scale="cM"))
+                   cM=h$getLocusStart(loci=peak.loci.vec, scale="cM"))
   return(list(full.results=list(p.values=full.results, chr=these.chr, pos=these.pos), 
               peak.loci=peak.loci.vec, 
               peak.loci.pos=peak.pos, 
@@ -264,7 +402,7 @@ double.averaged.mi.parametric.bootstrap <- function(formula, data, genomecache, 
   source("~/Documents/SolbergHS/GLS/lmmbygls/scripts_to_source.R", local=TRUE)
   source("~/Documents/SolbergHS/GLS/lmmbygls/support_functions.R", local=TRUE)
   source("~/Documents/SolbergHS/GLS/lmmbygls/ci_support.R", local=TRUE)
-
+  
   full.to.dosages <- straineff.mapping.matrix()
   
   h <- DiploprobReader$new(genomecache)
@@ -294,7 +432,7 @@ double.averaged.mi.parametric.bootstrap <- function(formula, data, genomecache, 
   
   loci <- h$getLoci()
   these.loci <- loci[h$getChromOfLocus(loci) == chr]
-
+  
   ## Setting up data structures to record scan statistics
   first.peak.loci.matrix <- matrix(NA, nrow=num.first.bs.samples, ncol=1)
   first.all.scans <- array(NA, dim=c(num.first.bs.samples, 1, length(these.loci)))
@@ -314,16 +452,16 @@ double.averaged.mi.parametric.bootstrap <- function(formula, data, genomecache, 
     first.all.scans[i,1,] <- this.first.bs.scan$p.value
     first.bs.peak <- this.first.bs.scan$loci[which.max(-log10(this.first.bs.scan$p.value))]
     first.peak.loci.matrix[i,1] <- first.bs.peak
-  
+    
     cat("First BS: finished scan", i, "out of", num.first.bs.samples, "\n")
-      
+    
     # Second Bootstrap
     P <- h$getLocusMatrix(locus=first.bs.peak, model="full", subjects=data$SUBJECT.NAME)
     #chr.of.locus <- h$getChromOfLocus(loci=first.bs.peak)
-      
+    
     q.matrix <- matrix(NA, nrow=nrow(data), ncol=num.av.over)
     sigma2.vec <- tau2.vec <- rep(NA, num.av.over)
-      
+    
     set.seed(seed)
     cat("\tSecond BS: fitting", num.av.over, "imputations to average:\n")
     bs.phenotype.prefix <- "y.second.bs." # For the closure function
@@ -331,7 +469,7 @@ double.averaged.mi.parametric.bootstrap <- function(formula, data, genomecache, 
     second.y.bs.matrix <- simulate.from.average.over.imputations()
     cat("\tSecond BS: generated", num.second.bs.samples, "averaged bootstrap samples\n")
     cat("\tSecond BS: beginning scans\n")
-      
+    
     newer.data <- cbind(second.y.bs.matrix, data)
     for(j in 1:num.second.bs.samples){
       this.second.formula <- formula(paste0("y.second.bs.", j, " ~ ", unlist(strsplit(this.formula.string, split="~"))[-1]))
@@ -346,7 +484,7 @@ double.averaged.mi.parametric.bootstrap <- function(formula, data, genomecache, 
       second.bs.peak <- this.second.bs.scan$loci[which.max(-log10(this.second.bs.scan$p.value))]
       second.peak.loci.matrix[i,1] <- second.bs.peak
       cat("\tSecond BS: finished scan", j, "out of", num.second.bs.samples, "\n")
-      }
+    }
   }
   first.peak.cm.matrix <- apply(first.peak.loci.matrix, 1, function(x) h$getLocusStart(loci=x, scale="cM"))
   first.peak.mb.matrix <- apply(first.peak.loci.matrix, 1, function(x) h$getLocusStart(loci=x, scale="Mb"))
@@ -574,9 +712,9 @@ nonparametric.bootstrap <- function(formula, data, genomecache, K,
 }
 
 case.bootstrap <- function(formula, data, genomecache, K,
-                                    num.bs.samples, num.imp, chr,
-                                    model, use.par="h2", use.scan.fix.par=TRUE,
-                                    do.augment=FALSE, seed=1, scale="cM"){
+                           num.bs.samples, num.imp, chr,
+                           model, use.par="h2", use.scan.fix.par=TRUE,
+                           do.augment=FALSE, seed=1, scale="cM"){
   
   scan.environment <- environment()
   for(object in ls(scan.environment)){
@@ -624,9 +762,9 @@ case.bootstrap <- function(formula, data, genomecache, K,
 }
 
 bayesian.bootstrap <- function(formula, data, genomecache, K,
-                                    num.bs.samples, num.imp, chr,
-                                    model, use.par="h2", use.scan.fix.par=TRUE,
-                                    seed=1, scale="cM"){
+                               num.bs.samples, num.imp, chr,
+                               model, use.par="h2", use.scan.fix.par=TRUE,
+                               seed=1, scale="cM"){
   
   scan.environment <- environment()
   for(object in ls(scan.environment)){
@@ -655,7 +793,7 @@ bayesian.bootstrap <- function(formula, data, genomecache, K,
   n <- nrow(data)
   
   weight.matrix <- matrix(NA, nrow=nrow(data), ncol=num.bs.samples)
-
+  
   for(i in 1:num.bs.samples){
     random.num <- sort(runif(n-1, min = 0, max = 1))
     
