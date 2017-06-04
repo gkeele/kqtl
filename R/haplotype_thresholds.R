@@ -22,6 +22,7 @@ generate.sample.outcomes.matrix <- function(scan.object, model.type=c("null", "a
   
   if(model.type == "null"){ fit <- scan.object$fit0 }
   if(model.type == "alt"){ fit <- scan.object$fit1 }
+  fit0.REML <- scan.object$fit0.REML
   if(class(fit) != "lmerMod"){
     Xb <- fit$x %*% fit$coefficients
     n <- nrow(fit$x)
@@ -34,8 +35,8 @@ generate.sample.outcomes.matrix <- function(scan.object, model.type=c("null", "a
         sigma2 <- fit$sigma2.mle*(n/(n - 1))
       }
       else{
-        tau2 <- fit.REML$tau2.mle
-        sigma2 <- fit.REML$sigma2.mle
+        tau2 <- fit0.REML$tau2.mle
+        sigma2 <- fit0.REML$sigma2.mle
       }
     }
     else{
