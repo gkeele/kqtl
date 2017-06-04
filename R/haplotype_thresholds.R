@@ -13,27 +13,34 @@
 #' @param seed DEFAULT: 1. The sampling process is random, thus a seed must be set for samples to be consistent
 #' across machines.
 #' @export
-#' @examples generate.null.bootstrap.matrix()
-generate.null.outcomes.matrix <- function(scan.object, method=c("bootstrap", "permutation"), use.REML=TRUE, num.samples, seed=1){
+#' @examples generate.sample.outcomes.matrix()
+generate.sample.outcomes.matrix <- function(scan.object, model.type=c("null", "alt"), 
+                                            method=c("bootstrap", "permutation"), use.REML=TRUE, 
+                                            use.BLUP=FALSE, num.samples, seed=1){
+  model.type <- model.type[1]
   method <- method[1]
-  if(class(scan.object$fit0) != "lmerMod"){
-    Xb <- scan.object$fit0$x %*% scan.object$fit0$coefficients
-    n <- nrow(scan.object$fit0$x)
-    K <- scan.object$fit0$K
-    weights <- scan.object$fit0$weights
+  
+  if(model.type == "null"){ fit <- fit }
+  if(model.type == "alt"){ fit <- scan.object$fit1 }
+  if(class(fit) != "lmerMod"){
+    Xb <- fit$x %*% fit$coefficients
+    n <- nrow(fit$x)
+    K <- fit$K
+    weights <- fit$weights
+    if(is.null(weights)){ weights <- rep(1, n) }
     if(use.REML){
       if(is.null(K)){
         tau2 <- 0
-        sigma2 <- scan.object$fit0$sigma2.mle*(n/(n - 1))
+        sigma2 <- fit$sigma2.mle*(n/(n - 1))
       }
       else{
-        tau2 <- scan.object$fit0.REML$tau2.mle
-        sigma2 <- scan.object$fit0.REML$sigma2.mle
+        tau2 <- fit.REML$tau2.mle
+        sigma2 <- fit.REML$sigma2.mle
       }
     }
     else{
-      tau2 <- scan.object$fit0$tau2.mle
-      sigma2 <- scan.object$fit0$sigma2.mle  
+      tau2 <- fit$tau2.mle
+      sigma2 <- fit$sigma2.mle  
     }
     sim.y.matrix <- matrix(NA, nrow=n, ncol=num.samples)
     
@@ -44,13 +51,24 @@ generate.null.outcomes.matrix <- function(scan.object, method=c("bootstrap", "pe
       original.K <- K
       impute.map <- scan.object$impute.map
       K <- reduce.large.K(large.K=K, impute.map=impute.map)
+      if(use.BLUP){
+        X <- fit$x
+        Sigma <- K*tau2 + diag(1/weights)*sigma2
+        inv.Sigma <- solve(Sigma)
+        u.BLUP <- (K*tau2) %*% inv.Sigma %*% (diag(nrow(K)) - X %*% solve(t(X) %*% inv.Sigma %*% X) %*% t(X) %*% inv.Sigma) %*% fit$y  
+      }
     }
     
     set.seed(seed)
     for(i in 1:num.samples){
       if(!is.null(K)){
         ## Handling potential replicates
-        u <- c(mnormt::rmnorm(1, mean=rep(0, nrow(K)), varcov=K*tau2))
+        if(use.BLUP){
+          u <- u.BLUP
+        }
+        else{
+          u <- c(mnormt::rmnorm(1, mean=rep(0, nrow(K)), varcov=K*tau2))
+        }
         names(u) <- unique(impute.map[,2])
         u <- u[impute.map[,2]]
       }
@@ -66,10 +84,10 @@ generate.null.outcomes.matrix <- function(scan.object, method=c("bootstrap", "pe
       }
       if(method == "permutation"){
         perm.y.ranks <- order(y.sample)
-        sim.y.matrix[,i] <- scan.object$fit0$y[perm.y.ranks]
+        sim.y.matrix[,i] <- fit$y[perm.y.ranks]
       }
     }
-    rownames(sim.y.matrix) <- names(scan.object$fit0$y)
+    rownames(sim.y.matrix) <- names(fit$y)
   }
   else{
     stop("Need to add lmer-based functionality!!")
