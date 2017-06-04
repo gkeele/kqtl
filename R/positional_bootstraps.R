@@ -143,7 +143,7 @@ run.positional.scans <- function(sim.object, keep.full.scans=TRUE,
   peak.loci.vec <- rep(NA, num.scans)
   iteration.formula <- formula(paste0("new.y ~ ", unlist(strsplit(formula, split="~"))[-1]))
   for(i in 1:num.scans){
-    new.y <- data.frame(y.matrix[,i], colnames(K))
+    new.y <- data.frame(y.matrix[,i], row.names(y.matrix))
     names(new.y) <- c("new.y", pheno.id)
     this.data <- merge(x=new.y, y=data, by=pheno.id, all.x=TRUE)
     
