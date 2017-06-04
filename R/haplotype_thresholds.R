@@ -28,7 +28,10 @@ generate.sample.outcomes.matrix <- function(scan.object, model.type=c("null", "a
     n <- nrow(fit$x)
     K <- fit$K
     weights <- fit$weights
-    if(is.null(weights)){ weights <- rep(1, n) }
+    return.weights <- weights
+    if(is.null(weights)){ 
+      weights <- rep(1, n) 
+    }
     if(use.REML){
       if(is.null(K)){
         tau2 <- 0
@@ -95,7 +98,7 @@ generate.sample.outcomes.matrix <- function(scan.object, model.type=c("null", "a
   }
   sim.threshold.object <- list(y.matrix=sim.y.matrix,
                                formula=scan.object$formula,
-                               weights=weights,
+                               weights=return.weights,
                                K=K,
                                method=method,
                                impute.map=scan.object$impute.map)
