@@ -118,6 +118,10 @@ run.positional.scans <- function(sim.object, keep.full.scans=TRUE,
   weights <- sim.object$weights
   K <- sim.object$K
   
+  impute.map <- sim.object$impute.map
+  pheno.id <- colnames(impute.map)[1]
+  geno.id <- colnames(impute.map)[2]
+  
   num.scans <- ncol(y.matrix)
   
   h <- DiploprobReader$new(genomecache)
@@ -139,13 +143,14 @@ run.positional.scans <- function(sim.object, keep.full.scans=TRUE,
   peak.loci.vec <- rep(NA, num.scans)
   iteration.formula <- formula(paste0("new.y ~ ", unlist(strsplit(formula, split="~"))[-1]))
   for(i in 1:num.scans){
-    new.y <- data.frame(new.y=y.matrix[,i], SUBJECT.NAME=colnames(K))
-    this.data <- merge(x=new.y, y=data, by="SUBJECT.NAME", all.x=TRUE)
+    new.y <- data.frame(y.matrix[,i], colnames(K))
+    names(new.y) <- c("new.y", pheno.id)
+    this.data <- merge(x=new.y, y=data, by=pheno.id, all.x=TRUE)
     
     this.scan <- scan.h2lmm(genomecache=genomecache, data=this.data, formula=iteration.formula, K=K, model=model,
                             use.par=use.par, use.multi.impute=use.multi.impute, num.imp=num.imp, chr=chr, brute=brute, use.fix.par=use.fix.par, seed=scan.seed, do.augment=do.augment, 
                             weights=weights, use.augment.weights=use.augment.weights, use.full.null=use.full.null, added.data.points=added.data.points,
-                            impute.on=impute.on)
+                            pheno.id=pheno.id, geno.id=geno.id)
     peak.index <- which.max(-log10(this.scan$p.value))
     peak.loci.vec[i] <- this.scan$loci[peak.index]
     if(keep.full.scans){
