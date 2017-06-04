@@ -117,11 +117,11 @@ run.positional.scans <- function(sim.object, keep.full.scans=TRUE,
   formula <- sim.object$formula
   weights <- sim.object$weights
   K <- sim.object$K
-  chr <- sim.object$fit$chr
   
   num.scans <- ncol(y.matrix)
   
   h <- DiploprobReader$new(genomecache)
+  chr <- h$getChromOfLocus(sim.object$loci)
   loci <- h$getLoci()
   chr.of.loci <- h$getChromOfLocus(loci)
   loci <- loci[chr.of.loci == chr]
