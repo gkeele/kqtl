@@ -20,7 +20,7 @@ generate.sample.outcomes.matrix <- function(scan.object, model.type=c("null", "a
   model.type <- model.type[1]
   method <- method[1]
   
-  if(model.type == "null"){ fit <- fit }
+  if(model.type == "null"){ fit <- scan.object$fit0 }
   if(model.type == "alt"){ fit <- scan.object$fit1 }
   if(class(fit) != "lmerMod"){
     Xb <- fit$x %*% fit$coefficients
