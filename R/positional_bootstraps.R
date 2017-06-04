@@ -117,7 +117,7 @@ run.positional.scans <- function(sim.object, keep.full.scans=TRUE,
   formula <- sim.object$formula
   weights <- sim.object$weights
   K <- sim.object$K
-  chr <- sim.object$chr
+  chr <- sim.object$fit$chr
   
   num.scans <- ncol(y.matrix)
   
