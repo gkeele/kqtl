@@ -29,9 +29,6 @@ generate.sample.outcomes.matrix <- function(scan.object, model.type=c("null", "a
     K <- fit$K
     weights <- fit$weights
     return.weights <- weights
-    if(is.null(weights)){ 
-      weights <- rep(1, n) 
-    }
     if(use.REML){
       if(is.null(K)){
         tau2 <- 0
@@ -57,6 +54,9 @@ generate.sample.outcomes.matrix <- function(scan.object, model.type=c("null", "a
       K <- reduce.large.K(large.K=K, impute.map=impute.map)
       if(use.BLUP){
         X <- fit$x
+        if(is.null(weights)){ 
+          weights <- rep(1, nrow(K)) 
+        }
         Sigma <- K*tau2 + diag(1/weights)*sigma2
         inv.Sigma <- solve(Sigma)
         u.BLUP <- (K*tau2) %*% inv.Sigma %*% (diag(nrow(K)) - X %*% solve(t(X) %*% inv.Sigma %*% X) %*% t(X) %*% inv.Sigma) %*% fit$y  
