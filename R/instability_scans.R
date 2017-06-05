@@ -28,8 +28,8 @@ generate.simple.sample.outcomes.matrix <- function(formula, data, pheno.id="SUBJ
   if(method == "bootstrap"){
     null.formula.string <- paste0("y ~", unlist(strsplit(paste0(Reduce(paste, deparse(formula))), split="~"))[-1])
     fit0 <- lm(formula(null.formula.string), data=use.data)
-    num.samples <- length(fit0$residuals)
-    sigma2 <- ifelse(use.REML, sum(fit0$residuals^2)/(num.samples - 1), sum(fit0$residuals^2)/num.samples)
+    n <- length(fit0$residuals)
+    sigma2 <- ifelse(use.REML, sum(fit0$residuals^2)/(n - 1), sum(fit0$residuals^2)/n)
     new.y <- data.frame(sapply(1:num.samples, function(x) fit0$fitted.values + rnorm(n=num.samples, mean=0, sd=sqrt(sigma2))))
   }
   if(method == "permutation"){
@@ -133,14 +133,6 @@ instability.lm.scan <- function(simple.sample.object,
       this.y <- y.matrix[,i]
 
       this.locus[sample] <- get.f.stat.p.val(qr.alt=qr.alt, qr.null=qr.null, y=this.y)
-      if(print.locus.fit){
-        if(use.ROP){
-          cat(paste0("sample: ", sample, ", locus: ", i, " of ", length(loci), "\n"))
-        }
-        if(!use.ROP){
-          cat(paste0("imp: ", imp, ", sample: ", sample, ", locus: ", i, " of ", length(loci), "\n"))
-        }
-      }
     }
     return(this.locus)
   }
@@ -192,6 +184,9 @@ instability.lm.scan <- function(simple.sample.object,
         impute.results[imp,,i] <- this.locus
       }
       full.results[,i] <- apply(impute.results[,,i, drop=FALSE], 2, function(x) median(x))
+    }
+    if(print.locus.fit){
+      cat(paste0("Finished locus: ", i, " of ", length(loci), "\n"))
     }
   }
   return(list(impute.results=impute.results, full.results=list(p.values=full.results, chr=these.chr, pos=these.pos),
