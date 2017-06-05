@@ -57,6 +57,8 @@ instability.lm.scan <- function(simple.sample.object,
   null.formula <- simple.sample.object$formula
   null.formula.string <- Reduce(paste, deparse(null.formula))
   
+  num.samples <- nrow(y.matrix)
+  
   h <- DiploprobReader$new(genomecache)
   loci <- h$getLoci()
   if(!is.null(just.these.loci)){
