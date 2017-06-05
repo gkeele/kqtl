@@ -356,43 +356,4 @@ sim.instability.lm.scan <- function(formula, data, num.bs.scans=100,
                 num.sim=num.sim,
                 num.founders=num.founders))
 }
-    
-    
-# temp.scan <- instability.lm.scan(log(BMI_Butt)~1+Dissector, data=Solberg.pheno.data, num.bs.scans=1000,
-#                                 genomecache="~/Documents/SolbergHS/caches/DOQTL_genomecache_989rats/",
-#                                 model="additive",
-#                                 seed=5,
-#                                 scale="cM",
-#                                 use.ROP=TRUE, num.imp=10, just.these.loci=c("WKYc89c09_s1_485", "WKYc69b04_s1_762"))
-# temp.scan <- instability.lm.scan(log(BMI_Butt)~1, data=Solberg.pheno.data, num.bs.scans=1000,
-#                                  genomecache="~/Documents/SolbergHS/caches/DOQTL_genomecache_989rats/",
-#                                  model="additive",
-#                                  seed=1,
-#                                  scale="cM",
-#                                  use.ROP=TRUE, num.imp=10, just.these.loci=c("WKYc89c09_s1_485", "WKYc69b04_s1_762"))
-# 
-# BMI.woDissector.ROP.instability.scan <- instability.lm.scan(log(BMI_Butt)~1, data=Solberg.pheno.data, num.bs.scans=1000,
-#                                  genomecache="~/Documents/SolbergHS/caches/DOQTL_genomecache_989rats/",
-#                                  model="additive",
-#                                  seed=1,
-#                                  scale="cM",
-#                                  use.ROP=TRUE)
-# BMI.wDissector.ROP.instability.scan <- instability.lm.scan(log(BMI_Butt)~1+Dissector, data=Solberg.pheno.data, num.bs.scans=1000,
-#                                                            genomecache="~/Documents/SolbergHS/caches/DOQTL_genomecache_989rats/",
-#                                                            model="additive",
-#                                                            seed=1,
-#                                                            scale="cM",
-#                                                            use.ROP=TRUE)
-# 
-# cairo_pdf("~/Documents/SolbergHS/instability/balance/BMI_comparison_instability.pdf", height=7, width=7)
-# par(mfrow=c(2,1))
-# null.pvalue.ci.plot(par.bs.scans=BMI.woDissector.ROP.instability.scan, cache.title="Solberg DO-QTL genomecache")
-# null.pvalue.ci.plot(par.bs.scans=BMI.wDissector.ROP.instability.scan, cache.title="Solberg DO-QTL genomecache")
-# dev.off()
-# 
-# BMI.ROP.instability.scan <- instability.lm.scan(sqrt(Ins0)~1+number+Handler, data=Solberg.pheno.data, num.bs.scans=1000,
-#                                                 genomecache="~/Documents/SolbergHS/caches/DOQTL_genomecache_989rats/",
-#                                                 model="additive",
-#                                                 seed=1,
-#                                                 scale="cM",
-#                                                 use.ROP=TRUE, num.imp=10, just.these.loci=c("WKYc89c09_s1_485", "WKYc69b04_s1_762"))
+

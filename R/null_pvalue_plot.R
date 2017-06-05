@@ -11,14 +11,14 @@ null.pvalue.ci.plot <- function(null.scans, conf.level=0.95, scale="Mb",
                                 give.output=FALSE,
                                 is.sim=FALSE)
 {
-  chr <- par.bs.scans$full.results$chr
+  chr <- null.scans$full.results$chr
   has.X <- FALSE
   if(any(chr=="X")){
     has.X <- TRUE
     chr[chr=="X"] <- length(unique(chr))
   }
   
-  pos <-par.bs.scans$full.results$pos[[scale]]
+  pos <-null.scans$full.results$pos[[scale]]
   
   pre.chr <- as.factor(as.numeric(chr))
   order.i <- order(pre.chr, pos)
@@ -31,7 +31,7 @@ null.pvalue.ci.plot <- function(null.scans, conf.level=0.95, scale="Mb",
   chr.types <- levels(pre.chr)
   
   # Calculating confidence intervals
-  these.cis <- apply(par.bs.scans$full.results$p.values, 2, function(x) EnvStats::eexp(-log(x), ci=TRUE, conf.level=conf.level)$interval$limits[c("LCL", "UCL")])
+  these.cis <- apply(null.scans$full.results$p.values, 2, function(x) EnvStats::eexp(-log(x), ci=TRUE, conf.level=conf.level)$interval$limits[c("LCL", "UCL")])
   these.cis <- these.cis[,order.i]
   
   # Finding extremes of y for plot window
@@ -67,14 +67,14 @@ null.pvalue.ci.plot <- function(null.scans, conf.level=0.95, scale="Mb",
   
   shift.left <- min(pos[pre.chr==chr.types[1]])
   if(!is.sim){
-    this.title <- c(paste("%95 CI of -Log rate parameter", lambda.code, "from", nrow(par.bs.scans$full.results$p.values), "null sims", sep=" "), 
+    this.title <- c(paste("%95 CI of -Log rate parameter", lambda.code, "from", nrow(null.scans$full.results$p.values), "null sims", sep=" "), 
                     cache.title,
-                    paste0(par.bs.scans$formula, " + locus (", par.bs.scans$model, ")")) 
+                    paste0(null.scans$formula, " + locus (", null.scans$model, ")")) 
   }
   if(is.sim){
-    this.title <- c(paste("%95 CI of -Log rate parameter", lambda.code, "from", nrow(par.bs.scans$full.results$p.values), "null sims", sep=" "), 
+    this.title <- c(paste("%95 CI of -Log rate parameter", lambda.code, "from", nrow(null.scans$full.results$p.values), "null sims", sep=" "), 
                     cache.title,
-                    paste0("Parameters: n=", par.bs.scans$num.sim, ", num.founders=", par.bs.scans$num.founders))
+                    paste0("Parameters: n=", null.scans$num.sim, ", num.founders=", null.scans$num.founders))
   }
 
   plot(rep(pos[1], 2), -c(log(these.cis[1,1]), log(these.cis[2,1])), 
