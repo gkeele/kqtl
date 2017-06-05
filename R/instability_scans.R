@@ -120,7 +120,7 @@ instability.lm.scan <- function(simple.sample.object,
       geno.names <- gsub(pattern="/", replacement=".", x=colnames(geno.data), fixed=TRUE)
       set.to.intercept <- which.max(colSums(geno.data))
       combined.data <- data.frame(pheno.data, geno.data[,-set.to.intercept])
-      alt.formula.string <- paste0(null.formula.string, " + ", paste(geno.names[-set.to.intercept], collapse=" + "))
+      alt.formula.string <- paste("~", unlist(strsplit(paste0(null.formula.string, " + ", paste(geno.names[-set.to.intercept], collapse=" + ")), split="~"))[2])
       design.matrix <- model.matrix(formula(alt.formula.string), data=combined.data)
       
       qr.alt <- qr(design.matrix)
