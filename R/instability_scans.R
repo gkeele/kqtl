@@ -130,7 +130,7 @@ instability.lm.scan <- function(simple.sample.object,
     #######################
     this.locus <- rep(NA, num.scans)
     for(sample in 1:num.scans){
-      this.y <- y.matrix[,i]
+      this.y <- y.matrix[,sample]
 
       this.locus[sample] <- get.f.stat.p.val(qr.alt=qr.alt, qr.null=qr.null, y=this.y)
     }
