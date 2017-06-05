@@ -19,7 +19,8 @@ subdirectory and a full model subdirectory. Each contains subdirectories for eac
 store .RData files for the probabilities/dosages of each locus.}
 
 \item{data}{A data frame with outcome and potential covariates. Should also have IDs
-that link to IDs in the genome cache, often the individual-level ID named "SUBJECT.NAME".}
+that link to IDs in the genome cache, often with the individual-level ID named "SUBJECT.NAME", though others
+can be specified with pheno.id.}
 
 \item{formula}{An lm style formula with functions of outcome and covariates contained in data frame.}
 

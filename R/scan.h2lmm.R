@@ -7,7 +7,8 @@
 #' subdirectory and a full model subdirectory. Each contains subdirectories for each chromosome, which then
 #' store .RData files for the probabilities/dosages of each locus.
 #' @param data A data frame with outcome and potential covariates. Should also have IDs
-#' that link to IDs in the genome cache, often the individual-level ID named "SUBJECT.NAME".
+#' that link to IDs in the genome cache, often with the individual-level ID named "SUBJECT.NAME", though others
+#' can be specified with pheno.id.
 #' @param formula An lm style formula with functions of outcome and covariates contained in data frame.
 #' @param K DEFAULT: NULL. A positive semi-definite relationship matrix, usually a realized genetic relationship matrix (GRM)
 #' based on SNP genotypes or the founder haplotype probabilities. Colnames and rownames should match

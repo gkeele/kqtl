@@ -1,12 +1,15 @@
-#' Returns a matrix of outcome samples, either permutations or from the null model of no locus effect
+#' Returns a matrix of outcome samples, either permutations of the actual data or drawn from the null model of no locus effect
 #'
-#' This function takes an scan.h2lmm() object, and returns a specified number of outcome samples, either permutations or
-#' from the null model of no locus effect.
+#' This function draws simple bootstraps or permutations from a data set and returns a specified number of outcome samples.
 #'
-#' @param scan.object A scan.h2lmm() object.
-#' @param method DEFAULT: "bootstrap". "bootstrap" specifies parametric bootstraps from the null model. "permutation" specifies
-#' permutations that can respect the structure of the data. Permutations are more appropriate if the data have highly
-#' influential data points.
+#' @param formula An lm style formula with functions of outcome and covariates contained in data frame.
+#' @param data A data frame with outcome and potential covariates. Should also have IDs
+#' that link to IDs in the genome cache, often with the individual-level ID named "SUBJECT.NAME", though others
+#' can be specified with pheno.id.
+#' @param pheno.id DEFAULT: "SUBJECT.NAME". The is the individual-level ID that is associated with data points in the phenotype
+#' data. Generally this should be unique for each data point.
+#' @param method DEFAULT: "bootstrap". "bootstrap" specifies that bootstrap samples are drawn from a simple Gaussian based on the
+#' formula argument. "permutation" specifies simple permutations, essentially re-mixing the actual outcome vector.
 #' @param use.REML DEFAULT: TRUE. Determines whether the variance components for the parametric sampling are 
 #' based on maximizing the likelihood (ML) or the residual likelihood (REML).
 #' @param num.samples The number of parametric bootstrap samples to return.
@@ -41,13 +44,35 @@ generate.simple.sample.outcomes.matrix <- function(formula, data, pheno.id="SUBJ
   return(results)
 }
 
+#' Runs quick fixed effect only scans off of simple bootstrap and permutation samples.
+#'
+#' This function runs scans of simple bootstraps or permutations from a data set with the purpose of assessing the null
+#' distribution of the p-values.
+#'
+#' @param simple.sample.object An object returned from generate.simple.sample.outcomes.matrix(). This contains the samples and supporting
+#' information for the fast scans.
+#' @param genomecache The path to the genome cache directory. The genome cache is a particularly structured
+#' directory that stores the haplotype probabilities/dosages at each locus. It has an additive model
+#' subdirectory and a full model subdirectory. Each contains subdirectories for each chromosome, which then
+#' store .RData files for the probabilities/dosages of each locus.
+#' @param model DEFAULT: additive. Specifies how to model the founder haplotype probabilities. The additive options specifies
+#' use of haplotype dosages, and is most commonly used. The full option regresses the phenotype on the actual
+#' diplotype probabilities.
+#' @param seed DEFAULT: 1. The sampling process is random, thus a seed must be set for samples to be consistent
+#' across machines.
+#' @param use.ROP DEFAULT: TRUE. TRUE specifies ROP. FALSE specifies multiple imputations.
+#' @param num.imp DEFAULT: 11. The number of imputations that are used.
+#' @param chr DEFAULT: "all". Specifies which chromosomes to scan.
+#' @param just.these.loci DEFAULT: NULL. Specifies a reduced set of loci to fit. If loci is just one locus, the alternative model fit
+#' will also be output as fit1.
+#' @param print.locus.fit DEFAULT: TRUE If TRUE, prints out how many loci have been fit currently.
 #' @export
+#' @examples instability.lm.scan()
 instability.lm.scan <- function(simple.sample.object,
                                 genomecache,
                                 model=c("additive", "full"),
                                 seed=1,
-                                pheno.id="SUBJECT.NAME",
-                                use.ROP=TRUE, num.imp=10, chr="all", just.these.loci=NULL, print.locus.fit=TRUE,
+                                use.ROP=TRUE, num.imp=11, chr="all", just.these.loci=NULL, print.locus.fit=TRUE,
                                 ...){
 
   y.matrix <- simple.sample.object$y.matrix
@@ -61,8 +86,15 @@ instability.lm.scan <- function(simple.sample.object,
   
   h <- DiploprobReader$new(genomecache)
   loci <- h$getLoci()
+  
+  loci.chr <- h$getChromOfLocus(loci)
+  if(chr[1] != "all"){
+    loci.chr <- h$getChromOfLocus(loci)
+    loci <- loci[loci.chr %in% chr]
+  }
   if(!is.null(just.these.loci)){
-    loci <- just.these.loci
+    loci <- loci[loci %in% just.these.loci]
+    loci.chr <- loci.chr[loci %in% just.these.loci]
   }
   
   full.results <- matrix(NA, nrow=num.scans, ncol=length(loci))
