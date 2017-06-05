@@ -14,7 +14,7 @@ generate.sample.outcomes.matrix(scan.object, model.type = c("null", "alt"),
 \item{model.type}{DEFAULT: "null". "null" specifies sampling processes from the null model. "alt" specifies sampling processes
 from the alternative model.}
 
-\item{method}{DEFAULT: "bootstrap". "bootstrap" specifies parametric bootstraps from the null model. "permutation" specifies
+\item{method}{DEFAULT: "bootstrap". "bootstrap" specifies parametric bootstraps from the given model. "permutation" specifies
 parametric permutations that can respect the structure of the data. Permutations are more appropriate if the data have highly
 influential data points.}
 

@@ -1,22 +1,50 @@
+#' Returns a matrix of outcome samples, either permutations or from the null model of no locus effect
+#'
+#' This function takes an scan.h2lmm() object, and returns a specified number of outcome samples, either permutations or
+#' from the null model of no locus effect.
+#'
+#' @param scan.object A scan.h2lmm() object.
+#' @param method DEFAULT: "bootstrap". "bootstrap" specifies parametric bootstraps from the null model. "permutation" specifies
+#' permutations that can respect the structure of the data. Permutations are more appropriate if the data have highly
+#' influential data points.
+#' @param use.REML DEFAULT: TRUE. Determines whether the variance components for the parametric sampling are 
+#' based on maximizing the likelihood (ML) or the residual likelihood (REML).
+#' @param num.samples The number of parametric bootstrap samples to return.
+#' @param seed DEFAULT: 1. The sampling process is random, thus a seed must be set for samples to be consistent
+#' across machines.
+#' @export
+#' @examples generate.simple.sample.outcomes.matrix()
+generate.simple.sample.outcomes.matrix <- function(formula, data, pheno.id="SUBJECT.NAME", 
+                                                   method=c("bootstrap", "permutation"), use.REML=TRUE, 
+                                                   num.samples, seed=1){
+  method <- method[1]
+  
+  use.data <- model.frame(formula(paste0(paste0(Reduce(paste, deparse(formula))), "+", pheno.id)), data=data)
+  names(use.data)[1] <- "y"
+  set.seed(seed)
+  if(method == "bootstrap"){
+    null.formula.string <- paste0("y ~", unlist(strsplit(paste0(Reduce(paste, deparse(formula))), split="~"))[-1])
+    fit0 <- lm(formula(null.formula.string), data=use.data)
+    num.samples <- length(fit0$residuals)
+    sigma2 <- ifelse(use.REML, sum(fit0$residuals^2)/(num.samples - 1), sum(fit0$residuals^2)/num.samples)
+    new.y <- data.frame(sapply(1:num.samples, function(x) fit0$fitted.values + rnorm(n=num.samples, mean=0, sd=sqrt(sigma2))))
+  }
+  if(method == "permutation"){
+    new.y <- data.frame(sapply(1:num.samples, function(x) sample(use.data$y)))
+  }
+  names(new.y) <- paste0("y", 1:num.samples)
+  new.y$SUBJECT.NAME <- use.data$SUBJECT.NAME
+  return(new.y)
+}
+
 #' @export
 instability.lm.scan <- function(formula, data, num.bs.scans=100,
                                 genomecache,
                                 model=c("additive", "full"),
                                 seed=1,
                                 pheno.id="SUBJECT.NAME",
-                                use.ROP=TRUE, num.imp=10, just.these.loci=NULL, print.locus.fit=TRUE,
+                                use.ROP=TRUE, num.imp=10, chr="all", just.these.loci=NULL, print.locus.fit=TRUE,
                                 ...){
-  
-  use.data <- model.frame(formula(paste0(paste0(Reduce(paste, deparse(formula))), "+", pheno.id)), data=data)
-  names(use.data)[1] <- "y"
-  null.formula.string <- paste0("y ~", unlist(strsplit(paste0(Reduce(paste, deparse(formula))), split="~"))[-1])
-  fit0 <- lm(formula(null.formula.string), data=use.data)
-  num.samples <- length(fit0$residuals)
-  sigma2 <- sum(fit0$residuals^2)/(num.samples - 1)
-  set.seed(seed)
-  new.y <- data.frame(sapply(1:num.bs.scans, function(x) fit0$fitted.values + rnorm(n=num.samples, mean=0, sd=sqrt(sigma2))))
-  names(new.y) <- paste0("X", 1:num.bs.scans)
-  new.y$SUBJECT.NAME <- use.data$SUBJECT.NAME
 
   h <- DiploprobReader$new(genomecache)
   loci <- h$getLoci()

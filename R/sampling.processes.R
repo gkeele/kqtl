@@ -6,7 +6,7 @@
 #' @param scan.object A scan.h2lmm() object.
 #' @param model.type DEFAULT: "null". "null" specifies sampling processes from the null model. "alt" specifies sampling processes
 #' from the alternative model.
-#' @param method DEFAULT: "bootstrap". "bootstrap" specifies parametric bootstraps from the null model. "permutation" specifies
+#' @param method DEFAULT: "bootstrap". "bootstrap" specifies parametric bootstraps from the given model. "permutation" specifies
 #' parametric permutations that can respect the structure of the data. Permutations are more appropriate if the data have highly
 #' influential data points.
 #' @param use.REML DEFAULT: TRUE. Determines whether the variance components for the parametric sampling are 
