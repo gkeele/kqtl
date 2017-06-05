@@ -4,7 +4,7 @@ null.pvalue.ci.plot <- function(null.scans, conf.level=0.95, scale="Mb",
                                 bs.max=NULL,
                                 SIM.object=NULL,
                                 dist.object=NULL,
-                                cache.title,
+                                cache.title="",
                                 formula.title=NULL,
                                 model.title=NULL,
                                 y.max.manual=NULL, y.min.manual=NULL,
@@ -35,8 +35,8 @@ null.pvalue.ci.plot <- function(null.scans, conf.level=0.95, scale="Mb",
   these.cis <- these.cis[,order.i]
   
   # Finding extremes of y for plot window
-  y.max <- max(-log(these.cis[1,]), 1, y.max.manual)
-  y.min <- min(-log(these.cis[2,]), -1, y.min.manual)
+  y.max <- max(-log(these.cis[1,]), 1, y.max.manual, 0.5)
+  y.min <- min(-log(these.cis[2,]), -1, y.min.manual, -0.5)
   
   # Adding color scale that matches siginficance
   if(is.null(SIM.object) & is.null(dist.object)){
