@@ -30,7 +30,7 @@ generate.simple.sample.outcomes.matrix <- function(formula, data, pheno.id="SUBJ
     fit0 <- lm(formula(null.formula.string), data=use.data)
     n <- length(fit0$residuals)
     sigma2 <- ifelse(use.REML, sum(fit0$residuals^2)/(n - 1), sum(fit0$residuals^2)/n)
-    new.y <- data.frame(sapply(1:num.samples, function(x) fit0$fitted.values + rnorm(n=num.samples, mean=0, sd=sqrt(sigma2))))
+    new.y <- data.frame(sapply(1:num.samples, function(x) fit0$fitted.values + rnorm(n=n, mean=0, sd=sqrt(sigma2))))
   }
   if(method == "permutation"){
     new.y <- data.frame(sapply(1:num.samples, function(x) sample(use.data$y)))
