@@ -33,12 +33,16 @@ generate.simple.sample.outcomes.matrix <- function(formula, data, pheno.id="SUBJ
     new.y <- data.frame(sapply(1:num.samples, function(x) sample(use.data$y)))
   }
   names(new.y) <- paste0("y", 1:num.samples)
-  new.y$SUBJECT.NAME <- use.data$SUBJECT.NAME
-  return(new.y)
+  new.y[[pheno.id]] <- use.data[[pheno.id]]
+  results <- list(y.matrix=new.y,
+                  formula=formula,
+                  data=use.data,
+                  pheno.id=pheno.id)
+  return(results)
 }
 
 #' @export
-instability.lm.scan <- function(formula, data, num.bs.scans=100,
+instability.lm.scan <- function(simple.sample.object,
                                 genomecache,
                                 model=c("additive", "full"),
                                 seed=1,
@@ -46,19 +50,26 @@ instability.lm.scan <- function(formula, data, num.bs.scans=100,
                                 use.ROP=TRUE, num.imp=10, chr="all", just.these.loci=NULL, print.locus.fit=TRUE,
                                 ...){
 
+  y.matrix <- simple.sample.object$y.matrix
+  num.scans <- ncol(y.matrix) - 1
+  pheno.id <- simple.sample.object$pheno.id
+  pheno.data <- simple.sample.object$data
+  null.formula <- simple.sample.object$formula
+  null.formula.string <- Reduce(paste, deparse(null.formula))
+  
   h <- DiploprobReader$new(genomecache)
   loci <- h$getLoci()
   if(!is.null(just.these.loci)){
     loci <- just.these.loci
   }
   
-  full.results <- matrix(NA, nrow=num.bs.scans, ncol=length(loci))
+  full.results <- matrix(NA, nrow=num.scans, ncol=length(loci))
   colnames(full.results) <- loci
   these.chr <- h$getChromOfLocus(loci)
   these.pos <- list(cM=h$getLocusStart(loci, scale="cM"),
                     Mb=h$getLocusStart(loci, scale="Mb"))
   founders <- gsub(pattern="/", replacement=".", x=h$getFounders(), fixed=TRUE)
-  ##### closures (functions defined within function)
+  ####################### closures (functions defined within function)
   get.qr.null <- function(){
     qr.null <- qr.alt
     num.gen.columns <- ifelse(model=="additive", length(founders)-1, length(founders)+choose(length(founders)-1, 2))
@@ -69,8 +80,7 @@ instability.lm.scan <- function(formula, data, num.bs.scans=100,
     qr.null$pivot <- qr.null$pivot[1:(total.columns-num.gen.columns)]
     return(qr.null)
   }
-
-  run.locus.bs.fits <- function(){
+  run.locus.fits <- function(){
     get.f.stat.p.val <- function(qr.alt, qr.null, y){
       rss0 <- sum(qr.resid(qr.null, y)^2)
       rss1 <- sum(qr.resid(qr.alt, y)^2)
@@ -83,47 +93,48 @@ instability.lm.scan <- function(formula, data, num.bs.scans=100,
       p.val <- pf(q=f.stat, df1=df1, df2=df2, lower.tail=FALSE)
       return(p.val)
     }
-    this.locus <- rep(NA, num.bs.scans)
-    for(bs in 1:num.bs.scans){
-      this.bs <- data.frame(y=new.y[,paste0("X", bs)], SUBJECT.NAME=new.y$SUBJECT.NAME)
-      bs.data <- merge(this.bs, full.real.data[,-2], by="SUBJECT.NAME", all=FALSE)
+    #######################
+    this.locus <- rep(NA, num.scans)
+    for(sample in 1:num.scans){
+      this.y <- y.matrix[,i]
 
-      this.locus[bs] <- get.f.stat.p.val(qr.alt=qr.alt, qr.null=qr.null, y=bs.data$y)
+      this.locus[sample] <- get.f.stat.p.val(qr.alt=qr.alt, qr.null=qr.null, y=this.sample[,this.y])
       if(print.locus.fit){
         if(use.ROP){
-          cat(paste0("bs: ", bs, ", locus: ", i, " of ", length(loci), "\n"))
+          cat(paste0("sample: ", sample, ", locus: ", i, " of ", length(loci), "\n"))
         }
         if(!use.ROP){
-          cat(paste0("imp: ", imp, ", bs: ", bs, ", locus: ", i, " of ", length(loci), "\n"))
+          cat(paste0("imp: ", imp, ", sample: ", sample, ", locus: ", i, " of ", length(loci), "\n"))
         }
       }
     }
     return(this.locus)
   }
-  impute.results <- array(NA, dim=c(num.imp, num.bs.scans, length(loci)))
+  
+  impute.results <- array(NA, dim=c(num.imp, num.scans, length(loci)))
   for(i in 1:length(loci)){
-    this.locus.scan <- rep(NA, num.bs.scans)
+    this.locus.scan <- rep(NA, num.scans)
     if(use.ROP){
       # ROP
-      geno.data <- h$getLocusMatrix(loci[i], model=model)
+      geno.data <- h$getLocusMatrix(loci[i], model=model, subjects=as.character(pheno.data[,pheno.id]))
       geno.names <- gsub(pattern="/", replacement=".", x=colnames(geno.data), fixed=TRUE)
-      geno.data <- data.frame(SUBJECT.NAME=rownames(geno.data), geno.data)
-      full.real.data <- merge(x=use.data, y=geno.data, by="SUBJECT.NAME", all=FALSE)
-      set.to.intercept <- which.max(colSums(full.real.data[,geno.names]))
-      full.real.data <- full.real.data[,-which(names(full.real.data) == geno.names[set.to.intercept])]
+      set.to.intercept <- which.max(colSums(geno.data))
+      combined.data <- data.frame(pheno.data, geno.data[,-set.to.intercept])
       alt.formula.string <- paste0(null.formula.string, " + ", paste(geno.names[-set.to.intercept], collapse=" + "))
-      design.matrix <- model.matrix(formula(alt.formula.string), data=full.real.data)
+      design.matrix <- model.matrix(formula(alt.formula.string), data=combined.data)
       
       qr.alt <- qr(design.matrix)
       # get qr.null from qr.alt
-      qr.null <- get.qr.null()
-      this.locus <- run.locus.bs.fits()
+      if(i == 1){
+        qr.null <- get.qr.null()
+      }
+      this.locus <- run.locus.fits()
       full.results[,i] <- this.locus
       impute.results <- NULL
     }
     if(!use.ROP){
       set.seed(seed)
-      prob.geno.data <- h$getLocusMatrix(loci[i], model="full")
+      prob.geno.data <- h$getLocusMatrix(loci[i], model="full", subjects=as.character(pheno.data[,pheno.id]))
       prob.geno.data[prob.geno.data < 0] <- 0
       for(imp in 1:num.imp){
         geno.names <- colnames(prob.geno.data)
@@ -135,14 +146,14 @@ instability.lm.scan <- function(formula, data, num.bs.scans=100,
           colnames(geno.data) <- founders
           geno.names <- founders
         }
-        geno.data <- data.frame(SUBJECT.NAME=rownames(geno.data), geno.data)
-        full.real.data <- merge(x=use.data, y=geno.data, by="SUBJECT.NAME", all=FALSE)
-        set.to.intercept <- which.max(colSums(full.real.data[,geno.names]))
-        full.real.data <- full.real.data[,-which(names(full.real.data) == geno.names[set.to.intercept])]
+        set.to.intercept <- which.max(colSums(geno.data))
+        combined.data <- data.frame(pheno.data, geno.data[,-set.to.intercept])
         alt.formula.string <- paste0(null.formula.string, " + ", paste(geno.names[-set.to.intercept], collapse=" + "))
-        design.matrix <- model.matrix(formula(alt.formula.string), data=full.real.data)
+        design.matrix <- model.matrix(formula(alt.formula.string), data=combined.data)
         qr.alt <- qr(design.matrix)
-        qr.null <- get.qr.null()
+        if(i == 1){ 
+          qr.null <- get.qr.null() 
+        }
         this.locus <- run.locus.bs.fits()
         impute.results[imp,,i] <- this.locus
       }
