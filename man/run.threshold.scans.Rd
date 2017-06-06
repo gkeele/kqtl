@@ -6,7 +6,7 @@
 \usage{
 run.threshold.scans(sim.threshold.object, keep.full.scans = TRUE, genomecache,
   data, model = c("additive", "full"), use.multi.impute = TRUE,
-  num.imp = 11, chr = "all", scan.seed = 1, ...)
+  num.imp = 11, chr = "all", just.these.loci = NULL, scan.seed = 1, ...)
 }
 \arguments{
 \item{sim.threshold.object}{An object created by either generate.null.bootstrap.matrix() or generate.perm.matrix().}
@@ -31,6 +31,9 @@ diplotype probabilities.}
 \item{num.imp}{DEFAULT: 11. IF multiple imputations are used, this specifies the number of imputations to perform.}
 
 \item{chr}{DEFAULT: "all". The chromosomes to conduct scans over.}
+
+\item{just.these.loci}{DEFAULT: NULL. Specifies a reduced set of loci to fit. If loci is just one locus, the alternative model fit
+will also be output as fit1.}
 
 \item{scan.seed}{DEFAULT: 1. The sampling process is random, thus a seed must be set for samples to be consistent
 across machines.}

@@ -140,6 +140,8 @@ reduce.large.K <- function(large.K, impute.map){
 #' @param use.multi.impute DEFAULT: TRUE. This option specifies whether to use ROP or multiple imputations.
 #' @param num.imp DEFAULT: 11. IF multiple imputations are used, this specifies the number of imputations to perform.
 #' @param chr DEFAULT: "all". The chromosomes to conduct scans over.
+#' @param just.these.loci DEFAULT: NULL. Specifies a reduced set of loci to fit. If loci is just one locus, the alternative model fit
+#' will also be output as fit1.
 #' @param scan.seed DEFAULT: 1. The sampling process is random, thus a seed must be set for samples to be consistent
 #' across machines.
 #' @export
@@ -147,7 +149,7 @@ reduce.large.K <- function(large.K, impute.map){
 run.threshold.scans <- function(sim.threshold.object, keep.full.scans=TRUE,
                                 genomecache, data,
                                 model=c("additive", "full"),
-                                use.multi.impute=TRUE, num.imp=11, chr="all", 
+                                use.multi.impute=TRUE, num.imp=11, chr="all", just.these.loci=NULL, 
                                 scan.seed=1, ...){
   y.matrix <- sim.threshold.object$y.matrix
   formula <- sim.threshold.object$formula
@@ -161,9 +163,13 @@ run.threshold.scans <- function(sim.threshold.object, keep.full.scans=TRUE,
   h <- DiploprobReader$new(genomecache)
   loci <- h$getLoci()
   loci.chr <- h$getChromOfLocus(loci)
-  if(chr != "all"){
+  if(chr[1] != "all"){
     loci.chr <- h$getChromOfLocus(loci)
     loci <- loci[loci.chr %in% chr]
+  }
+  if(!is.null(just.these.loci)){
+    loci <- loci[loci %in% just.these.loci]
+    loci.chr <- loci.chr[loci %in% just.these.loci]
   }
   
   full.results <- these.chr <- these.pos <- NULL
