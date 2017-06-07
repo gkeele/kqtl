@@ -11,6 +11,39 @@ rint <- function(phenotype, prop=0.5){
   return(rint_phenotype)
 }
 
+#' Returns a significance threshold based on fitting max LODs or max -log10p to a generalized extreme value (GEV) distribution
+#'
+#' This function takes an scan.h2lmm() object, and returns a specified number of outcome samples, either permutations or
+#' from the null model of no locus effect.
+#'
+#' @param extreme.statistic A vector of max LODs or min p-values from null scans of the data.
+#' @param use.lod DEFAULT: FALSE. "FALSE" specifies LOD scores. "TRUE" specifies p-values.
+#' @param percentile DEFAULT: 0.95. The desired alpha level (false positive probability) from the GEV distribution.
+#' @export
+#' @examples get.gev.thresholds()
+get.gev.thresholds <- function(extreme.statistic, use.lod=FALSE, percentile=0.95){
+  if(!use.lod){
+    evd.pars <- as.numeric(evir::gev(-log10(extreme.statistic))$par.est)
+  }
+  if(use.lod){
+    evd.pars <- as.numeric(evir::gev(extreme.statistic)$par.est)
+  }
+  thresh <- evir::qgev(p=percentile, xi=evd.pars[1], sigma=evd.pars[2], mu=evd.pars[3])
+  return(thresh)
+}
+
+#' @export
+ci.median <- function(x, conf=0.95){ # from R/asbio
+  n <- nrow(as.matrix(x))
+  if(qbinom((1 - conf)/2, n, 0.5) == 0){ stop("CI not calculable") }
+  L <- qbinom((1 - conf)/2, n, 0.5)
+  U <- n - L + 1
+  if (L >= U){ stop("CI not calculable") }
+  order.x <- sort(x)
+  ci <- c(lower = order.x[L], upper = order.x[n - L + 1])
+  return(ci)
+}
+
 predict.lmmbygls <- function(fit0.no.augment, original.n, augment.n, covariates, weights){
   e <- rnorm(augment.n, 0, sd=sqrt(fit0.no.augment$sigma2.mle))
   if(!is.null(weights)){
