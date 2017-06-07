@@ -22,6 +22,7 @@ gls.fit <- function(X, y, M, logDetV, rotate=TRUE, ...){
   return(fit)
 }
 
+#' @export
 lmmbygls <- function(formula, data, K=NULL, eigen.K=NULL, fix.par=NULL,
                      M=NULL, logDetV=NULL, weights, pheno.id,
                      use.par=c("h2", "h2.REML"), 
