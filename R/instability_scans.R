@@ -79,9 +79,8 @@ instability.lm.scan <- function(simple.sample.object,
   num.scans <- ncol(y.matrix) - 1
   pheno.id <- simple.sample.object$pheno.id
   pheno.data <- simple.sample.object$data
-  null.formula <- simple.sample.object$formula
-  null.formula.string <- Reduce(paste, deparse(null.formula))
-  
+  null.formula.string <- simple.sample.object$formula
+
   num.samples <- nrow(y.matrix)
   
   h <- DiploprobReader$new(genomecache)
