@@ -65,11 +65,12 @@ null.pvalue.ci.plot <- function(null.scans, conf.level=0.95, scale="Mb",
   gray.spectrum <- gray.colors(n=1000, start=0, end=0.8)
   lambda.code <- "\u03BB"
   
+  null.formula.string <- ifelse(is.formula(null.scans$formula), Reduce(paste, deparse(null.formula)), null.formula)
   shift.left <- min(pos[pre.chr==chr.types[1]])
   if(!is.sim){
     this.title <- c(paste("%95 CI of -Log rate parameter", lambda.code, "from", nrow(null.scans$full.results$p.values), "null sims", sep=" "), 
                     cache.title,
-                    paste0(null.scans$formula, " + locus (", null.scans$model, ")")) 
+                    paste0(null.formula.string, " + locus (", null.scans$model, ")")) 
   }
   if(is.sim){
     this.title <- c(paste("%95 CI of -Log rate parameter", lambda.code, "from", nrow(null.scans$full.results$p.values), "null sims", sep=" "), 

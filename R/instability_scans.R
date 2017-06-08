@@ -190,7 +190,7 @@ instability.lm.scan <- function(simple.sample.object,
     }
   }
   return(list(impute.results=impute.results, full.results=list(p.values=full.results, chr=these.chr, pos=these.pos),
-              formula=paste0(Reduce(paste, deparse(formula))),
+              formula=null.formula,
               model=model))
 }
 
