@@ -79,7 +79,8 @@ instability.lm.scan <- function(simple.sample.object,
   num.scans <- ncol(y.matrix) - 1
   pheno.id <- simple.sample.object$pheno.id
   pheno.data <- simple.sample.object$data
-  null.formula.string <- simple.sample.object$formula
+  null.formula <- simple.sample.object$formula
+  null.formula.string <- ifelse(is.formula(null.formula), Reduce(paste, deparse(null.formula)), null.formula)
 
   num.samples <- nrow(y.matrix)
   
