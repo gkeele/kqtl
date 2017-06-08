@@ -4,7 +4,7 @@ null.pvalue.ci.plot <- function(null.scans, conf.level=0.95, scale="Mb",
                                 bs.max=NULL,
                                 SIM.object=NULL,
                                 dist.object=NULL,
-                                cache.title="",
+                                cache.title=NULL,
                                 formula.title=NULL,
                                 model.title=NULL,
                                 y.max.manual=NULL, y.min.manual=NULL,
@@ -127,7 +127,7 @@ null.pvalue.ci.plot <- function(null.scans, conf.level=0.95, scale="Mb",
   if(!has.X){
     axis.label <- chr.types
   }
-  axis(side=1, tick=F, line=NA, at=label.spots, labels=axis.label, cex.axis=0.7, padj=-3.5)
+  axis(side=1, tick=FALSE, line=NA, at=label.spots, labels=axis.label, cex.axis=0.7, padj=-3.5)
   if(give.output){
     return(these.cis)
   }
