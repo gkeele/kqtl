@@ -350,7 +350,7 @@ sim.instability.lm.scan <- function(formula, data, num.bs.scans=100,
     }
   }    
   return(list(full.results=list(p.values=full.results, chr=these.chr, pos=these.pos),
-                formula=paste0(Reduce(paste, deparse(formula))),
+                formula=formula,
                 model=model,
                 num.sim=num.sim,
                 num.founders=num.founders))
