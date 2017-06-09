@@ -6,9 +6,9 @@
 \usage{
 genome.plotter.whole(scan.list, use.lod = FALSE, just.these.chr = NULL,
   scale = "Mb", main.colors = c("black", "gray48", "blue"),
-  use.legend = TRUE, main = "", my.legend.cex = 0.6, my.lwd = NULL,
-  y.max.manual = NULL, hard.thresholds = NULL, thresholds.col = "red",
-  thresholds.legend = NULL)
+  use.legend = TRUE, main = "", my.legend.cex = 0.6,
+  my.legend.lwd = NULL, y.max.manual = NULL, hard.thresholds = NULL,
+  thresholds.col = "red", thresholds.legend = NULL)
 }
 \arguments{
 \item{scan.list}{A list of scan.h2lmm() objects that are to be plotted within the same genome scan plot.}
@@ -27,7 +27,7 @@ genome.plotter.whole(scan.list, use.lod = FALSE, just.these.chr = NULL,
 
 \item{my.legend.cex}{DEFAULT: 0.6. Specifies the size of the text in the legend.}
 
-\item{my.lwd}{DEFAULT: NULL. If NULL, all lines have lwd=1.5. If not, option specifies the lwds.}
+\item{my.legend.lwd}{DEFAULT: NULL. If NULL, all lines have lwd=1.5. If not, option specifies the lwds.}
 
 \item{y.max.manual}{DEFAULT: NULL. Manually adds a max y-value. Allows multiple genome scans to easily be on the same scale.}
 

@@ -155,7 +155,7 @@ genome.plotter.chr <- function(scan.object, chr, use.lod=FALSE,
 #' @param use.legend DEFAULT: TRUE. Include a legend for the different associations. If TRUE, the labels are the names of the non.mi.scan.list object.
 #' @param main DEFAULT: NULL. Adds a title above the model.
 #' @param my.legend.cex DEFAULT: 0.6. Specifies the size of the text in the legend.
-#' @param my.lwd DEFAULT: NULL. If NULL, all lines have lwd=1.5. If not, option specifies the lwds.
+#' @param my.legend.lwd DEFAULT: NULL. If NULL, all lines have lwd=1.5. If not, option specifies the lwds.
 #' @param y.max.manual DEFAULT: NULL. Manually adds a max y-value. Allows multiple genome scans to easily be on the same scale.
 #' @param hard.thresholds DEFAULT: NULL. Specify one or more horizontal threshold lines.
 #' @param thresholds.col DEFAULT: "red". Set the colors of the specified thresholds.
@@ -166,11 +166,11 @@ genome.plotter.chr <- function(scan.object, chr, use.lod=FALSE,
 genome.plotter.whole <- function(scan.list, use.lod=FALSE, just.these.chr=NULL,
                                  scale="Mb", main.colors=c("black", "gray48", "blue"),
                                  use.legend=TRUE, main="",
-                                 my.legend.cex=0.6, my.lwd=NULL,
+                                 my.legend.cex=0.6, my.legend.lwd=NULL,
                                  y.max.manual=NULL,
                                  hard.thresholds=NULL, thresholds.col="red", thresholds.legend=NULL)
 {
-  if(is.null(my.lwd)){ my.lwd <- rep(1.5, length(scan.list)) }
+  if(is.null(my.legend.lwd)){ my.legend.lwd <- rep(1.5, length(scan.list)) }
   if(length(thresholds.col) < length(hard.thresholds)){ thresholds.col <- rep(thresholds.col, length(hard.thresholds)) }
   main.object <- scan.list[[1]]
   if(use.lod){
@@ -247,7 +247,7 @@ genome.plotter.whole <- function(scan.list, use.lod=FALSE, just.these.chr=NULL,
        xlim=c(shift.left, sum(max.pos)+(length(chr.types)-1)), 
        ylim=c(-0.1, y.max), 
        xaxt="n", yaxt="n", xlab="", ylab=this.ylab, main=this.title,
-       frame.plot=F, type="l", pch=20, cex=0.5, lwd=my.lwd[1], col=main.colors[1])
+       frame.plot=F, type="l", pch=20, cex=0.5, lwd=my.legend.lwd[1], col=main.colors[1])
   axis(side=2, at=0:y.max, las=2)
   
   label.spots <- min.pos[1] + (max.pos[1] - min.pos[1])/2
@@ -260,7 +260,7 @@ genome.plotter.whole <- function(scan.list, use.lod=FALSE, just.these.chr=NULL,
                 y=c(0, rep(y.max, length(min(this.pos, na.rm=TRUE):max(this.pos, na.rm=TRUE))), 0), border=NA, col="gray88")
       }
       label.spots <- c(label.spots, min.pos[i] + shift + (max.pos[i] - min.pos[i])/2)
-      points(this.pos, outcome[pre.chr==chr.types[i]], type="l", lwd=my.lwd[1], col=main.colors[1])
+      points(this.pos, outcome[pre.chr==chr.types[i]], type="l", lwd=my.legend.lwd[1], col=main.colors[1])
       shift <- shift + max.pos[i]
     }
   }
@@ -305,10 +305,10 @@ genome.plotter.whole <- function(scan.list, use.lod=FALSE, just.these.chr=NULL,
         chr.types <- levels(pre.chr)
         
         compare.shift <- max.pos[1]
-        points(pos[pre.chr==chr.types[1]], compare.outcome[pre.chr==chr.types[1]], type="l", col=main.colors[i], lwd=1.5)
+        points(pos[pre.chr==chr.types[1]], compare.outcome[pre.chr==chr.types[1]], type="l", col=main.colors[i], lwd=my.legend.lwd[i])
         if(length(chr.types) > 1){
           for(j in 2:length(chr.types)){
-            points(pos[pre.chr==chr.types[j]] + compare.shift, compare.outcome[pre.chr==chr.types[j]], type="l", col=main.colors[i], lwd=my.lwd[i])
+            points(pos[pre.chr==chr.types[j]] + compare.shift, compare.outcome[pre.chr==chr.types[j]], type="l", col=main.colors[i], lwd=my.legend.lwd[i])
             compare.shift <- compare.shift + max.pos[j]
           }
         }
