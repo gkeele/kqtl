@@ -323,7 +323,7 @@ genome.plotter.whole <- function(scan.list, use.lod=FALSE, just.these.chr=NULL,
     axis(side=1, tick=F, line=NA, at=label.spots, labels=axis.label, cex.axis=0.7, padj=-1.5)
   if(use.legend){
     legend("topright", legend=names(scan.list), 
-           lty=rep(1, length(scan.list)), lwd=my.lwd, 
+           lty=rep(1, length(scan.list)), lwd=my.legend.lwd, 
            col=main.colors[1:length(scan.list)], bty="n", cex=my.legend.cex)
   }
   if(!is.null(hard.thresholds)){
