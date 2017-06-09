@@ -6,7 +6,7 @@
 \usage{
 genome.plotter.whole(scan.list, use.lod = FALSE, just.these.chr = NULL,
   scale = "Mb", main.colors = c("black", "gray48", "blue"),
-  use.legend = TRUE, main = "", my.legend.cex = 0.6,
+  use.legend = TRUE, main = "", my.legend.cex = 0.6, my.lwd = NULL,
   y.max.manual = NULL, hard.thresholds = NULL, thresholds.col = "red",
   thresholds.legend = NULL)
 }
@@ -26,6 +26,8 @@ genome.plotter.whole(scan.list, use.lod = FALSE, just.these.chr = NULL,
 \item{main}{DEFAULT: NULL. Adds a title above the model.}
 
 \item{my.legend.cex}{DEFAULT: 0.6. Specifies the size of the text in the legend.}
+
+\item{my.lwd}{DEFAULT: NULL. If NULL, all lines have lwd=1.5. If not, option specifies the lwds.}
 
 \item{y.max.manual}{DEFAULT: NULL. Manually adds a max y-value. Allows multiple genome scans to easily be on the same scale.}
 

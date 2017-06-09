@@ -6,7 +6,7 @@
 \usage{
 prob.heatmap(marker, p.value = NULL, genomecache, model = "additive",
   phenotype, phenotype.data, merge.by = "SUBJECT.NAME",
-  founder.labels = NULL)
+  founder.labels = NULL, founder.cex = 1)
 }
 \arguments{
 \item{marker}{A marker that is contained in the genome cache. In general this should be a marker of interest, such as one
@@ -26,6 +26,8 @@ genomes in the genome cache.}
 \item{merge.by}{DEFAULT: "SUBJECT.NAME". Specifies the columns to merge phenotype and haplotype data.}
 
 \item{founder.labels}{DEFAULT: "NULL". If NULL, will default to the labels in the genome cache.}
+
+\item{founder.cex}{DEFAULT: 1. Defines the text size of the founder labels.}
 }
 \description{
 This function produces a probability heatmap plot, ordered by the phenotype. This gives an idea of what the regression

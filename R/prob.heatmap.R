@@ -13,10 +13,11 @@
 #' genomes in the genome cache.
 #' @param merge.by DEFAULT: "SUBJECT.NAME". Specifies the columns to merge phenotype and haplotype data.
 #' @param founder.labels DEFAULT: "NULL". If NULL, will default to the labels in the genome cache.
+#' @param founder.cex DEFAULT: 1. Defines the text size of the founder labels.
 #' @export
 #' @examples prob.heatmap()
 prob.heatmap = function(marker, p.value=NULL, genomecache, model="additive",
-                        phenotype, phenotype.data, merge.by="SUBJECT.NAME", founder.labels=NULL){
+                        phenotype, phenotype.data, merge.by="SUBJECT.NAME", founder.labels=NULL, founder.cex=1){
   if(!is.null(p.value)){
     p.value <- round(-log10(p.value), 4)
   }
@@ -62,14 +63,14 @@ prob.heatmap = function(marker, p.value=NULL, genomecache, model="additive",
   #heatmap(t(probs), Rowv=NA, Colv=NA, col = rev(cols), scale="column", margins=c(4,4), labCol="") 
   box()
   axis(2, at=seq(0, num.col, 1+1/num.col)/num.col, 
-       labels=rev(founder.labels), 
+       labels=rev(founder.labels), cex.axis=founder.cex,
        lty=0, srt=90, las=2) # add txt on the strain   
   axis(1, at=0.5, labels=phenotype, tick=FALSE)
   axis(3, at=c(0,0.25,0.5,0.75,1), labels=c(s1,s2,s3,s5,s6))
   this.title <- ifelse(is.null(p.value), marker, paste0(marker, ": -log10P=", p.value))
   title(this.title, line=2.5)
   
-  ramp.label <- ifelse(model == "additive", "Dos", "Prob")
+  ramp.label <- ifelse(model == "additive", "Dose", "Prob")
   par(fig=c(.9,.97,.3,.6), mai=c(.1,.1,.3,.1), new=TRUE)
   if(model == "additive"){ image(y=seq(from=0, to=2, length.out=length(cols)), z=matrix(seq(from=0, to=2, length.out=length(cols)), nrow=1), 
                                  zlim=c(0, 2), ylim=c(0, 2), axes=FALSE, col=rev(cols), main=ramp.label) } #for the legend 
