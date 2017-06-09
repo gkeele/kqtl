@@ -1,6 +1,7 @@
+#' @export
 multi.imput.lmmbygls <- function(num.imp, 
                                  data, formula, pheno.id="SUBJECT.NAME",
-                                 founders=founders, diplotype.probs, K=NULL, fit0=NULL, fit0.glmnet=NULL,
+                                 founders=founders, diplotype.probs, K=NULL, fit0=NULL,
                                  use.par, fix.par=NULL, model=c("additive", "full"), p.value.method=c("LRT", "ANOVA"),
                                  use.lmer, impute.map,
                                  brute=TRUE, seed=1, do.augment,
