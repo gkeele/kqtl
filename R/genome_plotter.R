@@ -156,6 +156,7 @@ genome.plotter.chr <- function(scan.object, chr, use.lod=FALSE,
 #' @param main DEFAULT: NULL. Adds a title above the model.
 #' @param my.legend.cex DEFAULT: 0.6. Specifies the size of the text in the legend.
 #' @param my.legend.lwd DEFAULT: NULL. If NULL, all lines have lwd=1.5. If not, option specifies the lwds.
+#' @param my.legend.pos DEFAULT: "topright". Specifies where to put the legend, if specified in use.legend.
 #' @param y.max.manual DEFAULT: NULL. Manually adds a max y-value. Allows multiple genome scans to easily be on the same scale.
 #' @param hard.thresholds DEFAULT: NULL. Specify one or more horizontal threshold lines.
 #' @param thresholds.col DEFAULT: "red". Set the colors of the specified thresholds.
@@ -166,7 +167,7 @@ genome.plotter.chr <- function(scan.object, chr, use.lod=FALSE,
 genome.plotter.whole <- function(scan.list, use.lod=FALSE, just.these.chr=NULL,
                                  scale="Mb", main.colors=c("black", "gray48", "blue"),
                                  use.legend=TRUE, main="",
-                                 my.legend.cex=0.6, my.legend.lwd=NULL,
+                                 my.legend.cex=0.6, my.legend.lwd=NULL, my.legend.pos="topright",
                                  y.max.manual=NULL,
                                  hard.thresholds=NULL, thresholds.col="red", thresholds.legend=NULL)
 {
@@ -322,7 +323,7 @@ genome.plotter.whole <- function(scan.list, use.lod=FALSE, just.these.chr=NULL,
     }
     axis(side=1, tick=F, line=NA, at=label.spots, labels=axis.label, cex.axis=0.7, padj=-1.5)
   if(use.legend){
-    legend("topright", legend=names(scan.list), 
+    legend(my.legend.pos, legend=names(scan.list), 
            lty=rep(1, length(scan.list)), lwd=my.legend.lwd, 
            col=main.colors[1:length(scan.list)], bty="n", cex=my.legend.cex)
   }
