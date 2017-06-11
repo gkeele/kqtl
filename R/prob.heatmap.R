@@ -28,17 +28,12 @@ prob.heatmap = function(marker, p.value=NULL, genomecache, model="additive",
     founder.labels <- colnames(X)
   }
   num.col <- length(founder.labels)
-  # if(model == "additive"){
-  #   if(sum(X[1,]) == 2){
-  #     X <- X/2
-  #   }
-  # }
   
   subjects <- h$getSubjects()
   X.data <- data.frame(rownames(X), X)
   names(X.data)[1] <- merge.by
   
-  # allow function of phenotype
+  # Allow function of phenotype
   phenotype.data <- model.frame(formula(paste(phenotype, "~ 1 +", merge.by)), data=phenotype.data)
   names(phenotype.data)[1] <- "y"
   final.data <- merge(x=phenotype.data, y=X.data, by=merge.by, all=FALSE)

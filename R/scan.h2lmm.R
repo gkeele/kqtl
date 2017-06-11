@@ -110,7 +110,6 @@ scan.h2lmm <- function(genomecache, data,
     }
     weights <- make.augment.weights(data=data, weights=weights, augment.n=augment.n, added.data.points=added.data.points)
   }
-  
   ###### Null model
   ## check for LMER notation
   use.lmer <- check.for.lmer.formula(null.formula)
@@ -180,13 +179,14 @@ scan.h2lmm <- function(genomecache, data,
   ## Prepping link between phenotype and genotype (necessary for imputation in multiple imputations)
   impute.map <- data.frame(data[,pheno.id], data[,geno.id])
   names(impute.map) <- c(pheno.id, geno.id)
+  non.augment.subjects <- as.character(data[,geno.id])[-grep(pattern="augment", x=as.character(data[,geno.id]))]
 
   for(i in 1:length(loci)){
     if(use.multi.impute){
       if(i == 1){ # only at the beginning
         MI.LOD <- MI.p.value <- matrix(NA, nrow=num.imp, ncol=length(loci))
       }
-      diplotype.prob.matrix <- h$getLocusMatrix(loci[i], model="full", subjects=old.data[,geno.id])
+      diplotype.prob.matrix <- h$getLocusMatrix(loci[i], model="full", subjects=non.augment.subjects)
       if(do.augment){
         if(model=="additive"){
           augment.matrix <- matrix(0, nrow=augment.n, ncol=choose(augment.n, 2) + augment.n)
@@ -213,7 +213,7 @@ scan.h2lmm <- function(genomecache, data,
       p.vec[i] <- median(fit1$p.value)
     }
     if(!use.multi.impute){
-      X <- h$getLocusMatrix(loci[i], model=model, subjects=as.character(data[,geno.id]))
+      X <- h$getLocusMatrix(loci[i], model=model, subjects=non.augment.subjects)
       max.column <- which.max(colSums(X, na.rm=TRUE))[1]
       X <- X[,-max.column]
       colnames(X) <- gsub(pattern="/", replacement=".", x=colnames(X), fixed=TRUE)
