@@ -179,7 +179,7 @@ scan.h2lmm <- function(genomecache, data,
   ## Prepping link between phenotype and genotype (necessary for imputation in multiple imputations)
   impute.map <- data.frame(data[,pheno.id], data[,geno.id])
   names(impute.map) <- c(pheno.id, geno.id)
-  non.augment.subjects <- as.character(data[,geno.id])[-grep(pattern="augment", x=as.character(data[,geno.id]))]
+  non.augment.subjects <- as.character(data[,geno.id])[grep(pattern="augment", x=as.character(data[,geno.id]), invert=TRUE)]
 
   for(i in 1:length(loci)){
     if(use.multi.impute){
