@@ -63,11 +63,14 @@ prob.heatmap = function(marker, p.value=NULL, genomecache, model="additive",
   box()
   axis(2, at=seq(0, num.col, 1+1/num.col)/num.col, 
        labels=rev(founder.labels), cex.axis=founder.cex,
-       lty=0, srt=90, las=2) # add txt on the strain   
+       lty=0, srt=90, las=2) # add txt on the strain 
+  phenotype <- ifelse(is.null(alternative.phenotype.label), phenotype, alternative.phenotype.label)
   axis(1, at=0.5, labels=phenotype, tick=FALSE)
   axis(3, at=c(0,0.25,0.5,0.75,1), labels=c(s1,s2,s3,s5,s6))
-  this.title <- ifelse(is.null(p.value), marker, paste0(marker, ": -log10P=", p.value))
-  title(this.title, line=2.5)
+  if(include.marker){
+    this.title <- ifelse(is.null(p.value), marker, paste0(marker, ": -log10P=", p.value))
+    title(this.title, line=2.5)
+  }
   
   if(include.ramp){
     ramp.label <- c(ifelse(model == "additive", "Haplotype", "Diplotype"),
@@ -123,9 +126,7 @@ prob.image = function(marker.data, marker=NULL, p.value=NULL,
        lty=0, srt=90, las=2) # add txt on the strain   
   axis(1, at=0.5, labels=phenotype, tick=FALSE)
   axis(3, at=c(0,0.25,0.5,0.75,1), labels=c(s1,s2,s3,s5,s6))
-  if(include.marker){
-    this.title <- ifelse(is.null(p.value), marker, paste0(marker, ": -log10P=", p.value))
-  }
-  title(this.title, line=2.5)
+  this.title <- ifelse(is.null(p.value), marker, paste0(marker, ": -log10P=", p.value))
+  title(this.title, line=2.5)  
   par(plt <- oplt)
 }
