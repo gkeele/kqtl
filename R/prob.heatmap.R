@@ -73,11 +73,12 @@ prob.heatmap = function(marker, p.value=NULL, genomecache, model="additive",
   }
   
   if(include.ramp){
-    ramp.label <- c(ifelse(model == "additive", "Haplotype", "Diplotype"),
+    ramp.label <- c(ifelse(model == "additive", "Hap", "Dip"),
                     ifelse(model == "additive", "Dose", "Prob"))
     par(fig=c(0.9, 0.97, 0.3, 0.6), 
-        mai=c(0.1, 0.1, 0.3, 0.1), 
-        mar=c(0,0,2.5,0), new=TRUE)
+        mai=c(0.1, 0.05, 0.5, 0.05), 
+        #mar=c(0,0,2.5,0), 
+        new=TRUE)
     if(model == "additive"){ image(y=seq(from=0, to=2, length.out=length(cols)), z=matrix(seq(from=0, to=2, length.out=length(cols)), nrow=1), 
                                    zlim=c(0, 2), ylim=c(0, 2), axes=FALSE, col=rev(cols), main=ramp.label, cex.main=0.75) } #for the legend 
     if(model == "full"){ image(y=seq(from=0, to=1, length.out=length(cols)), z=matrix(seq(from=0, to=1, length.out=length(cols)), nrow=1), 
