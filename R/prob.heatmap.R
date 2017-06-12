@@ -76,9 +76,9 @@ prob.heatmap = function(marker, p.value=NULL, genomecache, model="additive",
         mai=c(0.1, 0.1, 0.3, 0.1), 
         mar=c(0,0,2.5,0), new=TRUE)
     if(model == "additive"){ image(y=seq(from=0, to=2, length.out=length(cols)), z=matrix(seq(from=0, to=2, length.out=length(cols)), nrow=1), 
-                                   zlim=c(0, 2), ylim=c(0, 2), axes=FALSE, col=rev(cols), main=ramp.label, cex.main=0.8) } #for the legend 
+                                   zlim=c(0, 2), ylim=c(0, 2), axes=FALSE, col=rev(cols), main=ramp.label, cex.main=0.75) } #for the legend 
     if(model == "full"){ image(y=seq(from=0, to=1, length.out=length(cols)), z=matrix(seq(from=0, to=1, length.out=length(cols)), nrow=1), 
-                               zlim=c(0, 1), ylim=c(0, 1), axes=FALSE, col=rev(cols), main=ramp.label, cex.main=0.8) }
+                               zlim=c(0, 1), ylim=c(0, 1), axes=FALSE, col=rev(cols), main=ramp.label, cex.main=0.75) }
     box()
     axis(2, las=1)          
     
