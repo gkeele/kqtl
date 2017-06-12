@@ -70,12 +70,15 @@ prob.heatmap = function(marker, p.value=NULL, genomecache, model="additive",
   title(this.title, line=2.5)
   
   if(include.ramp){
-    ramp.label <- ifelse(model == "additive", c("Haplotype", "Dose"), c("Diplotype", "Prob"))
-    par(fig=c(.9,.97,.3,.6), mai=c(.1,.1,.3,.1), new=TRUE)
+    ramp.label <- c(ifelse(model == "additive", "Haplotype", "Diplotype"),
+                    ifelse(model == "additive", "Dose", "Prob"))
+    par(fig=c(0.9, 0.97, 0.3, 0.6), 
+        mai=c(0.1, 0.1, 0.3, 0.1), 
+        mar=c(0,0,2.5,0), new=TRUE)
     if(model == "additive"){ image(y=seq(from=0, to=2, length.out=length(cols)), z=matrix(seq(from=0, to=2, length.out=length(cols)), nrow=1), 
-                                   zlim=c(0, 2), ylim=c(0, 2), axes=FALSE, col=rev(cols), main=ramp.label) } #for the legend 
+                                   zlim=c(0, 2), ylim=c(0, 2), axes=FALSE, col=rev(cols), main=ramp.label, cex.main=0.8) } #for the legend 
     if(model == "full"){ image(y=seq(from=0, to=1, length.out=length(cols)), z=matrix(seq(from=0, to=1, length.out=length(cols)), nrow=1), 
-                               zlim=c(0, 1), ylim=c(0, 1), axes=FALSE, col=rev(cols), main=ramp.label) }
+                               zlim=c(0, 1), ylim=c(0, 1), axes=FALSE, col=rev(cols), main=ramp.label, cex.main=0.8) }
     box()
     axis(2, las=1)          
     
