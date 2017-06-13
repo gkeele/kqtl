@@ -75,7 +75,7 @@ prob.heatmap = function(marker, p.value=NULL, genomecache, model="additive",
   if(include.ramp){
     ramp.label <- c(ifelse(model == "additive", "Hap", "Dip"),
                     ifelse(model == "additive", "Dose", "Prob"))
-    par(fig=c(0.9, 0.95, 0.3, 0.6), 
+    par(fig=c(0.9, 0.95, 0.33, 0.66), 
         mai=c(0.1, 0.05, 0.5, 0.05), 
         #mar=c(0,0,2.5,0), 
         new=TRUE)
