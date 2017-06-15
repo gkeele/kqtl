@@ -16,18 +16,19 @@ rint <- function(phenotype, prop=0.5){
 #' This function takes an scan.h2lmm() object, and returns a specified number of outcome samples, either permutations or
 #' from the null model of no locus effect.
 #'
-#' @param extreme.statistic A vector of max LODs or min p-values from null scans of the data.
+#' @param threshold.scans Output object from run.threshold.scans().
 #' @param use.lod DEFAULT: FALSE. "FALSE" specifies LOD scores. "TRUE" specifies p-values.
 #' @param percentile DEFAULT: 0.95. The desired alpha level (false positive probability) from the GEV distribution.
 #' @export
 #' @examples get.gev.thresholds()
-get.gev.thresholds <- function(extreme.statistic, use.lod=FALSE, percentile=0.95){
+get.gev.thresholds <- function(threshold.scans, use.lod=FALSE, percentile=0.95){
   if(!use.lod){
-    evd.pars <- as.numeric(evir::gev(-log10(extreme.statistic))$par.est)
+    extreme.values <- -log10(threshold.scans$max.statistics$p.values)
   }
-  if(use.lod){
-    evd.pars <- as.numeric(evir::gev(extreme.statistic)$par.est)
+  else{
+    extreme.values <- threshold.scans$max.statistics$LOD
   }
+  evd.pars <- as.numeric(evir::gev(extreme.values)$par.est)
   thresh <- evir::qgev(p=percentile, xi=evd.pars[1], sigma=evd.pars[2], mu=evd.pars[3])
   return(thresh)
 }

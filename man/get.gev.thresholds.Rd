@@ -4,10 +4,10 @@
 \alias{get.gev.thresholds}
 \title{Returns a significance threshold based on fitting max LODs or max -log10p to a generalized extreme value (GEV) distribution}
 \usage{
-get.gev.thresholds(extreme.statistic, use.lod = FALSE, percentile = 0.95)
+get.gev.thresholds(threshold.scans, use.lod = FALSE, percentile = 0.95)
 }
 \arguments{
-\item{extreme.statistic}{A vector of max LODs or min p-values from null scans of the data.}
+\item{threshold.scans}{Output object from run.threshold.scans().}
 
 \item{use.lod}{DEFAULT: FALSE. "FALSE" specifies LOD scores. "TRUE" specifies p-values.}
 
