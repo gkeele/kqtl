@@ -172,10 +172,10 @@ run.threshold.scans <- function(sim.threshold.object, keep.full.scans=TRUE,
     loci.chr <- loci.chr[loci %in% just.these.loci]
   }
   
-  full.results <- these.chr <- these.pos <- NULL
+  full.p <- full.lod <- these.chr <- these.pos <- NULL
   if(keep.full.scans){
     full.p <- full.lod <- matrix(NA, nrow=num.scans, ncol=length(loci))
-    colnames(full.results) <- loci
+    colnames(full.p) <- colnames(full.lod) <- loci
     these.chr <- h$getChromOfLocus(loci)
     these.pos <- list(Mb=h$getLocusStart(loci, scale="Mb"),
                       cM=h$getLocusStart(loci, scale="cM"))
