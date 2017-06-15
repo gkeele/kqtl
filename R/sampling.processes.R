@@ -202,8 +202,8 @@ run.threshold.scans <- function(sim.threshold.object, keep.full.scans=TRUE,
     max.lod[i] <- max(this.scan$LOD)
     cat("threshold scan:", i, "\n")
   }
-  return(list(full.results=list(p.values=list(LOD=full.lod,
-                                              p.value=full.p),
+  return(list(full.results=list(LOD=full.lod,
+                                p.value=full.p,
                                 chr=these.chr, 
                                 pos=these.pos), 
               max.statistics=list(LOD=max.lod,
