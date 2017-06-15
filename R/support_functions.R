@@ -23,7 +23,7 @@ rint <- function(phenotype, prop=0.5){
 #' @examples get.gev.thresholds()
 get.gev.thresholds <- function(threshold.scans, use.lod=FALSE, percentile=0.95){
   if(!use.lod){
-    extreme.values <- -log10(threshold.scans$max.statistics$p.values)
+    extreme.values <- -log10(threshold.scans$max.statistics$p.value)
   }
   else{
     extreme.values <- threshold.scans$max.statistics$LOD
