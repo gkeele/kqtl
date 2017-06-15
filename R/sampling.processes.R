@@ -207,7 +207,7 @@ run.threshold.scans <- function(sim.threshold.object, keep.full.scans=TRUE,
                                 chr=these.chr, 
                                 pos=these.pos), 
               max.statistics=list(LOD=max.lod,
-                                  p.value=min.p))
+                                  p.value=min.p)))
 }
 
 ################# QTL CI methods
