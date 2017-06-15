@@ -174,13 +174,13 @@ run.threshold.scans <- function(sim.threshold.object, keep.full.scans=TRUE,
   
   full.results <- these.chr <- these.pos <- NULL
   if(keep.full.scans){
-    full.results <- matrix(NA, nrow=num.scans, ncol=length(loci))
+    full.p <- full.lod <- matrix(NA, nrow=num.scans, ncol=length(loci))
     colnames(full.results) <- loci
     these.chr <- h$getChromOfLocus(loci)
     these.pos <- list(Mb=h$getLocusStart(loci, scale="Mb"),
                       cM=h$getLocusStart(loci, scale="cM"))
   }
-  max.results <- rep(NA, num.scans)
+  min.p <- max.lod <- rep(NA, num.scans)
   
   iteration.formula <- formula(paste0("new_y ~ ", unlist(strsplit(formula, split="~"))[-1]))
   for(i in 1:num.scans){
@@ -195,15 +195,19 @@ run.threshold.scans <- function(sim.threshold.object, keep.full.scans=TRUE,
                             weights=weights, chr=chr,
                             ...)
     if(keep.full.scans){
-      full.results[i,] <- this.scan$p.value
+      full.p[i,] <- this.scan$p.value
+      full.lod[i,] <- this.scan$LOD
     }
-    max.results[i] <- min(this.scan$p.value)
+    min.p[i] <-  min(this.scan$p.value)
+    max.lod[i] <- max(this.scan$LOD)
     cat("threshold scan:", i, "\n")
   }
-  return(list(full.results=list(p.values=full.results, 
+  return(list(full.results=list(p.values=list(LOD=full.lod,
+                                              p.value=full.p),
                                 chr=these.chr, 
                                 pos=these.pos), 
-              max.statistics=max.results))
+              max.statistics=list(LOD=max.lod,
+                                  p.value=min.p))
 }
 
 ################# QTL CI methods
