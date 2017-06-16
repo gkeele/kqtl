@@ -1,6 +1,6 @@
 #### Class for a DiploprobReader object
 #### Written by Will Valdar - from bagpipe.backend package
-
+#' @exportClass 
 DiploprobReader <- setRefClass("DiploprobReader",
   fields = c(
     "mHappy"
