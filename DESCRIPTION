@@ -1,4 +1,4 @@
-Package: kqtl
+Package: miqtl
 Title: Suite of QTL Mapping Functions
 Version: 0.1
 Authors@R: c(person("William", "Valdar", role = "aut"),
